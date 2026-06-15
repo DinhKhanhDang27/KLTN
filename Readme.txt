@@ -1,0 +1,10 @@
+- SHA256 ip including Core & Wrapper
+- CPU RISCV 64 bit
+- DE0 Nano kit cyclone IV 
+- SDRAM CONTROLLER - SDRAM 32MB
+- SystemVerilog 
+- Avalon - Bridge -  AXI4 //Cái này nên xem lại
+- DMA không?
+- Dùng interupt để báo cho riscv thay vì polling
+- Phần mềm có cần RTOS không? 
+- code C không dùng nios II esclip thì dùng gì?

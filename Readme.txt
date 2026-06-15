@@ -10,7 +10,7 @@
 - code C không dùng nios II esclip thì dùng gì? // cái này nên xem lại
 ==========
 
-Brainstoming
+********Brainstoming***********
 1. Cấu trúc SoC (System on Chip) của hệ thống?
 Từ file Readme, hệ thống của bạn là một SoC được xây dựng trên kit DE0 Nano (Cyclone IV E) bằng ngôn ngữ SystemVerilog, với cấu trúc tổng quát gồm các khối chính sau:
 1. Bộ xử lý trung tâm (CPU): Core RISC-V 64-bit.
@@ -43,3 +43,37 @@ Nằm độc lập, bao gồm SHA256_Core (xử lý toán học) + SHA256_AXI_Wr
 2. Block Bridge (AXI2Avalon):
 Là một khối riêng biệt nằm trên đường truyền (Bus) giữa AXI Interconnect (của CPU) và khối SDRAM Controller.
 + Tóm tắt lợi ích của việc tách riêng: Nếu sau này bạn mang khối SHA256 sang một SoC khác thuần AXI (như Xilinx Zynq), bạn chỉ việc bê nguyên khối SHA256 IP (Core + Wrapper) đi mà không cần quan tâm đến Bridge. Tính module (modularity) của phần cứng được đảm bảo.
+
+=====================
+1. Ứng dụng của DMA trong hệ thống mã hóa SHA256
+Trong đồ án của bạn, CPU RISC-V sẽ cần gửi dữ liệu (ví dụ: một file text hoặc một luồng dữ liệu) từ bộ nhớ chính (SDRAM) vào lõi SHA256 để tiến hành băm (hashing).
+
+Kịch bản không có DMA (CPU tự làm "shipper"):
+
+CPU phải liên tục thực hiện lệnh đọc (Load) dữ liệu từ SDRAM vào thanh ghi của CPU.
+Sau đó, CPU lại thực hiện lệnh ghi (Store) dữ liệu từ thanh ghi vào địa chỉ của khối SHA256.
+SHA256 xử lý theo block 512-bit (64 byte). Nếu bạn cần băm một file 1MB, CPU phải chạy đi chạy lại việc đọc/ghi hàng vạn lần. Trong lúc làm việc này, CPU không thể làm được việc gì khác, và tốc độ truyền dữ liệu cũng chậm do phải đi qua CPU.
+
+
+Kịch bản có DMA (DMA làm "shipper" chuyên nghiệp):
+
+DMA giống như một vi điều khiển chuyên dụng chỉ làm nhiệm vụ chuyển đồ.
+CPU chỉ cần nói với DMA: "Này DMA, hãy copy 1MB dữ liệu bắt đầu từ địa chỉ X trong SDRAM, nạp thẳng vào địa chỉ Y của khối SHA256 cho tôi".
+Sau đó, CPU được giải phóng hoàn toàn và có thể đi làm việc khác.
+DMA sẽ tự động nắm quyền điều khiển Bus (AXI/Avalon), kéo dữ liệu với tốc độ cao nhất (burst transfer) trực tiếp từ SDRAM sang SHA256. Khi nào chuyển xong, DMA sẽ gửi một tín hiệu Ngắt (Interrupt) báo cho CPU biết.
+
+
+2. Ưu và nhược điểm khi đưa DMA vào đồ án
+- Ưu điểm:
+Tăng tốc độ cực lớn (High Throughput): Khối SHA256 có thể chạy hết công suất vì lúc nào cũng được bơm dữ liệu liên tục.
+Giải phóng CPU: CPU có thể chạy hệ điều hành (RTOS) mượt mà hơn, hoặc xử lý các logic khác trong khi dữ liệu đang được mã hóa.
+Thể hiện kỹ năng kiến trúc SoC: Việc tích hợp thành công IP (Intellectual Property) DMA, cấu hình Bus đa Master (CPU và DMA cùng tranh chấp Bus), và viết code C điều khiển ngắt sẽ đánh giá năng lực rất tốt trước hội đồng bảo vệ.
+
+- Nhược điểm:
+Tăng độ phức tạp phần cứng: Hệ thống Bus (AXI Interconnect) sẽ phức tạp hơn vì lúc này có tới 2 Master (CPU và DMA) muốn truy cập vào các Slave (SDRAM, SHA256).
+Tăng độ phức tạp phần mềm: Bạn phải viết thêm Driver (mã C) để cấu hình các thanh ghi của DMA và xử lý ngắt của nó.
+Lời khuyên cho tiến độ đồ án của bạn:
+Bạn nên áp dụng chiến lược "Phát triển theo từng giai đoạn":
+
++  Giai đoạn 1 (Bắt buộc phải chạy được): KHÔNG dùng DMA. Hãy để CPU đọc/ghi trực tiếp vào SHA256 Wrapper qua AXI-Lite. Mục đích là để chứng minh core RISC-V, lõi SHA256 và giao tiếp cơ bản (Wrapper/Bridge) hoạt động đúng đắn.
++ Giai đoạn 2 (Nâng cấp tối ưu): Sau khi Phase 1 đã chạy trơn tru, bạn hãy thêm khối DMA vào hệ thống (có thể dùng khối mSGDMA của Quartus hoặc IP DMA mã nguồn mở) để nâng cấp tốc độ và lấy điểm cộng.

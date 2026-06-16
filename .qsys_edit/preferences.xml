@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<preferences>
+ <debug showDebugMenu="0" />
+ <systemtable>
+  <columns>
+   <connections preferredWidth="47" />
+   <irq preferredWidth="47" />
+  </columns>
+ </systemtable>
+ <clocktable>
+  <columns>
+   <clockname preferredWidth="229" />
+   <clocksource preferredWidth="229" />
+   <frequency preferredWidth="210" />
+  </columns>
+ </clocktable>
+ <library
+   expandedCategories="Library,Library/Verification,Library/Bridges,Library/Verification/Simulation,Library/Verification/Debug &amp; Performance,Project,Library/Clock and Reset" />
+ <window width="1100" height="728" x="0" y="0" />
+</preferences>

@@ -1,0 +1,16 @@
+# vsim -c riscv_sha256_avalon_tb -do "run -all; quit" 
+# Start time: 09:40:20 on Jun 16,2026
+# Loading work.riscv_sha256_avalon_tb
+# Loading work.riscv_sha256_avalon
+# Loading work.control_unit
+# Loading work.register_file
+# Loading work.imm_gen
+# Loading work.alu_control
+# Loading work.alu
+# Loading work.branch_control
+# run -all
+# [PASS] riscv_sha256_avalon C-oriented logical/load-store smoke test
+# ** Note: $finish    : C:/Users/dinhkhanhdang/Do_An_Thay_NGUYEN/rtl_riscv/riscv_sha256_avalon_tb.v(206)
+#    Time: 2435 ns  Iteration: 1  Instance: /riscv_sha256_avalon_tb
+# End time: 09:40:23 on Jun 16,2026, Elapsed time: 0:00:03
+# Errors: 0, Warnings: 0

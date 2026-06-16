@@ -1,0 +1,149 @@
+<mxGraphModel dx="2220" dy="916" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1700" pageHeight="950" math="0" shadow="0">
+  <root>
+    <mxCell id="0" />
+    <mxCell id="1" parent="0" />
+    <mxCell id="title" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=22;fontStyle=1;" value="He thong RISC-V + DMA + SHA256 dung Avalon-MM trong Quartus Qsys" vertex="1">
+      <mxGeometry height="40" width="1180" x="270" y="10" as="geometry" />
+    </mxCell>
+    <mxCell id="qsys_domain" parent="1" style="swimlane;html=1;startSize=30;rounded=0;fillColor=#fffaf2;strokeColor=#d79b00;fontSize=15;fontStyle=1;horizontal=1;" value="Qsys / Platform Designer Avalon system" vertex="1">
+      <mxGeometry height="850" width="1560" x="70" y="50" as="geometry" />
+    </mxCell>
+    <mxCell id="edge_timer_bus" edge="1" parent="qsys_domain" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;strokeWidth=3;strokeColor=#d79b00;fontSize=13;entryX=0.802;entryY=-0.048;entryDx=0;entryDy=0;entryPerimeter=0;" target="avalon_bus" value="Avalon Slave">
+      <mxGeometry relative="1" x="0.4115" y="-26" as="geometry">
+        <mxPoint x="19" y="-25" as="offset" />
+        <Array as="points">
+          <mxPoint x="1208" y="296" />
+        </Array>
+        <mxPoint x="1207.5411764705882" y="190" as="sourcePoint" />
+        <mxPoint x="1208" y="280" as="targetPoint" />
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="ycTzm-_oC_T5UkS5SJfv-3" edge="1" parent="qsys_domain" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;strokeWidth=2;strokeColor=#8e24aa;fontSize=13;dashed=1;entryX=-0.004;entryY=0.175;entryDx=0;entryDy=0;entryPerimeter=0;" target="irq_mapper" value="IRQ">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="1090" y="120" />
+          <mxPoint x="1090" y="80" />
+          <mxPoint x="1300" y="80" />
+          <mxPoint x="1300" y="110" />
+        </Array>
+        <mxPoint x="1100" y="120" as="sourcePoint" />
+        <mxPoint x="1310" y="110" as="targetPoint" />
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="avalon_bus" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;strokeWidth=4;fontSize=16;fontStyle=1;" value="Avalon-MM BUS chung / Qsys Interconnect&#xa;masters: RISC-V, DMA read master, DMA write master   |   slaves: SHA regs, on-chip memory, JTAG UART, SDRAM controller, DMA control regs" vertex="1">
+      <mxGeometry height="85" width="1400" x="150" y="390" as="geometry" />
+    </mxCell>
+    <mxCell id="riscv" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=15;fontStyle=1;" value="Custom RISC-V CPU&#xa;&#xa;Avalon-MM Master&#xa;fetch/load/store&#xa;config DMA/SHA" vertex="1">
+      <mxGeometry height="135" width="210" x="140" y="145" as="geometry" />
+    </mxCell>
+    <mxCell id="dma" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=15;fontStyle=1;" value="DMA Controller&#xa;Qsys IP co san&#xa;&#xa;Avalon-MM Slave&#xa;control regs&#xa;&#xa;Avalon-MM Masters&#xa;read/write memory" vertex="1">
+      <mxGeometry height="175" width="230" x="455" y="125" as="geometry" />
+    </mxCell>
+    <mxCell id="sha" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=15;fontStyle=1;" value="Custom SHA256 Wrapper&#xa;&#xa;Avalon-MM Slave&#xa;control/status regs&#xa;data input/output regs&#xa;&#xa;hoac Avalon-ST Sink&#xa;neu dung SGDMA" vertex="1">
+      <mxGeometry height="185" width="240" x="810" y="120" as="geometry" />
+    </mxCell>
+    <mxCell id="timer" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e8f5e9;strokeColor=#43a047;fontSize=15;fontStyle=1;" value="Interval Timer&#xa;Qsys IP co san&#xa;&#xa;Avalon-MM Slave&#xa;IRQ timer" vertex="1">
+      <mxGeometry height="135" width="190" x="1170" y="145" as="geometry" />
+    </mxCell>
+    <mxCell id="irq_mapper" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f3e5f5;strokeColor=#8e24aa;fontSize=14;fontStyle=1;" value="IRQ Mapper / Interrupt Receiver&#xa;Qsys tu sinh khi noi IRQ&#xa;&#xa;DMA irq&#xa;SHA irq&#xa;JTAG irq&#xa;Timer irq" vertex="1">
+      <mxGeometry height="170" width="190" x="1390" y="130" as="geometry" />
+    </mxCell>
+    <mxCell id="onchip" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1f5fe;strokeColor=#0288d1;fontSize=15;fontStyle=1;" value="On-Chip Memory&#xa;Qsys IP co san&#xa;&#xa;Avalon-MM Slave&#xa;boot/code/stack/data" vertex="1">
+      <mxGeometry height="135" width="210" x="155" y="610" as="geometry" />
+    </mxCell>
+    <mxCell id="jtag" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=15;fontStyle=1;" value="JTAG UART&#xa;Qsys IP co san&#xa;&#xa;Avalon-MM Slave&#xa;console/debug" vertex="1">
+      <mxGeometry height="135" width="210" x="485" y="610" as="geometry" />
+    </mxCell>
+    <mxCell id="sdram_ctrl" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff3e0;strokeColor=#f57c00;fontSize=15;fontStyle=1;" value="SDRAM Controller&#xa;Qsys IP co san&#xa;&#xa;Avalon-MM Slave&#xa;external memory window" vertex="1">
+      <mxGeometry height="135" width="225" x="825" y="610" as="geometry" />
+    </mxCell>
+    <mxCell id="reset_clk" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=15;fontStyle=1;" value="Clock Source + Reset Controller&#xa;Qsys IP co san / auto insert&#xa;&#xa;clk&#xa;reset_n" vertex="1">
+      <mxGeometry height="135" width="230" x="1175" y="610" as="geometry" />
+    </mxCell>
+    <mxCell id="sdram" parent="1" style="shape=cylinder3d;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#f5f5f5;strokeColor=#666666;fontSize=15;fontStyle=1;" value="External SDRAM chip" vertex="1">
+      <mxGeometry height="105" width="150" x="865" y="805" as="geometry" />
+    </mxCell>
+    <mxCell id="note" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#edf7ed;strokeColor=#2e7d32;fontSize=14;align=left;spacingLeft=12;" value="Khuyen nghi de de lam trong Quartus 13.0sp1: bo AXI4, dung Avalon-MM toan he thong. DMA Qsys doc/ghi memory qua Avalon-MM bus. SHA256 la custom component Avalon-MM slave; CPU ghi block/len/start vao SHA regs, hoac DMA copy block vao vung input regs/FIFO cua SHA." vertex="1">
+      <mxGeometry height="85" width="620" x="165" y="795" as="geometry" />
+    </mxCell>
+    <mxCell id="edge_riscv_bus" edge="1" parent="1" source="riscv" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;strokeWidth=3;strokeColor=#d79b00;fontSize=13;" value="Avalon Master">
+      <mxGeometry relative="1" x="-0.3566" as="geometry">
+        <mxPoint x="1" as="offset" />
+        <Array as="points">
+          <mxPoint x="245" y="389" />
+        </Array>
+        <mxPoint x="245" y="390" as="targetPoint" />
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="edge_dma_bus" edge="1" parent="1" source="dma" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;startArrow=classic;strokeWidth=3;strokeColor=#d79b00;fontSize=13;" target="avalon_bus" value="Avalon Slave regs + read/write Masters">
+      <mxGeometry relative="1" x="-0.1351" as="geometry">
+        <mxPoint as="offset" />
+        <Array as="points">
+          <mxPoint x="570" y="360" />
+          <mxPoint x="570" y="360" />
+        </Array>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="edge_sha_bus" edge="1" parent="1" source="avalon_bus" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;strokeWidth=3;strokeColor=#d79b00;fontSize=13;" target="sha" value="Avalon Slave">
+      <mxGeometry relative="1" x="0.0947" y="-37" as="geometry">
+        <mxPoint x="-7" y="22" as="offset" />
+        <Array as="points">
+          <mxPoint x="930" y="360" />
+          <mxPoint x="930" y="360" />
+        </Array>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="edge_onchip_bus" edge="1" parent="1" source="avalon_bus" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;strokeWidth=3;strokeColor=#d79b00;fontSize=13;" target="onchip" value="Avalon Slave">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="edge_jtag_bus" edge="1" parent="1" source="avalon_bus" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;strokeWidth=3;strokeColor=#d79b00;fontSize=13;" target="jtag" value="Avalon Slave">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="edge_sdram_bus" edge="1" parent="1" source="avalon_bus" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;strokeWidth=3;strokeColor=#d79b00;fontSize=13;" target="sdram_ctrl" value="Avalon Slave">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="edge_sdram_pins" edge="1" parent="1" source="sdram_ctrl" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;startArrow=classic;strokeWidth=2;strokeColor=#666666;fontSize=13;" target="sdram" value="SDRAM pins">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="edge_dma_irq" edge="1" parent="1" source="dma" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;strokeWidth=2;strokeColor=#8e24aa;fontSize=13;dashed=1;" target="irq_mapper" value="IRQ">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="570" y="100" />
+          <mxPoint x="1485" y="100" />
+        </Array>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="edge_sha_irq" edge="1" parent="1" source="sha" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;strokeWidth=2;strokeColor=#8e24aa;fontSize=13;dashed=1;" target="irq_mapper" value="IRQ hash_done">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="edge_irq_cpu" edge="1" parent="1" source="irq_mapper" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;strokeWidth=2;strokeColor=#8e24aa;fontSize=13;dashed=1;" target="riscv" value="IRQ to RISC-V">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="1485" y="350" />
+          <mxPoint x="270" y="350" />
+        </Array>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="edge_logical_dma_sha" edge="1" parent="1" source="dma" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;strokeWidth=2;strokeColor=#2e7d32;fontSize=13;dashed=1;" target="sha" value="logical data path: DMA writes SHA input regs/FIFO through Avalon-MM bus">
+      <mxGeometry relative="1" x="-0.12" y="20" as="geometry">
+        <mxPoint as="offset" />
+        <Array as="points">
+          <mxPoint x="750" y="260" />
+          <mxPoint x="750" y="260" />
+        </Array>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="ycTzm-_oC_T5UkS5SJfv-4" edge="1" parent="1" source="jtag" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;strokeWidth=2;strokeColor=#8e24aa;fontSize=13;dashed=1;exitX=0.997;exitY=0.584;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.649;entryY=1.012;entryDx=0;entryDy=0;entryPerimeter=0;" target="irq_mapper" value="IRQ">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="720" y="689" />
+          <mxPoint x="720" y="580" />
+          <mxPoint x="1520" y="580" />
+          <mxPoint x="1520" y="302" />
+        </Array>
+        <mxPoint x="720" y="630" as="sourcePoint" />
+        <mxPoint x="1520" y="590" as="targetPoint" />
+      </mxGeometry>
+    </mxCell>
+  </root>
+</mxGraphModel>

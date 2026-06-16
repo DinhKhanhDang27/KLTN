@@ -1,0 +1,473 @@
+m255
+K4
+z2
+!s11f vlog 2020.1 2020.02, Feb 28 2020
+13
+!s112 1.1
+!i10d 8192
+!i10e 25
+!i10f 100
+cModel Technology
+Z0 dC:/Users/dinhkhanhdang/Do_An_Thay_NGUYEN
+vadder
+Z1 !s110 1781577400
+!i10b 1
+!s100 5b14Vg]ozoYkiOgWanJDR2
+Z2 !s11b Dg1SIo80bB@j0V0VzS_@n1
+IPaPhM:a9iAm`P?R4[nzGQ3
+Z3 VDg1SIo80bB@j0V0VzS_@n1
+R0
+w1775221284
+8C:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\adder.v
+FC:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\adder.v
+!i122 5
+L0 1 9
+Z4 OV;L;2020.1;71
+r1
+!s85 0
+31
+Z5 !s108 1781577400.000000
+Z6 !s107 C:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\riscv_top.v|C:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\riscv_sha256_avalon_tb.v|C:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\riscv_sha256_avalon.v|C:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\register_file.v|C:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\pc_register.v|C:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\mux.v|C:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\instruction_memory.v|C:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\imm_gen.v|C:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\data_memory.v|C:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\control_unit.v|C:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\branch_control.v|C:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\alu_control.v|C:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\alu.v|C:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\adder_tb.v|C:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\adder.v|
+Z7 !s90 C:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\adder.v|C:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\adder_tb.v|C:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\alu.v|C:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\alu_control.v|C:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\branch_control.v|C:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\control_unit.v|C:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\data_memory.v|C:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\imm_gen.v|C:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\instruction_memory.v|C:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\mux.v|C:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\pc_register.v|C:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\register_file.v|C:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\riscv_sha256_avalon.v|C:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\riscv_sha256_avalon_tb.v|C:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\riscv_top.v|
+!i113 1
+Z8 tCvgOpt 0
+vadder_tb
+R1
+!i10b 1
+!s100 <Rj9:_0=RVFNFXh12^Jja3
+R2
+IPDZ>SXKJBH0`QD:5WPB]00
+R3
+R0
+w1774666619
+8C:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\adder_tb.v
+FC:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\adder_tb.v
+!i122 5
+L0 3 40
+R4
+r1
+!s85 0
+31
+R5
+R6
+R7
+!i113 1
+R8
+valu
+R1
+!i10b 1
+!s100 Lg@86Z>1MXmAEjh=D2cIS0
+R2
+Io3f;?`E8l>PGD`7:QHJ5o3
+R3
+R0
+w1775012110
+8C:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\alu.v
+FC:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\alu.v
+!i122 5
+L0 1 27
+R4
+r1
+!s85 0
+31
+R5
+R6
+R7
+!i113 1
+R8
+valu_control
+R1
+!i10b 1
+!s100 g`Oi]I:fiWZX]n2HG:Zo61
+R2
+IGkd<_::C4ho9LCB^>?RjS1
+R3
+R0
+w1772898359
+8C:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\alu_control.v
+FC:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\alu_control.v
+!i122 5
+L0 5 60
+R4
+r1
+!s85 0
+31
+R5
+R6
+R7
+!i113 1
+R8
+vavalon_simple_dma
+Z9 !s110 1781577573
+!i10b 1
+!s100 8[BEPz9>WmVWao0UmRLMS1
+R2
+I7z@cE[m`ifb]_GX4jA_zf2
+R3
+R0
+w1781577475
+8avalon_simple_dma.v
+Favalon_simple_dma.v
+!i122 7
+L0 1 192
+R4
+r1
+!s85 0
+31
+Z10 !s108 1781577573.000000
+Z11 !s107 avalon_simple_dma_tb.v|avalon_simple_dma.v|
+Z12 !s90 avalon_simple_dma.v|avalon_simple_dma_tb.v|
+!i113 1
+R8
+vavalon_simple_dma_tb
+R9
+!i10b 1
+!s100 [0fPGm^QN7z1?b[Omo0T02
+R2
+IAOI]:LdLjPDLPP8ja4z:b3
+R3
+R0
+w1781577563
+8avalon_simple_dma_tb.v
+Favalon_simple_dma_tb.v
+!i122 7
+L0 3 129
+R4
+r1
+!s85 0
+31
+R10
+R11
+R12
+!i113 1
+R8
+vbranch_control
+R1
+!i10b 1
+!s100 h^VTUo7lb?7cNIhRL_;;F0
+R2
+I>9oCVMd7Xl_dj]mabQfHB0
+R3
+R0
+Z13 w1772898376
+8C:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\branch_control.v
+FC:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\branch_control.v
+!i122 5
+L0 5 25
+R4
+r1
+!s85 0
+31
+R5
+R6
+R7
+!i113 1
+R8
+vcontrol_unit
+R1
+!i10b 1
+!s100 <NC;086>bJk4B]Zb>[Te53
+R2
+I<okhb<fX6b?z49FJ;e?Gn1
+R3
+R0
+w1780576855
+8C:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\control_unit.v
+FC:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\control_unit.v
+!i122 5
+L0 1 124
+R4
+r1
+!s85 0
+31
+R5
+R6
+R7
+!i113 1
+R8
+vdata_memory
+R1
+!i10b 1
+!s100 <KXXblQeM8Sm`ia:I@3Mf3
+R2
+IA?IfWhM=2KMRihAR7lEJU0
+R3
+R0
+w1774765635
+8C:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\data_memory.v
+FC:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\data_memory.v
+!i122 5
+L0 6 47
+R4
+r1
+!s85 0
+31
+R5
+R6
+R7
+!i113 1
+R8
+vimm_gen
+R1
+!i10b 1
+!s100 Bf?fohC[Ui]ciD:WGhF>J2
+R2
+I]5I6@]IZ`KT4ke`b55GV`3
+R3
+R0
+w1772898320
+8C:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\imm_gen.v
+FC:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\imm_gen.v
+!i122 5
+L0 6 42
+R4
+r1
+!s85 0
+31
+R5
+R6
+R7
+!i113 1
+R8
+vinstruction_memory
+Z14 !s110 1781577401
+!i10b 1
+!s100 95z=OUmET3=^aDS[6OV<03
+R2
+IVgQ_R=@Cf4M0STmiB>b4=1
+R3
+R0
+w1780558472
+8C:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\instruction_memory.v
+FC:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\instruction_memory.v
+!i122 5
+L0 5 15
+R4
+r1
+!s85 0
+31
+R5
+R6
+R7
+!i113 1
+R8
+vmux2to1
+R14
+!i10b 1
+!s100 _a<^9fX7H4azj4BIoLTKB3
+R2
+IlU?jjG_eTe221YL3SEb>`1
+R3
+R0
+R13
+Z15 8C:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\mux.v
+Z16 FC:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\mux.v
+!i122 5
+L0 4 10
+R4
+r1
+!s85 0
+31
+R5
+R6
+R7
+!i113 1
+R8
+vmux4to1
+R14
+!i10b 1
+!s100 SVYmkQ;mb<h9>VaI?GZ7_3
+R2
+I0@]C;<W:E5ToR@J>B`j]N2
+R3
+R0
+R13
+R15
+R16
+!i122 5
+L0 18 20
+R4
+r1
+!s85 0
+31
+R5
+R6
+R7
+!i113 1
+R8
+vpc_register
+R14
+!i10b 1
+!s100 CCE]8UHaCa2z1EI51[imz3
+R2
+I0a>I]igSJ:TDFBaY^FX8a1
+R3
+R0
+w1775221261
+8C:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\pc_register.v
+FC:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\pc_register.v
+!i122 5
+L0 1 15
+R4
+r1
+!s85 0
+31
+R5
+R6
+R7
+!i113 1
+R8
+vregister_file
+R14
+!i10b 1
+!s100 7Vkz38Uj9_6<z<g3F@M9Z1
+R2
+IO@MKQ`B<mTY?DSXmNFXVK0
+R3
+R0
+w1772956022
+8C:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\register_file.v
+FC:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\register_file.v
+!i122 5
+L0 6 32
+R4
+r1
+!s85 0
+31
+R5
+R6
+R7
+!i113 1
+R8
+vriscv_sha256_avalon
+R14
+!i10b 1
+!s100 2:VB5d2bQhe60Nf;PThL]1
+R2
+IiFU5BA=4]C7Z7kgNSVooi0
+R3
+R0
+w1781577257
+8C:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\riscv_sha256_avalon.v
+FC:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\riscv_sha256_avalon.v
+!i122 5
+L0 17 404
+R4
+r1
+!s85 0
+31
+R5
+R6
+R7
+!i113 1
+R8
+vriscv_sha256_avalon_tb
+R14
+!i10b 1
+!s100 YOE;DlGI>=eaDUXlVWJ992
+R2
+IZA;08EaAOB;<aj;dh[ZM02
+R3
+R0
+w1780577100
+8C:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\riscv_sha256_avalon_tb.v
+FC:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\riscv_sha256_avalon_tb.v
+!i122 5
+L0 3 206
+R4
+r1
+!s85 0
+31
+R5
+R6
+R7
+!i113 1
+R8
+vriscv_top
+R14
+!i10b 1
+!s100 lb8iFz84T3ezc6z5[nnaH2
+R2
+I9R9;z1z_?:a4FN=on3EY93
+R3
+R0
+w1780554173
+8C:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\riscv_top.v
+FC:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\riscv_top.v
+!i122 5
+L0 7 303
+R4
+r1
+!s85 0
+31
+R5
+R6
+R7
+!i113 1
+R8
+vsha256_avalon_wrapper
+Z17 !s110 1781577574
+!i10b 1
+!s100 8=_J;1QW30FNF4n8<Hk<H2
+R2
+I]KYi9B@UOhgC<ZVc9hoD42
+R3
+R0
+w1781577390
+8sha256Wrapper.v
+Fsha256Wrapper.v
+!i122 8
+L0 1 127
+R4
+r1
+!s85 0
+31
+R10
+!s107 sha256_avalon_wrapper_tb.v|sha256Wrapper.v|sha256Core.v|
+Z18 !s90 sha256Core.v|sha256Wrapper.v|sha256_avalon_wrapper_tb.v|
+!i113 1
+R8
+vsha256_avalon_wrapper_tb
+R17
+!i10b 1
+!s100 NZ5hBPj[oc98if4TgF[IV1
+R2
+I_DfQY9CCfkF;IVMVj?EY]0
+R3
+R0
+w1781577357
+8sha256_avalon_wrapper_tb.v
+Fsha256_avalon_wrapper_tb.v
+!i122 8
+L0 3 144
+R4
+r1
+!s85 0
+31
+R10
+Z19 !s107 sha256_avalon_wrapper_tb.v|sha256Wrapper.v|sha256Core.v|
+R18
+!i113 1
+R8
+vsha256_core
+R17
+!i10b 1
+!s100 C;ZQme9STPgBn9D;M;3bk2
+R2
+IG`:8QhAZjMTeT]BbF5DAP1
+R3
+R0
+w1781576714
+8sha256Core.v
+Fsha256Core.v
+!i122 8
+L0 1 188
+R4
+r1
+!s85 0
+31
+R10
+R19
+R18
+!i113 1
+R8

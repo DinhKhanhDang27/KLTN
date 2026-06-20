@@ -10,464 +10,527 @@ z2
 cModel Technology
 Z0 dC:/Users/dinhkhanhdang/Do_An_Thay_NGUYEN
 vadder
-Z1 !s110 1781577400
+Z1 DXx6 sv_std 3 std 0 22 VYECXdT12H8WgbUP_5Y6:3
+Z2 !s110 1781874031
 !i10b 1
-!s100 5b14Vg]ozoYkiOgWanJDR2
-Z2 !s11b Dg1SIo80bB@j0V0VzS_@n1
-IPaPhM:a9iAm`P?R4[nzGQ3
-Z3 VDg1SIo80bB@j0V0VzS_@n1
+!s100 jPhSD^dhPQH8hLPGHdQUB2
+Z3 !s11b Dg1SIo80bB@j0V0VzS_@n1
+I?3i_lB13m<NQLkii_<X4k3
+Z4 VDg1SIo80bB@j0V0VzS_@n1
+S1
 R0
 w1775221284
-8C:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\adder.v
-FC:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\adder.v
-!i122 5
+8rtl_riscv/adder.sv
+Frtl_riscv/adder.sv
+!i122 4
 L0 1 9
-Z4 OV;L;2020.1;71
+Z5 OV;L;2020.1;71
 r1
 !s85 0
 31
-Z5 !s108 1781577400.000000
-Z6 !s107 C:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\riscv_top.v|C:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\riscv_sha256_avalon_tb.v|C:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\riscv_sha256_avalon.v|C:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\register_file.v|C:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\pc_register.v|C:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\mux.v|C:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\instruction_memory.v|C:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\imm_gen.v|C:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\data_memory.v|C:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\control_unit.v|C:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\branch_control.v|C:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\alu_control.v|C:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\alu.v|C:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\adder_tb.v|C:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\adder.v|
-Z7 !s90 C:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\adder.v|C:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\adder_tb.v|C:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\alu.v|C:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\alu_control.v|C:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\branch_control.v|C:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\control_unit.v|C:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\data_memory.v|C:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\imm_gen.v|C:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\instruction_memory.v|C:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\mux.v|C:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\pc_register.v|C:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\register_file.v|C:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\riscv_sha256_avalon.v|C:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\riscv_sha256_avalon_tb.v|C:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\riscv_top.v|
+Z6 !s108 1781874030.000000
+!s107 rtl_riscv/riscv_top.sv|rtl_riscv/register_file.sv|rtl_riscv/pc_register.sv|rtl_riscv/mux.sv|rtl_riscv/instruction_memory.sv|rtl_riscv/imm_gen.sv|rtl_riscv/data_memory.sv|rtl_riscv/control_unit.sv|rtl_riscv/branch_control.sv|rtl_riscv/alu_control.sv|rtl_riscv/alu.sv|rtl_riscv/adder.sv|
+Z7 !s90 -sv|rtl_riscv/adder.sv|rtl_riscv/alu.sv|rtl_riscv/alu_control.sv|rtl_riscv/branch_control.sv|rtl_riscv/control_unit.sv|rtl_riscv/data_memory.sv|rtl_riscv/imm_gen.sv|rtl_riscv/instruction_memory.sv|rtl_riscv/mux.sv|rtl_riscv/pc_register.sv|rtl_riscv/register_file.sv|rtl_riscv/riscv_top.sv|
 !i113 1
+o-sv
 Z8 tCvgOpt 0
 vadder_tb
 R1
+Z9 !s110 1781873991
 !i10b 1
-!s100 <Rj9:_0=RVFNFXh12^Jja3
-R2
-IPDZ>SXKJBH0`QD:5WPB]00
+!s100 c9bLG2c9DDD8N1Vi2C_4S1
 R3
+IIUX>_Z04nbV;5EN6BdNFe3
+R4
+S1
 R0
 w1774666619
-8C:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\adder_tb.v
-FC:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\adder_tb.v
-!i122 5
+8rtl_riscv/adder_tb.sv
+Frtl_riscv/adder_tb.sv
+!i122 2
 L0 3 40
-R4
+R5
 r1
 !s85 0
 31
-R5
-R6
-R7
+Z10 !s108 1781873990.000000
+!s107 rtl_riscv/adder_tb.sv|rtl_riscv/adder.sv|
+!s90 -sv|rtl_riscv/adder.sv|rtl_riscv/adder_tb.sv|
 !i113 1
+o-sv
 R8
 valu
 R1
-!i10b 1
-!s100 Lg@86Z>1MXmAEjh=D2cIS0
 R2
-Io3f;?`E8l>PGD`7:QHJ5o3
+!i10b 1
+!s100 d;kN3ia5kIXMa<HaB6YlH3
 R3
+IJ9a6E9I[[DSJB3LF0MRh53
+R4
+S1
 R0
 w1775012110
-8C:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\alu.v
-FC:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\alu.v
-!i122 5
+8rtl_riscv/alu.sv
+Frtl_riscv/alu.sv
+!i122 4
 L0 1 27
-R4
+R5
 r1
 !s85 0
 31
-R5
 R6
+Z11 !s107 rtl_riscv/riscv_top.sv|rtl_riscv/register_file.sv|rtl_riscv/pc_register.sv|rtl_riscv/mux.sv|rtl_riscv/instruction_memory.sv|rtl_riscv/imm_gen.sv|rtl_riscv/data_memory.sv|rtl_riscv/control_unit.sv|rtl_riscv/branch_control.sv|rtl_riscv/alu_control.sv|rtl_riscv/alu.sv|rtl_riscv/adder.sv|
 R7
 !i113 1
+o-sv
 R8
 valu_control
 R1
-!i10b 1
-!s100 g`Oi]I:fiWZX]n2HG:Zo61
 R2
-IGkd<_::C4ho9LCB^>?RjS1
+!i10b 1
+!s100 flaz@bLzEbg;dCBDm9Ynh3
 R3
+IedN8>zjkQ<A]cZNk05g6o0
+R4
+S1
 R0
 w1772898359
-8C:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\alu_control.v
-FC:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\alu_control.v
-!i122 5
+8rtl_riscv/alu_control.sv
+Frtl_riscv/alu_control.sv
+!i122 4
 L0 5 60
-R4
+R5
 r1
 !s85 0
 31
-R5
 R6
+R11
 R7
 !i113 1
+o-sv
 R8
 vavalon_simple_dma
-Z9 !s110 1781577573
+R1
+Z12 !s110 1781873990
 !i10b 1
-!s100 8[BEPz9>WmVWao0UmRLMS1
-R2
-I7z@cE[m`ifb]_GX4jA_zf2
+!s100 nA4DNj<Qi16No::gYlLUV1
 R3
+Ii:[lmZC=l_2DN[c<aBoO;1
+R4
+S1
 R0
 w1781577475
-8avalon_simple_dma.v
-Favalon_simple_dma.v
-!i122 7
+8avalon_simple_dma.sv
+Favalon_simple_dma.sv
+!i122 1
 L0 1 192
-R4
-r1
-!s85 0
-31
-Z10 !s108 1781577573.000000
-Z11 !s107 avalon_simple_dma_tb.v|avalon_simple_dma.v|
-Z12 !s90 avalon_simple_dma.v|avalon_simple_dma_tb.v|
-!i113 1
-R8
-vavalon_simple_dma_tb
-R9
-!i10b 1
-!s100 [0fPGm^QN7z1?b[Omo0T02
-R2
-IAOI]:LdLjPDLPP8ja4z:b3
-R3
-R0
-w1781577563
-8avalon_simple_dma_tb.v
-Favalon_simple_dma_tb.v
-!i122 7
-L0 3 129
-R4
+R5
 r1
 !s85 0
 31
 R10
-R11
-R12
+Z13 !s107 avalon_simple_dma_tb.sv|avalon_simple_dma.sv|
+Z14 !s90 -sv|avalon_simple_dma.sv|avalon_simple_dma_tb.sv|
 !i113 1
+o-sv
+R8
+vavalon_simple_dma_tb
+R1
+R12
+!i10b 1
+!s100 597HE2akbal`VJ]@GM01g0
+R3
+IkMI<7^fbjehfa1ZOL7e4z3
+R4
+S1
+R0
+w1781577563
+8avalon_simple_dma_tb.sv
+Favalon_simple_dma_tb.sv
+!i122 1
+L0 3 129
+R5
+r1
+!s85 0
+31
+R10
+R13
+R14
+!i113 1
+o-sv
 R8
 vbranch_control
 R1
-!i10b 1
-!s100 h^VTUo7lb?7cNIhRL_;;F0
 R2
-I>9oCVMd7Xl_dj]mabQfHB0
+!i10b 1
+!s100 >MM]eGnK]^_BZ1MiG_5R;3
 R3
-R0
-Z13 w1772898376
-8C:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\branch_control.v
-FC:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\branch_control.v
-!i122 5
-L0 5 25
+ICnbA0SjTK9GYOPM`L3mXg2
 R4
+S1
+R0
+Z15 w1772898376
+8rtl_riscv/branch_control.sv
+Frtl_riscv/branch_control.sv
+!i122 4
+L0 5 25
+R5
 r1
 !s85 0
 31
-R5
 R6
+R11
 R7
 !i113 1
+o-sv
 R8
 vcontrol_unit
 R1
-!i10b 1
-!s100 <NC;086>bJk4B]Zb>[Te53
 R2
-I<okhb<fX6b?z49FJ;e?Gn1
+!i10b 1
+!s100 BobednE;L>VnZ5^V1J5Vd2
 R3
+IDNj1ZW?VHf8a1G7R[7`gP0
+R4
+S1
 R0
 w1780576855
-8C:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\control_unit.v
-FC:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\control_unit.v
-!i122 5
+8rtl_riscv/control_unit.sv
+Frtl_riscv/control_unit.sv
+!i122 4
 L0 1 124
-R4
+R5
 r1
 !s85 0
 31
-R5
 R6
+R11
 R7
 !i113 1
+o-sv
 R8
 vdata_memory
 R1
-!i10b 1
-!s100 <KXXblQeM8Sm`ia:I@3Mf3
 R2
-IA?IfWhM=2KMRihAR7lEJU0
+!i10b 1
+!s100 dzzMeI[3nBV=]5XfA`KAh3
 R3
+IELc[7md1K`2BCBS30@2bh0
+R4
+S1
 R0
 w1774765635
-8C:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\data_memory.v
-FC:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\data_memory.v
-!i122 5
+8rtl_riscv/data_memory.sv
+Frtl_riscv/data_memory.sv
+!i122 4
 L0 6 47
-R4
+R5
 r1
 !s85 0
 31
-R5
 R6
+R11
 R7
 !i113 1
+o-sv
 R8
 vimm_gen
 R1
-!i10b 1
-!s100 Bf?fohC[Ui]ciD:WGhF>J2
 R2
-I]5I6@]IZ`KT4ke`b55GV`3
+!i10b 1
+!s100 d5S613QfYCMMOMl?6JcFE1
 R3
+I`ZT51g:Ybg:2g>:eD77<40
+R4
+S1
 R0
 w1772898320
-8C:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\imm_gen.v
-FC:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\imm_gen.v
-!i122 5
+8rtl_riscv/imm_gen.sv
+Frtl_riscv/imm_gen.sv
+!i122 4
 L0 6 42
-R4
+R5
 r1
 !s85 0
 31
-R5
 R6
+R11
 R7
 !i113 1
+o-sv
 R8
 vinstruction_memory
-Z14 !s110 1781577401
-!i10b 1
-!s100 95z=OUmET3=^aDS[6OV<03
+R1
 R2
-IVgQ_R=@Cf4M0STmiB>b4=1
+!i10b 1
+!s100 QohJjZ8i]inIZO0Z;OZe=2
 R3
+ITF6]DQA62:7JlMGQ]j`JU2
+R4
+S1
 R0
 w1780558472
-8C:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\instruction_memory.v
-FC:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\instruction_memory.v
-!i122 5
+8rtl_riscv/instruction_memory.sv
+Frtl_riscv/instruction_memory.sv
+!i122 4
 L0 5 15
-R4
+R5
 r1
 !s85 0
 31
-R5
 R6
+R11
 R7
 !i113 1
+o-sv
 R8
 vmux2to1
-R14
-!i10b 1
-!s100 _a<^9fX7H4azj4BIoLTKB3
+R1
 R2
-IlU?jjG_eTe221YL3SEb>`1
+!i10b 1
+!s100 8@RPaS_ZTbl8;^bI1zk1U2
 R3
-R0
-R13
-Z15 8C:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\mux.v
-Z16 FC:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\mux.v
-!i122 5
-L0 4 10
+IjU53Ak4b@U7P`H@zWK[Rb1
 R4
+S1
+R0
+R15
+Z16 8rtl_riscv/mux.sv
+Z17 Frtl_riscv/mux.sv
+!i122 4
+L0 4 10
+R5
 r1
 !s85 0
 31
-R5
 R6
+R11
 R7
 !i113 1
+o-sv
 R8
 vmux4to1
-R14
-!i10b 1
-!s100 SVYmkQ;mb<h9>VaI?GZ7_3
+R1
 R2
-I0@]C;<W:E5ToR@J>B`j]N2
+!i10b 1
+!s100 K5mTIlfKk]koWcRCjR>7a2
 R3
+IP^P]99o<Lcbed_hd_K6L<0
+R4
+S1
 R0
-R13
 R15
 R16
-!i122 5
+R17
+!i122 4
 L0 18 20
-R4
+R5
 r1
 !s85 0
 31
-R5
 R6
+R11
 R7
 !i113 1
+o-sv
 R8
 vpc_register
-R14
-!i10b 1
-!s100 CCE]8UHaCa2z1EI51[imz3
+R1
 R2
-I0a>I]igSJ:TDFBaY^FX8a1
+!i10b 1
+!s100 <J;nnSd585FWAl8=[@C4b2
 R3
+IVfBohRJ1_=hYXHNjF9TO<0
+R4
+S1
 R0
 w1775221261
-8C:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\pc_register.v
-FC:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\pc_register.v
-!i122 5
+8rtl_riscv/pc_register.sv
+Frtl_riscv/pc_register.sv
+!i122 4
 L0 1 15
-R4
+R5
 r1
 !s85 0
 31
-R5
 R6
+R11
 R7
 !i113 1
+o-sv
 R8
 vregister_file
-R14
-!i10b 1
-!s100 7Vkz38Uj9_6<z<g3F@M9Z1
+R1
 R2
-IO@MKQ`B<mTY?DSXmNFXVK0
+!i10b 1
+!s100 _]XSF;T?i2?h1W6Y6GgT@1
 R3
+IAFoOjLGdW0edkN0]=LMaF1
+R4
+S1
 R0
 w1772956022
-8C:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\register_file.v
-FC:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\register_file.v
-!i122 5
+8rtl_riscv/register_file.sv
+Frtl_riscv/register_file.sv
+!i122 4
 L0 6 32
-R4
+R5
 r1
 !s85 0
 31
-R5
 R6
+R11
 R7
 !i113 1
+o-sv
 R8
-vriscv_sha256_avalon
-R14
+vriscv_avalon_wrapper
+R1
+R9
 !i10b 1
-!s100 2:VB5d2bQhe60Nf;PThL]1
-R2
-IiFU5BA=4]C7Z7kgNSVooi0
+!s100 K]=IcdWemY<ldz5O_:^DE3
 R3
-R0
-w1781577257
-8C:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\riscv_sha256_avalon.v
-FC:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\riscv_sha256_avalon.v
-!i122 5
-L0 17 404
+Ih`T5l53>OG>doQIR<nA5E3
 R4
+S1
+R0
+w1781873913
+8rtl_riscv/riscv_avalon_wrapper.sv
+Frtl_riscv/riscv_avalon_wrapper.sv
+!i122 3
+L0 1 193
+R5
 r1
 !s85 0
 31
-R5
-R6
-R7
+Z18 !s108 1781873991.000000
+Z19 !s107 rtl_riscv/riscv_avalon_wrapper_tb.sv|rtl_riscv/riscv_avalon_wrapper.sv|rtl_riscv/instruction_memory.sv|rtl_riscv/imm_gen.sv|rtl_riscv/control_unit.sv|rtl_riscv/branch_control.sv|rtl_riscv/alu_control.sv|rtl_riscv/alu.sv|
+Z20 !s90 -sv|rtl_riscv/alu.sv|rtl_riscv/alu_control.sv|rtl_riscv/branch_control.sv|rtl_riscv/control_unit.sv|rtl_riscv/imm_gen.sv|rtl_riscv/instruction_memory.sv|rtl_riscv/riscv_avalon_wrapper.sv|rtl_riscv/riscv_avalon_wrapper_tb.sv|
 !i113 1
+o-sv
 R8
-vriscv_sha256_avalon_tb
-R14
+vriscv_avalon_wrapper_tb
+R1
+R9
 !i10b 1
-!s100 YOE;DlGI>=eaDUXlVWJ992
-R2
-IZA;08EaAOB;<aj;dh[ZM02
+!s100 0FQG@_Xz<LUUbinfbG@EN1
 R3
-R0
-w1780577100
-8C:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\riscv_sha256_avalon_tb.v
-FC:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\riscv_sha256_avalon_tb.v
-!i122 5
-L0 3 206
+Ie;<X>MKZRV@I^018=hUX?0
 R4
+S1
+R0
+w1781873916
+8rtl_riscv/riscv_avalon_wrapper_tb.sv
+Frtl_riscv/riscv_avalon_wrapper_tb.sv
+!i122 3
+L0 3 86
+R5
 r1
 !s85 0
 31
-R5
-R6
-R7
+R18
+R19
+R20
 !i113 1
+o-sv
 R8
 vriscv_top
-R14
-!i10b 1
-!s100 lb8iFz84T3ezc6z5[nnaH2
+R1
 R2
-I9R9;z1z_?:a4FN=on3EY93
+!i10b 1
+!s100 2_]aJG?h`aj2U^aDGIX1Y3
 R3
+IIfdjomC11VJgkXYAjcA6?0
+R4
+S1
 R0
 w1780554173
-8C:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\riscv_top.v
-FC:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN\rtl_riscv\riscv_top.v
-!i122 5
+8rtl_riscv/riscv_top.sv
+Frtl_riscv/riscv_top.sv
+!i122 4
 L0 7 303
-R4
+R5
 r1
 !s85 0
 31
-R5
 R6
+R11
 R7
 !i113 1
+o-sv
 R8
 vsha256_avalon_wrapper
-Z17 !s110 1781577574
+R1
+R12
 !i10b 1
-!s100 8=_J;1QW30FNF4n8<Hk<H2
-R2
-I]KYi9B@UOhgC<ZVc9hoD42
+!s100 [Aij9acQKRb]ENf6kU:142
 R3
+I>@W35_icRkYAKHlG[k>iC2
+R4
+S1
 R0
 w1781577390
-8sha256Wrapper.v
-Fsha256Wrapper.v
-!i122 8
+8sha256Wrapper.sv
+Fsha256Wrapper.sv
+!i122 0
 L0 1 127
-R4
+R5
 r1
 !s85 0
 31
 R10
-!s107 sha256_avalon_wrapper_tb.v|sha256Wrapper.v|sha256Core.v|
-Z18 !s90 sha256Core.v|sha256Wrapper.v|sha256_avalon_wrapper_tb.v|
+Z21 !s107 sha256_avalon_wrapper_tb.sv|sha256Wrapper.sv|sha256Core.sv|
+Z22 !s90 -sv|sha256Core.sv|sha256Wrapper.sv|sha256_avalon_wrapper_tb.sv|
 !i113 1
+o-sv
 R8
 vsha256_avalon_wrapper_tb
-R17
+R1
+R12
 !i10b 1
-!s100 NZ5hBPj[oc98if4TgF[IV1
-R2
-I_DfQY9CCfkF;IVMVj?EY]0
+!s100 I;H9;PiX3j<hU`ATZ@G0z0
 R3
+IQo4lK]8LSlmIAeHMj<<=62
+R4
+S1
 R0
 w1781577357
-8sha256_avalon_wrapper_tb.v
-Fsha256_avalon_wrapper_tb.v
-!i122 8
+8sha256_avalon_wrapper_tb.sv
+Fsha256_avalon_wrapper_tb.sv
+!i122 0
 L0 3 144
-R4
+R5
 r1
 !s85 0
 31
 R10
-Z19 !s107 sha256_avalon_wrapper_tb.v|sha256Wrapper.v|sha256Core.v|
-R18
+R21
+R22
 !i113 1
+o-sv
 R8
 vsha256_core
-R17
+R1
+R12
 !i10b 1
-!s100 C;ZQme9STPgBn9D;M;3bk2
-R2
-IG`:8QhAZjMTeT]BbF5DAP1
+!s100 NLEz]G5dafSoB?m[HKzCS1
 R3
+I:CC]d7PzoG;Mb>k5lZXQe3
+R4
+S1
 R0
 w1781576714
-8sha256Core.v
-Fsha256Core.v
-!i122 8
+8sha256Core.sv
+Fsha256Core.sv
+!i122 0
 L0 1 188
-R4
+R5
 r1
 !s85 0
 31
 R10
-R19
-R18
+R21
+R22
 !i113 1
+o-sv
 R8

@@ -11,7 +11,7 @@ cModel Technology
 Z0 dC:/Users/dinhkhanhdang/Do_An_Thay_NGUYEN
 vadder
 Z1 DXx6 sv_std 3 std 0 22 VYECXdT12H8WgbUP_5Y6:3
-Z2 !s110 1781874031
+Z2 !s110 1781953789
 !i10b 1
 !s100 jPhSD^dhPQH8hLPGHdQUB2
 Z3 !s11b Dg1SIo80bB@j0V0VzS_@n1
@@ -22,43 +22,18 @@ R0
 w1775221284
 8rtl_riscv/adder.sv
 Frtl_riscv/adder.sv
-!i122 4
+!i122 0
 L0 1 9
 Z5 OV;L;2020.1;71
 r1
 !s85 0
 31
-Z6 !s108 1781874030.000000
-!s107 rtl_riscv/riscv_top.sv|rtl_riscv/register_file.sv|rtl_riscv/pc_register.sv|rtl_riscv/mux.sv|rtl_riscv/instruction_memory.sv|rtl_riscv/imm_gen.sv|rtl_riscv/data_memory.sv|rtl_riscv/control_unit.sv|rtl_riscv/branch_control.sv|rtl_riscv/alu_control.sv|rtl_riscv/alu.sv|rtl_riscv/adder.sv|
-Z7 !s90 -sv|rtl_riscv/adder.sv|rtl_riscv/alu.sv|rtl_riscv/alu_control.sv|rtl_riscv/branch_control.sv|rtl_riscv/control_unit.sv|rtl_riscv/data_memory.sv|rtl_riscv/imm_gen.sv|rtl_riscv/instruction_memory.sv|rtl_riscv/mux.sv|rtl_riscv/pc_register.sv|rtl_riscv/register_file.sv|rtl_riscv/riscv_top.sv|
+Z6 !s108 1781953789.000000
+!s107 rtl_riscv/riscv_sdram_sha_uart_tb.sv|rtl_riscv/riscv_avalon_wrapper.sv|rtl_riscv/instruction_memory.sv|rtl_riscv/imm_gen.sv|rtl_riscv/control_unit.sv|rtl_riscv/branch_control.sv|rtl_riscv/alu_control.sv|rtl_riscv/alu.sv|rtl_riscv/mux.sv|rtl_riscv/adder.sv|sha256Wrapper.sv|sha256Core.sv|
+Z7 !s90 -sv|sha256Core.sv|sha256Wrapper.sv|rtl_riscv/adder.sv|rtl_riscv/mux.sv|rtl_riscv/alu.sv|rtl_riscv/alu_control.sv|rtl_riscv/branch_control.sv|rtl_riscv/control_unit.sv|rtl_riscv/imm_gen.sv|rtl_riscv/instruction_memory.sv|rtl_riscv/riscv_avalon_wrapper.sv|rtl_riscv/riscv_sdram_sha_uart_tb.sv|
 !i113 1
 o-sv
 Z8 tCvgOpt 0
-vadder_tb
-R1
-Z9 !s110 1781873991
-!i10b 1
-!s100 c9bLG2c9DDD8N1Vi2C_4S1
-R3
-IIUX>_Z04nbV;5EN6BdNFe3
-R4
-S1
-R0
-w1774666619
-8rtl_riscv/adder_tb.sv
-Frtl_riscv/adder_tb.sv
-!i122 2
-L0 3 40
-R5
-r1
-!s85 0
-31
-Z10 !s108 1781873990.000000
-!s107 rtl_riscv/adder_tb.sv|rtl_riscv/adder.sv|
-!s90 -sv|rtl_riscv/adder.sv|rtl_riscv/adder_tb.sv|
-!i113 1
-o-sv
-R8
 valu
 R1
 R2
@@ -72,14 +47,14 @@ R0
 w1775012110
 8rtl_riscv/alu.sv
 Frtl_riscv/alu.sv
-!i122 4
+!i122 0
 L0 1 27
 R5
 r1
 !s85 0
 31
 R6
-Z11 !s107 rtl_riscv/riscv_top.sv|rtl_riscv/register_file.sv|rtl_riscv/pc_register.sv|rtl_riscv/mux.sv|rtl_riscv/instruction_memory.sv|rtl_riscv/imm_gen.sv|rtl_riscv/data_memory.sv|rtl_riscv/control_unit.sv|rtl_riscv/branch_control.sv|rtl_riscv/alu_control.sv|rtl_riscv/alu.sv|rtl_riscv/adder.sv|
+Z9 !s107 rtl_riscv/riscv_sdram_sha_uart_tb.sv|rtl_riscv/riscv_avalon_wrapper.sv|rtl_riscv/instruction_memory.sv|rtl_riscv/imm_gen.sv|rtl_riscv/control_unit.sv|rtl_riscv/branch_control.sv|rtl_riscv/alu_control.sv|rtl_riscv/alu.sv|rtl_riscv/mux.sv|rtl_riscv/adder.sv|sha256Wrapper.sv|sha256Core.sv|
 R7
 !i113 1
 o-sv
@@ -97,65 +72,15 @@ R0
 w1772898359
 8rtl_riscv/alu_control.sv
 Frtl_riscv/alu_control.sv
-!i122 4
+!i122 0
 L0 5 60
 R5
 r1
 !s85 0
 31
 R6
-R11
+R9
 R7
-!i113 1
-o-sv
-R8
-vavalon_simple_dma
-R1
-Z12 !s110 1781873990
-!i10b 1
-!s100 nA4DNj<Qi16No::gYlLUV1
-R3
-Ii:[lmZC=l_2DN[c<aBoO;1
-R4
-S1
-R0
-w1781577475
-8avalon_simple_dma.sv
-Favalon_simple_dma.sv
-!i122 1
-L0 1 192
-R5
-r1
-!s85 0
-31
-R10
-Z13 !s107 avalon_simple_dma_tb.sv|avalon_simple_dma.sv|
-Z14 !s90 -sv|avalon_simple_dma.sv|avalon_simple_dma_tb.sv|
-!i113 1
-o-sv
-R8
-vavalon_simple_dma_tb
-R1
-R12
-!i10b 1
-!s100 597HE2akbal`VJ]@GM01g0
-R3
-IkMI<7^fbjehfa1ZOL7e4z3
-R4
-S1
-R0
-w1781577563
-8avalon_simple_dma_tb.sv
-Favalon_simple_dma_tb.sv
-!i122 1
-L0 3 129
-R5
-r1
-!s85 0
-31
-R10
-R13
-R14
 !i113 1
 o-sv
 R8
@@ -169,17 +94,17 @@ ICnbA0SjTK9GYOPM`L3mXg2
 R4
 S1
 R0
-Z15 w1772898376
+Z10 w1772898376
 8rtl_riscv/branch_control.sv
 Frtl_riscv/branch_control.sv
-!i122 4
+!i122 0
 L0 5 25
 R5
 r1
 !s85 0
 31
 R6
-R11
+R9
 R7
 !i113 1
 o-sv
@@ -197,39 +122,14 @@ R0
 w1780576855
 8rtl_riscv/control_unit.sv
 Frtl_riscv/control_unit.sv
-!i122 4
+!i122 0
 L0 1 124
 R5
 r1
 !s85 0
 31
 R6
-R11
-R7
-!i113 1
-o-sv
-R8
-vdata_memory
-R1
-R2
-!i10b 1
-!s100 dzzMeI[3nBV=]5XfA`KAh3
-R3
-IELc[7md1K`2BCBS30@2bh0
-R4
-S1
-R0
-w1774765635
-8rtl_riscv/data_memory.sv
-Frtl_riscv/data_memory.sv
-!i122 4
-L0 6 47
-R5
-r1
-!s85 0
-31
-R6
-R11
+R9
 R7
 !i113 1
 o-sv
@@ -247,14 +147,14 @@ R0
 w1772898320
 8rtl_riscv/imm_gen.sv
 Frtl_riscv/imm_gen.sv
-!i122 4
+!i122 0
 L0 6 42
 R5
 r1
 !s85 0
 31
 R6
-R11
+R9
 R7
 !i113 1
 o-sv
@@ -272,14 +172,14 @@ R0
 w1780558472
 8rtl_riscv/instruction_memory.sv
 Frtl_riscv/instruction_memory.sv
-!i122 4
+!i122 0
 L0 5 15
 R5
 r1
 !s85 0
 31
 R6
-R11
+R9
 R7
 !i113 1
 o-sv
@@ -294,17 +194,17 @@ IjU53Ak4b@U7P`H@zWK[Rb1
 R4
 S1
 R0
-R15
-Z16 8rtl_riscv/mux.sv
-Z17 Frtl_riscv/mux.sv
-!i122 4
+R10
+Z11 8rtl_riscv/mux.sv
+Z12 Frtl_riscv/mux.sv
+!i122 0
 L0 4 10
 R5
 r1
 !s85 0
 31
 R6
-R11
+R9
 R7
 !i113 1
 o-sv
@@ -319,74 +219,24 @@ IP^P]99o<Lcbed_hd_K6L<0
 R4
 S1
 R0
-R15
-R16
-R17
-!i122 4
+R10
+R11
+R12
+!i122 0
 L0 18 20
 R5
 r1
 !s85 0
 31
 R6
-R11
-R7
-!i113 1
-o-sv
-R8
-vpc_register
-R1
-R2
-!i10b 1
-!s100 <J;nnSd585FWAl8=[@C4b2
-R3
-IVfBohRJ1_=hYXHNjF9TO<0
-R4
-S1
-R0
-w1775221261
-8rtl_riscv/pc_register.sv
-Frtl_riscv/pc_register.sv
-!i122 4
-L0 1 15
-R5
-r1
-!s85 0
-31
-R6
-R11
-R7
-!i113 1
-o-sv
-R8
-vregister_file
-R1
-R2
-!i10b 1
-!s100 _]XSF;T?i2?h1W6Y6GgT@1
-R3
-IAFoOjLGdW0edkN0]=LMaF1
-R4
-S1
-R0
-w1772956022
-8rtl_riscv/register_file.sv
-Frtl_riscv/register_file.sv
-!i122 4
-L0 6 32
-R5
-r1
-!s85 0
-31
-R6
-R11
+R9
 R7
 !i113 1
 o-sv
 R8
 vriscv_avalon_wrapper
 R1
-R9
+R2
 !i10b 1
 !s100 K]=IcdWemY<ldz5O_:^DE3
 R3
@@ -397,71 +247,46 @@ R0
 w1781873913
 8rtl_riscv/riscv_avalon_wrapper.sv
 Frtl_riscv/riscv_avalon_wrapper.sv
-!i122 3
+!i122 0
 L0 1 193
 R5
 r1
 !s85 0
 31
-Z18 !s108 1781873991.000000
-Z19 !s107 rtl_riscv/riscv_avalon_wrapper_tb.sv|rtl_riscv/riscv_avalon_wrapper.sv|rtl_riscv/instruction_memory.sv|rtl_riscv/imm_gen.sv|rtl_riscv/control_unit.sv|rtl_riscv/branch_control.sv|rtl_riscv/alu_control.sv|rtl_riscv/alu.sv|
-Z20 !s90 -sv|rtl_riscv/alu.sv|rtl_riscv/alu_control.sv|rtl_riscv/branch_control.sv|rtl_riscv/control_unit.sv|rtl_riscv/imm_gen.sv|rtl_riscv/instruction_memory.sv|rtl_riscv/riscv_avalon_wrapper.sv|rtl_riscv/riscv_avalon_wrapper_tb.sv|
-!i113 1
-o-sv
-R8
-vriscv_avalon_wrapper_tb
-R1
+R6
 R9
-!i10b 1
-!s100 0FQG@_Xz<LUUbinfbG@EN1
-R3
-Ie;<X>MKZRV@I^018=hUX?0
-R4
-S1
-R0
-w1781873916
-8rtl_riscv/riscv_avalon_wrapper_tb.sv
-Frtl_riscv/riscv_avalon_wrapper_tb.sv
-!i122 3
-L0 3 86
-R5
-r1
-!s85 0
-31
-R18
-R19
-R20
+R7
 !i113 1
 o-sv
 R8
-vriscv_top
+vriscv_sdram_sha_uart_tb
 R1
 R2
 !i10b 1
-!s100 2_]aJG?h`aj2U^aDGIX1Y3
+!s100 oTdX3Pc3Gz0AQVO0kgUD00
 R3
-IIfdjomC11VJgkXYAjcA6?0
+Imo5HEJOh^B4fN`Ija=3m>3
 R4
 S1
 R0
-w1780554173
-8rtl_riscv/riscv_top.sv
-Frtl_riscv/riscv_top.sv
-!i122 4
-L0 7 303
+w1781953772
+8rtl_riscv/riscv_sdram_sha_uart_tb.sv
+Frtl_riscv/riscv_sdram_sha_uart_tb.sv
+!i122 0
+L0 3 138
 R5
 r1
 !s85 0
 31
 R6
-R11
+R9
 R7
 !i113 1
 o-sv
 R8
 vsha256_avalon_wrapper
 R1
-R12
+R2
 !i10b 1
 !s100 [Aij9acQKRb]ENf6kU:142
 R3
@@ -478,40 +303,15 @@ R5
 r1
 !s85 0
 31
-R10
-Z21 !s107 sha256_avalon_wrapper_tb.sv|sha256Wrapper.sv|sha256Core.sv|
-Z22 !s90 -sv|sha256Core.sv|sha256Wrapper.sv|sha256_avalon_wrapper_tb.sv|
-!i113 1
-o-sv
-R8
-vsha256_avalon_wrapper_tb
-R1
-R12
-!i10b 1
-!s100 I;H9;PiX3j<hU`ATZ@G0z0
-R3
-IQo4lK]8LSlmIAeHMj<<=62
-R4
-S1
-R0
-w1781577357
-8sha256_avalon_wrapper_tb.sv
-Fsha256_avalon_wrapper_tb.sv
-!i122 0
-L0 3 144
-R5
-r1
-!s85 0
-31
-R10
-R21
-R22
+R6
+R9
+R7
 !i113 1
 o-sv
 R8
 vsha256_core
 R1
-R12
+R2
 !i10b 1
 !s100 NLEz]G5dafSoB?m[HKzCS1
 R3
@@ -528,9 +328,9 @@ R5
 r1
 !s85 0
 31
-R10
-R21
-R22
+R6
+R9
+R7
 !i113 1
 o-sv
 R8

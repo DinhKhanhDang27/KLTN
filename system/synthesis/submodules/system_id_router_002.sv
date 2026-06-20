@@ -42,7 +42,7 @@
 
 `timescale 1 ns / 1 ns
 
-module system_id_router_default_decode
+module system_id_router_002_default_decode
   #(
      parameter DEFAULT_CHANNEL = 0,
                DEFAULT_WR_CHANNEL = -1,
@@ -83,7 +83,7 @@ module system_id_router_default_decode
 endmodule
 
 
-module system_id_router
+module system_id_router_002
 (
     // -------------------
     // Clock & Reset
@@ -167,7 +167,7 @@ module system_id_router
 
 
 
-    system_id_router_default_decode the_default_decode(
+    system_id_router_002_default_decode the_default_decode(
       .default_destination_id (default_destid),
       .default_wr_channel   (),
       .default_rd_channel   (),
@@ -187,11 +187,7 @@ module system_id_router
 
 
         if (destid == 1 ) begin
-            src_channel = 5'b01;
-        end
-
-        if (destid == 0 ) begin
-            src_channel = 5'b10;
+            src_channel = 5'b1;
         end
 
 

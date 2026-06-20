@@ -2,7 +2,7 @@ set_global_assignment -entity "system" -library "system" -name IP_TOOL_NAME "Qsy
 set_global_assignment -entity "system" -library "system" -name IP_TOOL_VERSION "13.0sp1"
 set_global_assignment -entity "system" -library "system" -name IP_TOOL_ENV "Qsys"
 set_global_assignment -library "system" -name SOPCINFO_FILE [file join $::quartus(qip_path) "../../system.sopcinfo"]
-set_instance_assignment -entity "system" -library "system" -name SLD_INFO "QSYS_NAME system HAS_SOPCINFO 1 GENERATION_ID 1781882509"
+set_instance_assignment -entity "system" -library "system" -name SLD_INFO "QSYS_NAME system HAS_SOPCINFO 1 GENERATION_ID 1781958132"
 set_global_assignment -library "system" -name MISC_FILE [file join $::quartus(qip_path) "../../system.cmp"]
 set_global_assignment -name SYNTHESIS_ONLY_QIP ON
 set_global_assignment -library "system" -name MISC_FILE [file join $::quartus(qip_path) "../../system.qsys"]
@@ -12,8 +12,12 @@ set_global_assignment -library "system" -name SYSTEMVERILOG_FILE [file join $::q
 set_global_assignment -library "system" -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) "submodules/altera_merlin_address_alignment.sv"]
 set_global_assignment -library "system" -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) "submodules/altera_merlin_burst_uncompressor.sv"]
 set_global_assignment -library "system" -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) "submodules/altera_merlin_arbitrator.sv"]
+set_global_assignment -library "system" -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) "submodules/system_rsp_xbar_mux_001.sv"]
 set_global_assignment -library "system" -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) "submodules/system_rsp_xbar_mux.sv"]
+set_global_assignment -library "system" -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) "submodules/system_rsp_xbar_demux_002.sv"]
 set_global_assignment -library "system" -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) "submodules/system_rsp_xbar_demux.sv"]
+set_global_assignment -library "system" -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) "submodules/system_cmd_xbar_mux.sv"]
+set_global_assignment -library "system" -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) "submodules/system_cmd_xbar_demux_001.sv"]
 set_global_assignment -library "system" -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) "submodules/system_cmd_xbar_demux.sv"]
 set_global_assignment -library "system" -name VERILOG_FILE [file join $::quartus(qip_path) "submodules/altera_reset_controller.v"]
 set_global_assignment -library "system" -name VERILOG_FILE [file join $::quartus(qip_path) "submodules/altera_reset_synchronizer.v"]
@@ -22,13 +26,31 @@ set_global_assignment -library "system" -name SYSTEMVERILOG_FILE [file join $::q
 set_global_assignment -library "system" -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) "submodules/altera_merlin_traffic_limiter.sv"]
 set_global_assignment -library "system" -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) "submodules/altera_avalon_st_pipeline_base.v"]
 set_global_assignment -library "system" -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) "submodules/system_id_router_004.sv"]
+set_global_assignment -library "system" -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) "submodules/system_id_router_002.sv"]
 set_global_assignment -library "system" -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) "submodules/system_id_router.sv"]
+set_global_assignment -library "system" -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) "submodules/system_addr_router_001.sv"]
 set_global_assignment -library "system" -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) "submodules/system_addr_router.sv"]
 set_global_assignment -library "system" -name VERILOG_FILE [file join $::quartus(qip_path) "submodules/altera_avalon_sc_fifo.v"]
 set_global_assignment -library "system" -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) "submodules/altera_merlin_slave_agent.sv"]
 set_global_assignment -library "system" -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) "submodules/altera_merlin_master_agent.sv"]
 set_global_assignment -library "system" -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) "submodules/altera_merlin_slave_translator.sv"]
 set_global_assignment -library "system" -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) "submodules/altera_merlin_master_translator.sv"]
+set_global_assignment -library "system" -name VERILOG_FILE [file join $::quartus(qip_path) "submodules/system_master_0.v"]
+set_global_assignment -library "system" -name VERILOG_FILE [file join $::quartus(qip_path) "submodules/system_master_0_p2b_adapter.v"]
+set_global_assignment -library "system" -name VERILOG_FILE [file join $::quartus(qip_path) "submodules/system_master_0_b2p_adapter.v"]
+set_global_assignment -library "system" -name VERILOG_FILE [file join $::quartus(qip_path) "submodules/altera_avalon_packets_to_master.v"]
+set_global_assignment -library "system" -name VERILOG_FILE [file join $::quartus(qip_path) "submodules/altera_avalon_st_packets_to_bytes.v"]
+set_global_assignment -library "system" -name VERILOG_FILE [file join $::quartus(qip_path) "submodules/altera_avalon_st_bytes_to_packets.v"]
+set_global_assignment -library "system" -name VERILOG_FILE [file join $::quartus(qip_path) "submodules/system_master_0_timing_adt.v"]
+set_global_assignment -library "system" -name VERILOG_FILE [file join $::quartus(qip_path) "submodules/altera_avalon_st_jtag_interface.v"]
+set_global_assignment -library "system" -name VERILOG_FILE [file join $::quartus(qip_path) "submodules/altera_jtag_dc_streaming.v"]
+set_global_assignment -library "system" -name VERILOG_FILE [file join $::quartus(qip_path) "submodules/altera_jtag_sld_node.v"]
+set_global_assignment -library "system" -name VERILOG_FILE [file join $::quartus(qip_path) "submodules/altera_jtag_streaming.v"]
+set_global_assignment -library "system" -name VERILOG_FILE [file join $::quartus(qip_path) "submodules/altera_pli_streaming.v"]
+set_global_assignment -library "system" -name VERILOG_FILE [file join $::quartus(qip_path) "submodules/altera_avalon_st_clock_crosser.v"]
+set_global_assignment -library "system" -name VERILOG_FILE [file join $::quartus(qip_path) "submodules/altera_avalon_st_idle_remover.v"]
+set_global_assignment -library "system" -name VERILOG_FILE [file join $::quartus(qip_path) "submodules/altera_avalon_st_idle_inserter.v"]
+set_global_assignment -library "system" -name SDC_FILE [file join $::quartus(qip_path) "submodules/altera_avalon_st_jtag_interface.sdc"]
 set_global_assignment -library "system" -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) "submodules/rtl_riscv/riscv_avalon_wrapper.sv"]
 set_global_assignment -library "system" -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) "submodules/rtl_riscv/adder.sv"]
 set_global_assignment -library "system" -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) "submodules/rtl_riscv/instruction_memory.sv"]
@@ -53,12 +75,24 @@ set_global_assignment -library "system" -name VERILOG_FILE [file join $::quartus
 set_global_assignment -entity "altera_merlin_width_adapter" -library "system" -name IP_TOOL_NAME "altera_merlin_width_adapter"
 set_global_assignment -entity "altera_merlin_width_adapter" -library "system" -name IP_TOOL_VERSION "13.0"
 set_global_assignment -entity "altera_merlin_width_adapter" -library "system" -name IP_TOOL_ENV "Qsys"
+set_global_assignment -entity "system_rsp_xbar_mux_001" -library "system" -name IP_TOOL_NAME "altera_merlin_multiplexer"
+set_global_assignment -entity "system_rsp_xbar_mux_001" -library "system" -name IP_TOOL_VERSION "13.0"
+set_global_assignment -entity "system_rsp_xbar_mux_001" -library "system" -name IP_TOOL_ENV "Qsys"
 set_global_assignment -entity "system_rsp_xbar_mux" -library "system" -name IP_TOOL_NAME "altera_merlin_multiplexer"
 set_global_assignment -entity "system_rsp_xbar_mux" -library "system" -name IP_TOOL_VERSION "13.0"
 set_global_assignment -entity "system_rsp_xbar_mux" -library "system" -name IP_TOOL_ENV "Qsys"
+set_global_assignment -entity "system_rsp_xbar_demux_002" -library "system" -name IP_TOOL_NAME "altera_merlin_demultiplexer"
+set_global_assignment -entity "system_rsp_xbar_demux_002" -library "system" -name IP_TOOL_VERSION "13.0"
+set_global_assignment -entity "system_rsp_xbar_demux_002" -library "system" -name IP_TOOL_ENV "Qsys"
 set_global_assignment -entity "system_rsp_xbar_demux" -library "system" -name IP_TOOL_NAME "altera_merlin_demultiplexer"
 set_global_assignment -entity "system_rsp_xbar_demux" -library "system" -name IP_TOOL_VERSION "13.0"
 set_global_assignment -entity "system_rsp_xbar_demux" -library "system" -name IP_TOOL_ENV "Qsys"
+set_global_assignment -entity "system_cmd_xbar_mux" -library "system" -name IP_TOOL_NAME "altera_merlin_multiplexer"
+set_global_assignment -entity "system_cmd_xbar_mux" -library "system" -name IP_TOOL_VERSION "13.0"
+set_global_assignment -entity "system_cmd_xbar_mux" -library "system" -name IP_TOOL_ENV "Qsys"
+set_global_assignment -entity "system_cmd_xbar_demux_001" -library "system" -name IP_TOOL_NAME "altera_merlin_demultiplexer"
+set_global_assignment -entity "system_cmd_xbar_demux_001" -library "system" -name IP_TOOL_VERSION "13.0"
+set_global_assignment -entity "system_cmd_xbar_demux_001" -library "system" -name IP_TOOL_ENV "Qsys"
 set_global_assignment -entity "system_cmd_xbar_demux" -library "system" -name IP_TOOL_NAME "altera_merlin_demultiplexer"
 set_global_assignment -entity "system_cmd_xbar_demux" -library "system" -name IP_TOOL_VERSION "13.0"
 set_global_assignment -entity "system_cmd_xbar_demux" -library "system" -name IP_TOOL_ENV "Qsys"
@@ -74,9 +108,15 @@ set_global_assignment -entity "altera_merlin_traffic_limiter" -library "system" 
 set_global_assignment -entity "system_id_router_004" -library "system" -name IP_TOOL_NAME "altera_merlin_router"
 set_global_assignment -entity "system_id_router_004" -library "system" -name IP_TOOL_VERSION "13.0"
 set_global_assignment -entity "system_id_router_004" -library "system" -name IP_TOOL_ENV "Qsys"
+set_global_assignment -entity "system_id_router_002" -library "system" -name IP_TOOL_NAME "altera_merlin_router"
+set_global_assignment -entity "system_id_router_002" -library "system" -name IP_TOOL_VERSION "13.0"
+set_global_assignment -entity "system_id_router_002" -library "system" -name IP_TOOL_ENV "Qsys"
 set_global_assignment -entity "system_id_router" -library "system" -name IP_TOOL_NAME "altera_merlin_router"
 set_global_assignment -entity "system_id_router" -library "system" -name IP_TOOL_VERSION "13.0"
 set_global_assignment -entity "system_id_router" -library "system" -name IP_TOOL_ENV "Qsys"
+set_global_assignment -entity "system_addr_router_001" -library "system" -name IP_TOOL_NAME "altera_merlin_router"
+set_global_assignment -entity "system_addr_router_001" -library "system" -name IP_TOOL_VERSION "13.0"
+set_global_assignment -entity "system_addr_router_001" -library "system" -name IP_TOOL_ENV "Qsys"
 set_global_assignment -entity "system_addr_router" -library "system" -name IP_TOOL_NAME "altera_merlin_router"
 set_global_assignment -entity "system_addr_router" -library "system" -name IP_TOOL_VERSION "13.0"
 set_global_assignment -entity "system_addr_router" -library "system" -name IP_TOOL_ENV "Qsys"
@@ -95,6 +135,30 @@ set_global_assignment -entity "altera_merlin_slave_translator" -library "system"
 set_global_assignment -entity "altera_merlin_master_translator" -library "system" -name IP_TOOL_NAME "altera_merlin_master_translator"
 set_global_assignment -entity "altera_merlin_master_translator" -library "system" -name IP_TOOL_VERSION "13.0"
 set_global_assignment -entity "altera_merlin_master_translator" -library "system" -name IP_TOOL_ENV "Qsys"
+set_global_assignment -entity "system_master_0" -library "system" -name IP_TOOL_NAME "altera_jtag_avalon_master"
+set_global_assignment -entity "system_master_0" -library "system" -name IP_TOOL_VERSION "13.0"
+set_global_assignment -entity "system_master_0" -library "system" -name IP_TOOL_ENV "Qsys"
+set_global_assignment -entity "system_master_0_p2b_adapter" -library "system" -name IP_TOOL_NAME "channel_adapter"
+set_global_assignment -entity "system_master_0_p2b_adapter" -library "system" -name IP_TOOL_VERSION "13.0"
+set_global_assignment -entity "system_master_0_p2b_adapter" -library "system" -name IP_TOOL_ENV "Qsys"
+set_global_assignment -entity "system_master_0_b2p_adapter" -library "system" -name IP_TOOL_NAME "channel_adapter"
+set_global_assignment -entity "system_master_0_b2p_adapter" -library "system" -name IP_TOOL_VERSION "13.0"
+set_global_assignment -entity "system_master_0_b2p_adapter" -library "system" -name IP_TOOL_ENV "Qsys"
+set_global_assignment -entity "altera_avalon_packets_to_master" -library "system" -name IP_TOOL_NAME "altera_avalon_packets_to_master"
+set_global_assignment -entity "altera_avalon_packets_to_master" -library "system" -name IP_TOOL_VERSION "13.0"
+set_global_assignment -entity "altera_avalon_packets_to_master" -library "system" -name IP_TOOL_ENV "Qsys"
+set_global_assignment -entity "altera_avalon_st_packets_to_bytes" -library "system" -name IP_TOOL_NAME "altera_avalon_st_packets_to_bytes"
+set_global_assignment -entity "altera_avalon_st_packets_to_bytes" -library "system" -name IP_TOOL_VERSION "11.1"
+set_global_assignment -entity "altera_avalon_st_packets_to_bytes" -library "system" -name IP_TOOL_ENV "Qsys"
+set_global_assignment -entity "altera_avalon_st_bytes_to_packets" -library "system" -name IP_TOOL_NAME "altera_avalon_st_bytes_to_packets"
+set_global_assignment -entity "altera_avalon_st_bytes_to_packets" -library "system" -name IP_TOOL_VERSION "11.1"
+set_global_assignment -entity "altera_avalon_st_bytes_to_packets" -library "system" -name IP_TOOL_ENV "Qsys"
+set_global_assignment -entity "system_master_0_timing_adt" -library "system" -name IP_TOOL_NAME "timing_adapter"
+set_global_assignment -entity "system_master_0_timing_adt" -library "system" -name IP_TOOL_VERSION "13.0"
+set_global_assignment -entity "system_master_0_timing_adt" -library "system" -name IP_TOOL_ENV "Qsys"
+set_global_assignment -entity "altera_avalon_st_jtag_interface" -library "system" -name IP_TOOL_NAME "altera_jtag_dc_streaming"
+set_global_assignment -entity "altera_avalon_st_jtag_interface" -library "system" -name IP_TOOL_VERSION "13.0"
+set_global_assignment -entity "altera_avalon_st_jtag_interface" -library "system" -name IP_TOOL_ENV "Qsys"
 set_global_assignment -entity "system_timer_0" -library "system" -name IP_TOOL_NAME "altera_avalon_timer"
 set_global_assignment -entity "system_timer_0" -library "system" -name IP_TOOL_VERSION "13.0.1.99.2"
 set_global_assignment -entity "system_timer_0" -library "system" -name IP_TOOL_ENV "Qsys"

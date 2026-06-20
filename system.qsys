@@ -36,6 +36,14 @@
          type = "int";
       }
    }
+   element master_0
+   {
+      datum _sortIndex
+      {
+         value = "7";
+         type = "int";
+      }
+   }
    element new_sdram_controller_0
    {
       datum _sortIndex
@@ -68,6 +76,14 @@
          type = "String";
       }
    }
+   element new_sdram_controller_0.s1
+   {
+      datum baseAddress
+      {
+         value = "0";
+         type = "String";
+      }
+   }
    element timer_0.s1
    {
       datum baseAddress
@@ -81,14 +97,6 @@
       datum baseAddress
       {
          value = "33554432";
-         type = "String";
-      }
-   }
-   element new_sdram_controller_0.s1
-   {
-      datum baseAddress
-      {
-         value = "0";
          type = "String";
       }
    }
@@ -123,7 +131,7 @@
  <parameter name="projectName">KLTN_SHA256_RISCV.qpf</parameter>
  <parameter name="sopcBorderPoints" value="false" />
  <parameter name="systemHash" value="1" />
- <parameter name="timeStamp" value="1781880660372" />
+ <parameter name="timeStamp" value="1781958053815" />
  <parameter name="useTestBenchNamingPattern" value="false" />
  <instanceScript></instanceScript>
  <interface name="clk" internal="clk_0.clk_in" type="clock" dir="end" />
@@ -251,6 +259,19 @@
    name="riscv_avalon_wrapper_0">
   <parameter name="AUTO_CLOCK_CLOCK_RATE" value="50000000" />
  </module>
+ <module
+   kind="altera_jtag_avalon_master"
+   version="13.0"
+   enabled="1"
+   name="master_0">
+  <parameter name="USE_PLI" value="0" />
+  <parameter name="PLI_PORT" value="50000" />
+  <parameter name="COMPONENT_CLOCK" value="0" />
+  <parameter name="FAST_VER" value="0" />
+  <parameter name="FIFO_DEPTHS" value="2" />
+  <parameter name="AUTO_DEVICE_FAMILY" value="Cyclone IV E" />
+  <parameter name="AUTO_DEVICE" value="EP4CE22F17C6" />
+ </module>
  <connection
    kind="clock"
    version="13.0"
@@ -346,6 +367,48 @@
    end="new_sdram_controller_0.s1">
   <parameter name="arbitrationPriority" value="1" />
   <parameter name="baseAddress" value="0x0000" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection kind="clock" version="13.0" start="clk_0.clk" end="master_0.clk" />
+ <connection
+   kind="reset"
+   version="13.0"
+   start="clk_0.clk_reset"
+   end="master_0.clk_reset" />
+ <connection
+   kind="avalon"
+   version="13.0"
+   start="master_0.master"
+   end="jtag_uart_0.avalon_jtag_slave">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x020080a0" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection
+   kind="avalon"
+   version="13.0"
+   start="master_0.master"
+   end="sha256_avalon_wrapper_0.s0">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x02008000" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection
+   kind="avalon"
+   version="13.0"
+   start="master_0.master"
+   end="new_sdram_controller_0.s1">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x0000" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection
+   kind="avalon"
+   version="13.0"
+   start="master_0.master"
+   end="onchip_memory2_0.s1">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x02000000" />
   <parameter name="defaultConnection" value="false" />
  </connection>
  <interconnectRequirement for="$system" name="qsys_mm.clockCrossingAdapter" value="HANDSHAKE" />

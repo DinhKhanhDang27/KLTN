@@ -1,0 +1,56 @@
+Dưới đây là quy trình chuẩn sau khi bạn đã sửa Qsys và Generate HDL lại.
+1. Build firmware ROM
+Chạy trong PowerShell tại thư mục project:
+cd C:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN
+
+python asm_to_hex.py firmware_sdram_sha_uart.S -o firmware.hex
+
+Copy-Item firmware.hex system\synthesis\submodules\firmware.hex
+2. Tạo input muốn hash
+Ví dụ:
+Set-Content -NoNewline -Path message.txt -Value "Dinh Khanh Dang 23520224 Pham Chi Dat 23520265"
+3. Tạo script ghi input vào SDRAM
+python pack_sdram_input.py message.txt -o load_sdram_input.tcl
+Lệnh này sẽ in ra SHA-256 expected trên PC. Ghi lại dòng đó để lát so sánh với output từ FPGA.
+4. Compile Quartus
+Vì bạn vừa sửa Qsys/generate HDL, cần compile lại toàn bộ project.
+Trong Quartus:
+Processing -> Start Compilation
+Hoặc dùng command line nếu có Quartus shell:
+quartus_sh --flow compile KLTN_SHA256_RISCV
+Sau compile, kiểm tra file .sof mới:
+output_files/KLTN_SHA256_RISCV.sof
+5. Nạp SOF xuống FPGA
+Trong Quartus Programmer:
+Hardware Setup -> USB-Blaster
+Add File -> output_files/KLTN_SHA256_RISCV.sof
+Tick Program/Configure
+Start
+6. Ghi input vào SDRAM bằng System Console
+Mở:
+C:\altera\13.0sp1\quartus\sopc_builder\bin\system-console.exe
+Quartus -> Tools -> System Debugging Tools -> System Console
+Trong System Console, chuyển tới thư mục project nếu cần:
+refresh_connections
+get_service_paths master
+cd {C:/Users/dinhkhanhdang/Do_An_Thay_NGUYEN}
+Chạy script:
+source load_sdram_input.tcl
+Bạn nên thấy readback kiểu:
+magic  = 0x53484132
+length = 0x0000002e
+Nếu không thấy magic = 0x53484132, nghĩa là input chưa vào SDRAM đúng.
+7. Mở Nios II Terminal để xem digest
+Trong Nios2 Command Shell:
+nios2-terminal
+Nếu mọi thứ đúng, terminal sẽ in SHA-256 digest. Digest này phải trùng với dòng expected do pack_sdram_input.py in ở bước 3.
+
+
+Khi chỉ đổi input
+Nếu chỉ đổi message.txt, không sửa firmware/Qsys, thì chỉ cần:
+Set-Content -NoNewline -Path message.txt -Value "input moi"
+python pack_sdram_input.py message.txt -o load_sdram_input.tcl
+Sau đó:
+source load_sdram_input.tcl
+Rồi mở:
+nios2-terminal

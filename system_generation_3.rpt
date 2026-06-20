@@ -1,0 +1,120 @@
+Info: Starting: Create HDL design files for synthesis
+Info: ip-generate --project-directory=C:/Users/dinhkhanhdang/Do_An_Thay_NGUYEN/ --output-directory=C:/Users/dinhkhanhdang/Do_An_Thay_NGUYEN/system/synthesis/ --file-set=QUARTUS_SYNTH --report-file=sopcinfo:C:/Users/dinhkhanhdang/Do_An_Thay_NGUYEN/system.sopcinfo --report-file=html:C:/Users/dinhkhanhdang/Do_An_Thay_NGUYEN/system.html --report-file=qip:C:/Users/dinhkhanhdang/Do_An_Thay_NGUYEN/system/synthesis/system.qip --report-file=cmp:C:/Users/dinhkhanhdang/Do_An_Thay_NGUYEN/system.cmp --report-file=svd --system-info=DEVICE_FAMILY="Cyclone IV E" --system-info=DEVICE=EP4CE22F17C6 --system-info=DEVICE_SPEEDGRADE=6 --component-file=C:/Users/dinhkhanhdang/Do_An_Thay_NGUYEN/system.qsys --language=VERILOG
+Progress: Loading Do_An_Thay_NGUYEN/system.qsys
+Progress: Reading input file
+Progress: Adding clk_0 [clock_source 13.0]
+Progress: Parameterizing module clk_0
+Progress: Adding onchip_memory2_0 [altera_avalon_onchip_memory2 13.0.1.99.2]
+Progress: Parameterizing module onchip_memory2_0
+Progress: Adding jtag_uart_0 [altera_avalon_jtag_uart 13.0.1.99.2]
+Progress: Parameterizing module jtag_uart_0
+Progress: Adding new_sdram_controller_0 [altera_avalon_new_sdram_controller 13.0.1.99.2]
+Progress: Parameterizing module new_sdram_controller_0
+Progress: Adding timer_0 [altera_avalon_timer 13.0.1.99.2]
+Progress: Parameterizing module timer_0
+Progress: Adding sha256_avalon_wrapper_0 [sha256_avalon_wrapper 1.0]
+Progress: Parameterizing module sha256_avalon_wrapper_0
+Progress: Adding riscv_avalon_wrapper_0 [riscv_avalon_wrapper 1.0]
+Progress: Parameterizing module riscv_avalon_wrapper_0
+Progress: Building connections
+Progress: Parameterizing connections
+Progress: Validating
+Progress: Done reading input file
+Warning: system.jtag_uart_0: Interrupt sender jtag_uart_0.irq is not connected to an interrupt receiver
+Warning: system.timer_0: Interrupt sender timer_0.irq is not connected to an interrupt receiver
+Info: system: Generating system "system" for QUARTUS_SYNTH
+Info: pipeline_bridge_swap_transform: After transform: 7 modules, 17 connections
+Info: No custom instruction connections, skipping transform 
+Info: merlin_translator_transform: After transform: 13 modules, 35 connections
+Info: merlin_domain_transform: After transform: 26 modules, 100 connections
+Info: merlin_router_transform: After transform: 32 modules, 118 connections
+Info: merlin_traffic_limiter_transform: After transform: 33 modules, 122 connections
+Info: merlin_burst_transform: After transform: 34 modules, 125 connections
+Info: reset_adaptation_transform: After transform: 35 modules, 127 connections
+Info: merlin_network_to_switch_transform: After transform: 46 modules, 149 connections
+Info: merlin_width_transform: After transform: 48 modules, 155 connections
+Info: limiter_update_transform: After transform: 48 modules, 156 connections
+Info: merlin_mm_transform: After transform: 48 modules, 156 connections
+Warning: system: "No matching role found for rst_controller:reset_out:reset_req (reset_req)"
+Warning: system: "No matching role found for rst_controller:reset_out:reset_req (reset_req)"
+Warning: system: "No matching role found for rst_controller:reset_out:reset_req (reset_req)"
+Warning: system: "No matching role found for rst_controller:reset_out:reset_req (reset_req)"
+Warning: system: "No matching role found for rst_controller:reset_out:reset_req (reset_req)"
+Warning: system: "No matching role found for rst_controller:reset_out:reset_req (reset_req)"
+Warning: system: "No matching role found for rst_controller:reset_out:reset_req (reset_req)"
+Warning: system: "No matching role found for rst_controller:reset_out:reset_req (reset_req)"
+Warning: system: "No matching role found for rst_controller:reset_out:reset_req (reset_req)"
+Warning: system: "No matching role found for rst_controller:reset_out:reset_req (reset_req)"
+Warning: system: "No matching role found for rst_controller:reset_out:reset_req (reset_req)"
+Warning: system: "No matching role found for rst_controller:reset_out:reset_req (reset_req)"
+Warning: system: "No matching role found for rst_controller:reset_out:reset_req (reset_req)"
+Warning: system: "No matching role found for rst_controller:reset_out:reset_req (reset_req)"
+Warning: system: "No matching role found for rst_controller:reset_out:reset_req (reset_req)"
+Warning: system: "No matching role found for rst_controller:reset_out:reset_req (reset_req)"
+Warning: system: "No matching role found for rst_controller:reset_out:reset_req (reset_req)"
+Warning: system: "No matching role found for rst_controller:reset_out:reset_req (reset_req)"
+Warning: system: "No matching role found for rst_controller:reset_out:reset_req (reset_req)"
+Warning: system: "No matching role found for rst_controller:reset_out:reset_req (reset_req)"
+Warning: system: "No matching role found for rst_controller:reset_out:reset_req (reset_req)"
+Warning: system: "No matching role found for rst_controller:reset_out:reset_req (reset_req)"
+Warning: system: "No matching role found for rst_controller:reset_out:reset_req (reset_req)"
+Warning: system: "No matching role found for rst_controller:reset_out:reset_req (reset_req)"
+Warning: system: "No matching role found for rst_controller:reset_out:reset_req (reset_req)"
+Warning: system: "No matching role found for rst_controller:reset_out:reset_req (reset_req)"
+Warning: system: "No matching role found for rst_controller:reset_out:reset_req (reset_req)"
+Warning: system: "No matching role found for rst_controller:reset_out:reset_req (reset_req)"
+Warning: system: "No matching role found for rst_controller:reset_out:reset_req (reset_req)"
+Warning: system: "No matching role found for rst_controller:reset_out:reset_req (reset_req)"
+Warning: system: "No matching role found for rst_controller:reset_out:reset_req (reset_req)"
+Warning: system: "No matching role found for rst_controller:reset_out:reset_req (reset_req)"
+Warning: system: "No matching role found for rst_controller:reset_out:reset_req (reset_req)"
+Warning: system: "No matching role found for rst_controller:reset_out:reset_req (reset_req)"
+Warning: system: "No matching role found for rst_controller:reset_out:reset_req (reset_req)"
+Warning: system: "No matching role found for rst_controller:reset_out:reset_req (reset_req)"
+Warning: system: "No matching role found for rst_controller:reset_out:reset_req (reset_req)"
+Warning: system: "No matching role found for rst_controller:reset_out:reset_req (reset_req)"
+Warning: system: "No matching role found for rst_controller:reset_out:reset_req (reset_req)"
+Warning: system: "No matching role found for rst_controller:reset_out:reset_req (reset_req)"
+Warning: system: "No matching role found for rst_controller:reset_out:reset_req (reset_req)"
+Warning: system: "No matching role found for rst_controller:reset_out:reset_req (reset_req)"
+Warning: system: "No matching role found for rst_controller:reset_out:reset_req (reset_req)"
+Warning: system: "No matching role found for rst_controller:reset_out:reset_req (reset_req)"
+Warning: system: "No matching role found for rst_controller:reset_out:reset_req (reset_req)"
+Info: onchip_memory2_0: Starting RTL generation for module 'system_onchip_memory2_0'
+Info: onchip_memory2_0:   Generation command is [exec C:/altera/13.0sp1/quartus/bin/perl/bin/perl.exe -I C:/altera/13.0sp1/quartus/common/ip/altera/common/perl/5.8.3 -I C:/altera/13.0sp1/quartus/sopc_builder/bin/europa -I C:/altera/13.0sp1/quartus/sopc_builder/bin/perl_lib -I C:/altera/13.0sp1/quartus/sopc_builder/bin -I C:/altera/13.0sp1/quartus/../ip/altera/sopc_builder_ip/common -I C:/altera/13.0sp1/quartus/../ip/altera/sopc_builder_ip/altera_avalon_onchip_memory2 -- C:/altera/13.0sp1/quartus/../ip/altera/sopc_builder_ip/altera_avalon_onchip_memory2/generate_rtl.pl --name=system_onchip_memory2_0 --dir=C:/Users/DINHKH~1/AppData/Local/Temp/alt0623_8911011523666173452.dir/0001_onchip_memory2_0_gen/ --quartus_dir=C:/altera/13.0sp1/quartus --verilog --config=C:/Users/DINHKH~1/AppData/Local/Temp/alt0623_8911011523666173452.dir/0001_onchip_memory2_0_gen//system_onchip_memory2_0_component_configuration.pl  --do_build_sim=0  ]
+Info: onchip_memory2_0: Done RTL generation for module 'system_onchip_memory2_0'
+Info: onchip_memory2_0: "system" instantiated altera_avalon_onchip_memory2 "onchip_memory2_0"
+Info: jtag_uart_0: Starting RTL generation for module 'system_jtag_uart_0'
+Info: jtag_uart_0:   Generation command is [exec C:/altera/13.0sp1/quartus/bin/perl/bin/perl.exe -I C:/altera/13.0sp1/quartus/common/ip/altera/common/perl/5.8.3 -I C:/altera/13.0sp1/quartus/sopc_builder/bin/europa -I C:/altera/13.0sp1/quartus/sopc_builder/bin/perl_lib -I C:/altera/13.0sp1/quartus/sopc_builder/bin -I C:/altera/13.0sp1/quartus/../ip/altera/sopc_builder_ip/common -I C:/altera/13.0sp1/quartus/../ip/altera/sopc_builder_ip/altera_avalon_jtag_uart -- C:/altera/13.0sp1/quartus/../ip/altera/sopc_builder_ip/altera_avalon_jtag_uart/generate_rtl.pl --name=system_jtag_uart_0 --dir=C:/Users/DINHKH~1/AppData/Local/Temp/alt0623_8911011523666173452.dir/0002_jtag_uart_0_gen/ --quartus_dir=C:/altera/13.0sp1/quartus --verilog --config=C:/Users/DINHKH~1/AppData/Local/Temp/alt0623_8911011523666173452.dir/0002_jtag_uart_0_gen//system_jtag_uart_0_component_configuration.pl  --do_build_sim=0  ]
+Info: jtag_uart_0: Done RTL generation for module 'system_jtag_uart_0'
+Info: jtag_uart_0: "system" instantiated altera_avalon_jtag_uart "jtag_uart_0"
+Info: new_sdram_controller_0: Starting RTL generation for module 'system_new_sdram_controller_0'
+Info: new_sdram_controller_0:   Generation command is [exec C:/altera/13.0sp1/quartus/bin/perl/bin/perl.exe -I C:/altera/13.0sp1/quartus/common/ip/altera/common/perl/5.8.3 -I C:/altera/13.0sp1/quartus/sopc_builder/bin/europa -I C:/altera/13.0sp1/quartus/sopc_builder/bin/perl_lib -I C:/altera/13.0sp1/quartus/sopc_builder/bin -I C:/altera/13.0sp1/quartus/../ip/altera/sopc_builder_ip/common -I C:/altera/13.0sp1/quartus/../ip/altera/sopc_builder_ip/altera_avalon_new_sdram_controller -- C:/altera/13.0sp1/quartus/../ip/altera/sopc_builder_ip/altera_avalon_new_sdram_controller/generate_rtl.pl --name=system_new_sdram_controller_0 --dir=C:/Users/DINHKH~1/AppData/Local/Temp/alt0623_8911011523666173452.dir/0003_new_sdram_controller_0_gen/ --quartus_dir=C:/altera/13.0sp1/quartus --verilog --config=C:/Users/DINHKH~1/AppData/Local/Temp/alt0623_8911011523666173452.dir/0003_new_sdram_controller_0_gen//system_new_sdram_controller_0_component_configuration.pl  --do_build_sim=0  ]
+Info: new_sdram_controller_0: Done RTL generation for module 'system_new_sdram_controller_0'
+Info: new_sdram_controller_0: "system" instantiated altera_avalon_new_sdram_controller "new_sdram_controller_0"
+Info: timer_0: Starting RTL generation for module 'system_timer_0'
+Info: timer_0:   Generation command is [exec C:/altera/13.0sp1/quartus/bin/perl/bin/perl.exe -I C:/altera/13.0sp1/quartus/common/ip/altera/common/perl/5.8.3 -I C:/altera/13.0sp1/quartus/sopc_builder/bin/europa -I C:/altera/13.0sp1/quartus/sopc_builder/bin/perl_lib -I C:/altera/13.0sp1/quartus/sopc_builder/bin -I C:/altera/13.0sp1/quartus/../ip/altera/sopc_builder_ip/common -I C:/altera/13.0sp1/quartus/../ip/altera/sopc_builder_ip/altera_avalon_timer -- C:/altera/13.0sp1/quartus/../ip/altera/sopc_builder_ip/altera_avalon_timer/generate_rtl.pl --name=system_timer_0 --dir=C:/Users/DINHKH~1/AppData/Local/Temp/alt0623_8911011523666173452.dir/0004_timer_0_gen/ --quartus_dir=C:/altera/13.0sp1/quartus --verilog --config=C:/Users/DINHKH~1/AppData/Local/Temp/alt0623_8911011523666173452.dir/0004_timer_0_gen//system_timer_0_component_configuration.pl  --do_build_sim=0  ]
+Info: timer_0: Done RTL generation for module 'system_timer_0'
+Info: timer_0: "system" instantiated altera_avalon_timer "timer_0"
+Info: sha256_avalon_wrapper_0: "system" instantiated sha256_avalon_wrapper "sha256_avalon_wrapper_0"
+Info: riscv_avalon_wrapper_0: "system" instantiated riscv_avalon_wrapper "riscv_avalon_wrapper_0"
+Info: riscv_avalon_wrapper_0_m0_translator: "system" instantiated altera_merlin_master_translator "riscv_avalon_wrapper_0_m0_translator"
+Info: onchip_memory2_0_s1_translator: "system" instantiated altera_merlin_slave_translator "onchip_memory2_0_s1_translator"
+Info: riscv_avalon_wrapper_0_m0_translator_avalon_universal_master_0_agent: "system" instantiated altera_merlin_master_agent "riscv_avalon_wrapper_0_m0_translator_avalon_universal_master_0_agent"
+Info: onchip_memory2_0_s1_translator_avalon_universal_slave_0_agent: "system" instantiated altera_merlin_slave_agent "onchip_memory2_0_s1_translator_avalon_universal_slave_0_agent"
+Info: onchip_memory2_0_s1_translator_avalon_universal_slave_0_agent_rsp_fifo: "system" instantiated altera_avalon_sc_fifo "onchip_memory2_0_s1_translator_avalon_universal_slave_0_agent_rsp_fifo"
+Info: addr_router: "system" instantiated altera_merlin_router "addr_router"
+Info: id_router: "system" instantiated altera_merlin_router "id_router"
+Info: id_router_004: "system" instantiated altera_merlin_router "id_router_004"
+Info: limiter: "system" instantiated altera_merlin_traffic_limiter "limiter"
+Info: burst_adapter: "system" instantiated altera_merlin_burst_adapter "burst_adapter"
+Info: rst_controller: "system" instantiated altera_reset_controller "rst_controller"
+Info: cmd_xbar_demux: "system" instantiated altera_merlin_demultiplexer "cmd_xbar_demux"
+Info: rsp_xbar_demux: "system" instantiated altera_merlin_demultiplexer "rsp_xbar_demux"
+Info: rsp_xbar_mux: "system" instantiated altera_merlin_multiplexer "rsp_xbar_mux"
+Info: width_adapter: "system" instantiated altera_merlin_width_adapter "width_adapter"
+Info: Reusing file C:/Users/dinhkhanhdang/Do_An_Thay_NGUYEN/system/synthesis/submodules/altera_merlin_address_alignment.sv
+Info: Reusing file C:/Users/dinhkhanhdang/Do_An_Thay_NGUYEN/system/synthesis/submodules/altera_merlin_burst_uncompressor.sv
+Info: system: Done system" with 22 modules, 69 files, 1319882 bytes
+Info: ip-generate succeeded.
+Info: Finished: Create HDL design files for synthesis

@@ -1,16 +1,110 @@
-# vsim -c riscv_sha256_avalon_tb -do "run -all; quit" 
-# Start time: 09:40:20 on Jun 16,2026
-# Loading work.riscv_sha256_avalon_tb
-# Loading work.riscv_sha256_avalon
+# do sim_all.do
+# Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 28 2020
+# Start time: 19:59:50 on Jun 19,2026
+# vlog -sv sha256Core.sv sha256Wrapper.sv sha256_avalon_wrapper_tb.sv 
+# -- Compiling module sha256_core
+# -- Compiling module sha256_avalon_wrapper
+# -- Compiling module sha256_avalon_wrapper_tb
+# 
+# Top level modules:
+# 	sha256_avalon_wrapper_tb
+# End time: 19:59:50 on Jun 19,2026, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 28 2020
+# Start time: 19:59:50 on Jun 19,2026
+# vlog -sv avalon_simple_dma.sv avalon_simple_dma_tb.sv 
+# -- Compiling module avalon_simple_dma
+# -- Compiling module avalon_simple_dma_tb
+# 
+# Top level modules:
+# 	avalon_simple_dma_tb
+# End time: 19:59:50 on Jun 19,2026, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 28 2020
+# Start time: 19:59:50 on Jun 19,2026
+# vlog -sv rtl_riscv/adder.sv rtl_riscv/adder_tb.sv 
+# -- Compiling module adder
+# -- Compiling module adder_tb
+# 
+# Top level modules:
+# 	adder_tb
+# End time: 19:59:51 on Jun 19,2026, Elapsed time: 0:00:01
+# Errors: 0, Warnings: 0
+# Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 28 2020
+# Start time: 19:59:51 on Jun 19,2026
+# vlog -sv rtl_riscv/alu.sv rtl_riscv/alu_control.sv rtl_riscv/branch_control.sv rtl_riscv/control_unit.sv rtl_riscv/imm_gen.sv rtl_riscv/instruction_memory.sv rtl_riscv/riscv_avalon_wrapper.sv rtl_riscv/riscv_avalon_wrapper_tb.sv 
+# -- Compiling module alu
+# -- Compiling module alu_control
+# -- Compiling module branch_control
+# -- Compiling module control_unit
+# -- Compiling module imm_gen
+# -- Compiling module instruction_memory
+# -- Compiling module riscv_avalon_wrapper
+# -- Compiling module riscv_avalon_wrapper_tb
+# 
+# Top level modules:
+# 	riscv_avalon_wrapper_tb
+# End time: 19:59:51 on Jun 19,2026, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# vsim sha256_avalon_wrapper_tb 
+# Start time: 19:59:51 on Jun 19,2026
+# Loading sv_std.std
+# Loading work.sha256_avalon_wrapper_tb
+# Loading work.sha256_avalon_wrapper
+# Loading work.sha256_core
+# [PASS] sha256_avalon_wrapper abc vector and IRQ
+# ** Note: $finish    : sha256_avalon_wrapper_tb.sv(144)
+#    Time: 1265 ns  Iteration: 1  Instance: /sha256_avalon_wrapper_tb
+# Break in Module sha256_avalon_wrapper_tb at sha256_avalon_wrapper_tb.sv line 144
+# Stopped at sha256_avalon_wrapper_tb.sv line 144
+# End time: 19:59:52 on Jun 19,2026, Elapsed time: 0:00:01
+# Errors: 0, Warnings: 0
+# vsim avalon_simple_dma_tb 
+# Start time: 19:59:53 on Jun 19,2026
+# Loading sv_std.std
+# Loading work.avalon_simple_dma_tb
+# Loading work.avalon_simple_dma
+# [PASS] avalon_simple_dma memory copy
+# ** Note: $finish    : avalon_simple_dma_tb.sv(129)
+#    Time: 215 ns  Iteration: 1  Instance: /avalon_simple_dma_tb
+# Break in Module avalon_simple_dma_tb at avalon_simple_dma_tb.sv line 129
+# Stopped at avalon_simple_dma_tb.sv line 129
+# End time: 19:59:54 on Jun 19,2026, Elapsed time: 0:00:01
+# Errors: 0, Warnings: 0
+# vsim riscv_avalon_wrapper_tb 
+# Start time: 19:59:54 on Jun 19,2026
+# Loading sv_std.std
+# Loading work.riscv_avalon_wrapper_tb
+# Loading work.riscv_avalon_wrapper
+# Loading work.instruction_memory
 # Loading work.control_unit
-# Loading work.register_file
 # Loading work.imm_gen
 # Loading work.alu_control
 # Loading work.alu
 # Loading work.branch_control
-# run -all
-# [PASS] riscv_sha256_avalon C-oriented logical/load-store smoke test
-# ** Note: $finish    : C:/Users/dinhkhanhdang/Do_An_Thay_NGUYEN/rtl_riscv/riscv_sha256_avalon_tb.v(206)
-#    Time: 2435 ns  Iteration: 1  Instance: /riscv_sha256_avalon_tb
-# End time: 09:40:23 on Jun 16,2026, Elapsed time: 0:00:03
+# Loading work.sha256_avalon_wrapper
+# Loading work.sha256_core
+# [PASS] riscv_avalon_wrapper controls sha256_avalon_wrapper
+# ** Note: $finish    : rtl_riscv/riscv_avalon_wrapper_tb.sv(86)
+#    Time: 2045 ns  Iteration: 1  Instance: /riscv_avalon_wrapper_tb
+# Break in Module riscv_avalon_wrapper_tb at rtl_riscv/riscv_avalon_wrapper_tb.sv line 86
+# Stopped at rtl_riscv/riscv_avalon_wrapper_tb.sv line 86
+# End time: 19:59:55 on Jun 19,2026, Elapsed time: 0:00:01
+# Errors: 0, Warnings: 0
+# vsim adder_tb 
+# Start time: 19:59:55 on Jun 19,2026
+# Loading sv_std.std
+# Loading work.adder_tb
+# Loading work.adder
+# Time: 0 ns | a =                    0, b =                    0 | result =                    0
+# Time: 10000 ns | a =                   15, b =                   25 | result =                   40
+# Time: 20000 ns | a =                 1024, b =                    0 | result =                 1024
+# Time: 30000 ns | a =           4294967295, b =                    1 | result =           4294967296
+# Time: 40000 ns | a = 18446744073709551615, b =                    1 | result =                    0
+# ================ Simulation Complete ================
+# ** Note: $finish    : rtl_riscv/adder_tb.sv(39)
+#    Time: 50 ns  Iteration: 0  Instance: /adder_tb
+# Break in Module adder_tb at rtl_riscv/adder_tb.sv line 39
+# Stopped at rtl_riscv/adder_tb.sv line 39
+# End time: 19:59:56 on Jun 19,2026, Elapsed time: 0:00:01
 # Errors: 0, Warnings: 0

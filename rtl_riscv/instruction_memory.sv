@@ -7,10 +7,10 @@ module instruction_memory (
     output [31:0] instruction
 );
 
-    reg [31:0] mem [0:255];
+    reg [31:0] mem [0:1023];
     integer i;
 
-    assign instruction = mem[addr[9:2]]; 
+    assign instruction = mem[addr[11:2]];
 
     initial begin
 // Dùng dấu gạch chéo xuôi (/) kể cả trên Windows

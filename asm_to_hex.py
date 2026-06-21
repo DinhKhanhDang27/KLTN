@@ -21,11 +21,18 @@ def strip_comment(line):
     return line.split("#", 1)[0].split("//", 1)[0].strip()
 
 
+CONSTS = {}
+
+
 def parse_imm(text):
     text = text.strip()
     if len(text) >= 3 and text[0] == "'" and text[-1] == "'":
         return ord(text[1:-1].encode("utf-8").decode("unicode_escape"))
-    return int(text, 0)
+    if re.fullmatch(r"[-+]?((0x[0-9a-fA-F]+)|\d+)", text):
+        return int(text, 0)
+    if not re.fullmatch(r"[A-Za-z_.$][\w.$]*(\s*[-+]\s*[-+]?((0x[0-9a-fA-F]+)|\d+|[A-Za-z_.$][\w.$]*))*", text):
+        raise ValueError(f"bad immediate expression: {text}")
+    return eval(text, {"__builtins__": {}}, CONSTS)
 
 
 def reg(text):
@@ -96,12 +103,38 @@ def split_args(text):
 
 def load_program(path):
     labels = {}
+    local_labels = {}
     instructions = []
     pc = 0
+    in_block_comment = False
 
     for lineno, raw in enumerate(open(path, encoding="utf-8"), 1):
-        line = strip_comment(raw)
+        line = raw
+        while True:
+            if in_block_comment:
+                end = line.find("*/")
+                if end < 0:
+                    line = ""
+                    break
+                line = line[end + 2:]
+                in_block_comment = False
+            start = line.find("/*")
+            if start < 0:
+                break
+            end = line.find("*/", start + 2)
+            if end < 0:
+                line = line[:start]
+                in_block_comment = True
+                break
+            line = line[:start] + line[end + 2:]
+
+        line = strip_comment(line)
         if not line:
+            continue
+        if line.startswith(".equ"):
+            _, rest = line.split(None, 1)
+            name, value = split_args(rest)
+            CONSTS[name] = parse_imm(value)
             continue
         if line.startswith("."):
             continue
@@ -109,21 +142,79 @@ def load_program(path):
         while ":" in line:
             label, line = line.split(":", 1)
             label = label.strip()
-            if not re.fullmatch(r"[A-Za-z_.$][\w.$]*", label):
+            if re.fullmatch(r"\d+", label):
+                local_labels.setdefault(label, []).append(pc)
+            elif not re.fullmatch(r"[A-Za-z_.$][\w.$]*", label):
                 raise ValueError(f"{path}:{lineno}: bad label: {label}")
-            labels[label] = pc
+            else:
+                labels[label] = pc
             line = line.strip()
             if not line:
                 break
 
         if line:
-            instructions.append((lineno, pc, line))
-            pc += 4
+            for part in line.split(";"):
+                part = part.strip()
+                if part:
+                    expanded = expand_pseudo(part)
+                    for item in expanded:
+                        instructions.append((lineno, pc, item))
+                        pc += 4
 
-    return labels, instructions
+    return labels, local_labels, instructions
 
 
-def assemble_one(line, pc, labels):
+def resolve_label(name, pc, labels, local_labels):
+    match = re.fullmatch(r"(\d+)([bf])", name)
+    if not match:
+        return labels[name]
+
+    number, direction = match.groups()
+    pcs = local_labels.get(number, [])
+    if direction == "b":
+        candidates = [value for value in pcs if value < pc]
+        if candidates:
+            return candidates[-1]
+    else:
+        candidates = [value for value in pcs if value > pc]
+        if candidates:
+            return candidates[0]
+    raise KeyError(name)
+
+
+def signed12(value):
+    value &= 0xfff
+    return value - 0x1000 if value & 0x800 else value
+
+
+def expand_pseudo(line):
+    op, _, rest = line.partition(" ")
+    args = split_args(rest)
+
+    if op == "li":
+        value = parse_imm(args[1])
+        if -2048 <= value <= 2047:
+            return [f"addi {args[0]}, zero, {value}"]
+        upper = ((value + 0x800) >> 12) & 0xfffff
+        lower = signed12(value)
+        result = [f"lui {args[0]}, {upper}"]
+        if lower:
+            result.append(f"addi {args[0]}, {args[0]}, {lower}")
+        return result
+    if op == "mv":
+        return [f"addi {args[0]}, {args[1]}, 0"]
+    if op == "ret":
+        return ["jalr zero, 0(ra)"]
+    if op == "j":
+        return [f"jal zero, {args[0]}"]
+    if op == "beqz":
+        return [f"beq {args[0]}, zero, {args[1]}"]
+    if op == "bnez":
+        return [f"bne {args[0]}, zero, {args[1]}"]
+    return [line]
+
+
+def assemble_one(line, pc, labels, local_labels):
     op, _, rest = line.partition(" ")
     op = op.strip()
     args = split_args(rest)
@@ -168,11 +259,14 @@ def assemble_one(line, pc, labels):
         imm, rs1 = parse_mem_operand(args[1])
         return enc_s(imm, reg(args[0]), rs1, 0x2, 0x23)
     if op in ("beq", "bne"):
-        target = labels[args[2]]
+        target = resolve_label(args[2], pc, labels, local_labels)
         funct3 = 0x0 if op == "beq" else 0x1
         return enc_b(target - pc, reg(args[1]), reg(args[0]), funct3, 0x63)
+    if op == "blt":
+        target = resolve_label(args[2], pc, labels, local_labels)
+        return enc_b(target - pc, reg(args[1]), reg(args[0]), 0x4, 0x63)
     if op == "jal":
-        target = labels[args[1]]
+        target = resolve_label(args[1], pc, labels, local_labels)
         return enc_j(target - pc, reg(args[0]), 0x6f)
     if op == "jalr":
         imm, rs1 = parse_mem_operand(args[1])
@@ -187,11 +281,11 @@ def main():
     parser.add_argument("-o", "--output", default="firmware.hex")
     args = parser.parse_args()
 
-    labels, instructions = load_program(args.input)
+    labels, local_labels, instructions = load_program(args.input)
     words = []
     for lineno, pc, line in instructions:
         try:
-            words.append(assemble_one(line, pc, labels))
+            words.append(assemble_one(line, pc, labels, local_labels))
         except Exception as exc:
             raise SystemExit(f"{args.input}:{lineno}: {exc}") from exc
 

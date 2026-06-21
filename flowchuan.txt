@@ -54,3 +54,21 @@ Sau đó:
 source load_sdram_input.tcl
 Rồi mở:
 nios2-terminal
+
+
+cd C:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN
+python asm_to_hex.py firmware_sha256_ip_timer.S -o firmware.hex
+Copy-Item firmware.hex system\synthesis\submodules\firmware.hex
+
+comple quartus
+
+nios2-terminal
+I3w
+cd C:\Users\dinhkhanhdang\Do_An_Thay_NGUYEN
+Set-Content -NoNewline -Path message.txt -Value "abc"
+python pack_sdram_input.py message.txt -o load_sdram_input.tcl
+
+refresh_connections
+get_service_paths master
+cd {C:/Users/dinhkhanhdang/Do_An_Thay_NGUYEN}
+source load_sdram_input.tcl

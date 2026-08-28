@@ -10,19 +10,19 @@ set_module_property EDITABLE false
 
 add_fileset QUARTUS_SYNTH QUARTUS_SYNTH "" ""
 set_fileset_property QUARTUS_SYNTH TOP_LEVEL riscv_avalon_wrapper
-add_fileset_file rtl_riscv/riscv_avalon_wrapper.sv SYSTEM_VERILOG PATH rtl_riscv/riscv_avalon_wrapper.sv
-add_fileset_file rtl_riscv/adder.sv SYSTEM_VERILOG PATH rtl_riscv/adder.sv
-add_fileset_file rtl_riscv/instruction_memory.sv SYSTEM_VERILOG PATH rtl_riscv/instruction_memory.sv
-add_fileset_file rtl_riscv/control_unit.sv SYSTEM_VERILOG PATH rtl_riscv/control_unit.sv
-add_fileset_file rtl_riscv/imm_gen.sv SYSTEM_VERILOG PATH rtl_riscv/imm_gen.sv
-add_fileset_file rtl_riscv/alu_control.sv SYSTEM_VERILOG PATH rtl_riscv/alu_control.sv
-add_fileset_file rtl_riscv/alu.sv SYSTEM_VERILOG PATH rtl_riscv/alu.sv
-add_fileset_file rtl_riscv/branch_control.sv SYSTEM_VERILOG PATH rtl_riscv/branch_control.sv
-add_fileset_file rtl_riscv/data_memory.sv SYSTEM_VERILOG PATH rtl_riscv/data_memory.sv
-add_fileset_file rtl_riscv/mux.sv SYSTEM_VERILOG PATH rtl_riscv/mux.sv
-add_fileset_file rtl_riscv/pc_register.sv SYSTEM_VERILOG PATH rtl_riscv/pc_register.sv
-add_fileset_file rtl_riscv/register_file.sv SYSTEM_VERILOG PATH rtl_riscv/register_file.sv
-add_fileset_file firmware.hex OTHER PATH firmware.hex
+add_fileset_file riscv_avalon_wrapper.sv SYSTEM_VERILOG PATH riscv_avalon_wrapper.sv
+add_fileset_file adder.sv SYSTEM_VERILOG PATH adder.sv
+add_fileset_file instruction_memory.sv SYSTEM_VERILOG PATH instruction_memory.sv
+add_fileset_file control_unit.sv SYSTEM_VERILOG PATH control_unit.sv
+add_fileset_file imm_gen.sv SYSTEM_VERILOG PATH imm_gen.sv
+add_fileset_file alu_control.sv SYSTEM_VERILOG PATH alu_control.sv
+add_fileset_file alu.sv SYSTEM_VERILOG PATH alu.sv
+add_fileset_file branch_control.sv SYSTEM_VERILOG PATH branch_control.sv
+add_fileset_file data_memory.sv SYSTEM_VERILOG PATH data_memory.sv
+add_fileset_file mux.sv SYSTEM_VERILOG PATH mux.sv
+add_fileset_file pc_register.sv SYSTEM_VERILOG PATH pc_register.sv
+add_fileset_file register_file.sv SYSTEM_VERILOG PATH register_file.sv
+add_fileset_file firmware.hex OTHER PATH ../firmware/firmware.hex
 
 add_interface clock clock end
 add_interface_port clock clk clk Input 1

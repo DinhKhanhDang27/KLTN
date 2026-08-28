@@ -14,6 +14,6 @@ module instruction_memory (
 
     initial begin
 // Dùng dấu gạch chéo xuôi (/) kể cả trên Windows
-$readmemh("firmware.hex", mem);    end
+$readmemh("firmware/firmware.hex", mem);    end
 
 endmodule

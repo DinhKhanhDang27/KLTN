@@ -1,0 +1,50 @@
+        // ==========================================
+        // Generated UVM Sequence for input: "anh ho quan co trong nha
+anh ho quan co trong nha"
+        // Input in hex: 61 6E 68 20 68 6F 20 71 75 61 6E 20 63 6F 20 74 72 6F 6E 67 20 6E 68 61 0A 61 6E 68 20 68 6F 20 71 75 61 6E 20 63 6F 20 74 72 6F 6E 67 20 6E 68 61. Padding added.
+        // Total length: 49 bytes = 392 bits
+        // ==========================================
+
+        logic [31:0] rdata;
+
+        // --- BLOCK 0 ---
+        // Block 0: 616E6820
+        write_reg(5'd0, 32'h616E6820);
+        write_reg(5'd1, 32'h686F2071);
+        write_reg(5'd2, 32'h75616E20);
+        write_reg(5'd3, 32'h636F2074);
+        write_reg(5'd4, 32'h726F6E67);
+        write_reg(5'd5, 32'h206E6861);
+        write_reg(5'd6, 32'h0A616E68);
+        write_reg(5'd7, 32'h20686F20);
+        write_reg(5'd8, 32'h7175616E);
+        write_reg(5'd9, 32'h20636F20);
+        write_reg(5'd10, 32'h74726F6E);
+        write_reg(5'd11, 32'h67206E68);
+        write_reg(5'd12, 32'h61800000);
+        write_reg(5'd13, 32'h00000000);
+        // Block 14: MSB length
+        write_reg(5'd14, 32'h00000000);
+        // Block 15: length in bits = 392 = 0x188
+        write_reg(5'd15, 32'h00000188);
+
+        // Control (init=1, start=1)
+        write_reg(5'd16, 32'h00000003); // bit 0: start, bit 1: init
+
+        // Wait for done
+        do begin
+            read_reg(5'd17, rdata);
+        end while((rdata & 32'h2) == 0); // bit 1 is done/hash_valid
+
+        // Read hash
+        for(int i=18; i<=25; i++) begin
+            read_reg(i[4:0], rdata);
+        end
+
+        // ==========================================
+        // [COPY TO SCOREBOARD] EXPECTED HASH (Golden Model)
+        // ==========================================
+        logic [31:0] expected_hash [8] = '{
+            32'h9d96d33d, 32'h5ab76dab, 32'h477d9a07, 32'h7e57f411,
+            32'h760f12cd, 32'ha36296da, 32'h96194fd3, 32'h537dc020
+        };

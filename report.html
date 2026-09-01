@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quy Trình Đo Chu Kỳ Phần Cứng / Phần Mềm SHA-256</title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; margin: 40px auto; max-width: 900px; padding: 20px; color: #333; }
+        h1 { color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px; }
+        h2 { color: #2980b9; margin-top: 30px; }
+        h3 { color: #16a085; }
+        code { background: #f4f4f4; padding: 2px 5px; border-radius: 4px; font-family: Consolas, monospace; color: #c0392b; }
+        pre { background: #f8f9fa; padding: 15px; border-left: 4px solid #3498db; overflow-x: auto; font-family: Consolas, monospace; }
+        .expected-result { background: #e8f6f3; padding: 10px 15px; border-left: 4px solid #1abc9c; margin: 15px 0; font-style: italic; }
+        .note { background: #fff3cd; padding: 10px 15px; border-left: 4px solid #ffc107; margin: 15px 0; font-size: 0.9em; }
+        ul { margin-bottom: 20px; }
+        hr { border: 0; border-top: 1px solid #eee; margin: 30px 0; }
+    </style>
+</head>
+<body>
+
+    <h1>Hướng Dẫn Chạy Đo Chu Kỳ Phần Cứng / Phần Mềm SHA-256</h1>
+    <p>Dưới đây là hướng dẫn chi tiết từng bước (step-by-step) với chính xác các câu lệnh dựa trên cấu trúc thư mục dự án hiện tại.</p>
+
+    <hr>
+
+    <h2>GIAI ĐOẠN 1: TẠO VÀ ĐÓNG GÓI DỮ LIỆU INPUT</h2>
+    <p>Mở Terminal / PowerShell tại thư mục gốc của dự án (<code>~/Study/KLtN/code</code>).</p>
+
+    <h3>Bước 1: Tạo file text chứa dữ liệu đầu vào</h3>
+    <p>Chạy lệnh sau để ghi chuỗi dữ liệu (ví dụ: "Dinh Khanh Dang") vào file <code>message.txt</code> bên trong thư mục <code>docs/</code>:</p>
+    <pre>echo -n "Dinh Khanh Dang" > docs/message.txt</pre>
+
+    <h3>Bước 2: Chạy script đóng gói dữ liệu thành TCL script</h3>
+    <pre>python scripts/pack_sdram_input.py docs/message.txt -o scripts/load_sdram_input.tcl</pre>
+    <div class="expected-result">
+        <strong>Kết quả mong đợi:</strong> Terminal sẽ in ra thông số độ dài chuỗi và một dòng chứa mã SHA-256 thực tế (PC tính toán). Hãy <strong>copy dòng mã băm này lại</strong> để đối chiếu ở phần cuối.
+    </div>
+
+    <hr>
+
+    <h2>GIAI ĐOẠN 2: ĐO CHU KỲ PHẦN MỀM (SOFTWARE HASHING)</h2>
+
+    <h3>Bước 1: Biên dịch Firmware Mềm</h3>
+    <p>Chạy lệnh sau để chuyển mã Assembly của phần mềm thành file HEX:</p>
+    <pre>python scripts/asm_to_hex.py firmware/firmware_soft_sha256_timer.S -o firmware/firmware.hex</pre>
+    <div class="note">
+        <strong>Lưu ý:</strong> Cấu hình hệ thống Qsys đã được tự động trỏ đến file <code>firmware/firmware.hex</code>, nên bạn không cần phải chạy lệnh copy đè vào hệ thống như quy trình cũ.
+    </div>
+
+    <h3>Bước 2: Compile (Biên dịch) toàn bộ Quartus Project</h3>
+    <p>Bạn mở giao diện Quartus, chọn <strong>Processing -> Start Compilation</strong>.<br>
+    Hoặc nếu chạy trên command line, sử dụng:</p>
+    <pre>quartus_sh --flow compile KLTN_SHA256_RISCV</pre>
+    <div class="expected-result">
+        <strong>Kết quả mong đợi:</strong> Quá trình compile chạy thành công (0 errors), sinh ra file bitstream cấu hình tại <code>output_files/KLTN_SHA256_RISCV.sof</code>.
+    </div>
+
+    <h3>Bước 3: Nạp FPGA</h3>
+    <ul>
+        <li>Bật mạch, cắm cáp USB-Blaster.</li>
+        <li>Mở <strong>Quartus Programmer</strong>, chọn <strong>Hardware Setup</strong> là USB-Blaster.</li>
+        <li>Chọn <strong>Add File</strong> <code>output_files/KLTN_SHA256_RISCV.sof</code>, đánh dấu tick "Program/Configure" rồi bấm <strong>Start</strong>.</li>
+    </ul>
+
+    <h3>Bước 4: Nạp dữ liệu Input xuống SDRAM</h3>
+    <p>Mở phần mềm Nios II Command Shell, sau đó gõ:</p>
+    <pre>system-console</pre>
+    <p>Trong cửa sổ System Console, lần lượt gõ các lệnh sau để trỏ đến thư mục làm việc và nạp script dữ liệu TCL vừa tạo:</p>
+    <pre>refresh_connections
+get_service_paths master
+cd [pwd]  # (Hoặc gõ chính xác đường dẫn: cd {C:/.../code})
+source scripts/load_sdram_input.tcl</pre>
+    <div class="expected-result">
+        <strong>Kết quả mong đợi:</strong> System Console sẽ in ra <code>magic = 0x53484132</code> (báo hiệu dữ liệu đã ghi xuống SDRAM thành công).
+    </div>
+
+    <h3>Bước 5: Xem kết quả băm và chu kỳ phần mềm</h3>
+    <p>Để terminal cũ của Nios qua một bên (hoặc mở cửa sổ Nios II Command Shell mới), chạy lệnh:</p>
+    <pre>nios2-terminal</pre>
+    <div class="expected-result">
+        <strong>Kết quả mong đợi:</strong> Bo mạch in lên màn hình Terminal chuỗi mã SHA-256 giống hệt với mã đã copy ở Giai đoạn 1. Kế bên dưới, nó sẽ in ra <strong>tổng số lượng chu kỳ (Software Cycles)</strong> đã dùng.<br>
+        Tắt terminal này bằng phím <code>Ctrl + C</code>.
+    </div>
+
+    <hr>
+
+    <h2>GIAI ĐOẠN 3: ĐO CHU KỲ PHẦN CỨNG (HARDWARE ACCELERATOR)</h2>
+
+    <h3>Bước 1: Biên dịch Firmware Cứng</h3>
+    <p>Trở lại Terminal gốc của dự án, biên dịch mã Assembly dành riêng cho Hardware IP đè lên file hex cũ:</p>
+    <pre>python scripts/asm_to_hex.py firmware/firmware_sha256_ip_timer.S -o firmware/firmware.hex</pre>
+
+    <h3>Bước 2: Compile lại Quartus Project</h3>
+    <p>Giống như trên, mở Quartus và chọn <strong>Processing -> Start Compilation</strong> (để nó build firmware cứng mới vào bộ nhớ FPGA).</p>
+
+    <h3>Bước 3: Nạp FPGA lần 2</h3>
+    <p>Mở <strong>Quartus Programmer</strong> nạp lại file <code>.sof</code> vừa build đè xuống bo mạch (thao tác y hệt bước 3 của GĐ2). Mạch sẽ bị reset.</p>
+
+    <h3>Bước 4: Nạp lại dữ liệu Input xuống SDRAM</h3>
+    <p>Vì mạch vừa bị reset, dữ liệu ở SDRAM có thể mất đồng bộ. Trở lại cửa sổ System Console (nếu chưa tắt) và chạy lại lệnh nạp:</p>
+    <pre>source scripts/load_sdram_input.tcl</pre>
+
+    <h3>Bước 5: Xem kết quả băm và chu kỳ phần cứng</h3>
+    <p>Mở lại Nios II Command Shell và gõ:</p>
+    <pre>nios2-terminal</pre>
+    <div class="expected-result">
+        <strong>Kết quả mong đợi cuối cùng:</strong> Trên màn hình sẽ xuất hiện đoạn mã SHA-256 hoàn toàn trùng khớp với Giai đoạn 1 và 2. Nhưng lần này, con số <strong>Hardware Cycles</strong> (số chu kỳ phần cứng) được in ra sẽ <strong>nhỏ hơn rất rất nhiều</strong> so với con số ở Giai đoạn 2. Đó chính là minh chứng cho việc IP Hardware tăng tốc việc tính toán!
+    </div>
+
+</body>
+</html>

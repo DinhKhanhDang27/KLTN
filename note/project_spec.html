@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Specification - RISC-V & SHA-256 SoC</title>
+    <style>
+        :root { --primary-color: #101112; --secondary-color: #34495e; --accent-color: #2980b9; --border-color: #e0e6ed; }
+        body { font-family: 'Consolas', 'Courier New', monospace; line-height: 1.5; color: #0e1318; max-width: 900px; margin: 0 auto; padding: 20px; background-color: #f4f7f6; font-size: 14px; }
+        h1 { color: #fff; background-color: var(--primary-color); padding: 15px; border-radius: 4px; text-transform: uppercase; font-size: 20px; letter-spacing: 1px; }
+        h2 { color: var(--accent-color); border-bottom: 2px solid var(--border-color); padding-bottom: 5px; margin-top: 30px; text-transform: uppercase; font-size: 16px; }
+        h3 { color: var(--secondary-color); font-size: 15px; margin-top: 20px; }
+        ul { list-style-type: square; padding-left: 20px; }
+        li { margin-bottom: 6px; }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; background-color: #fff; font-size: 13px; }
+        th, td { border: 1px solid var(--border-color); padding: 10px; text-align: left; }
+        th { background-color: #ecf0f1; color: var(--primary-color); }
+        .note { background-color: #e8f4f8; border-left: 4px solid var(--accent-color); padding: 10px; margin: 10px 0; font-style: italic; }
+        code { font-weight: bold; color: #c0392b; }
+    </style>
+</head>
+<body>
+
+    <h1>SoC System Specification: RISC-V & SHA-256</h1>
+
+    <h2>1. System Overview & Memory Map</h2>
+    <ul>
+        <li><strong>Clock Frequency:</strong> 50 MHz</li>
+        <li><strong>Target FPGA:</strong> Cyclone IV E (EP4CE22F17C6)</li>
+        <li><strong>Bus Architecture:</strong> Avalon Memory-Mapped (Avalon-MM)</li>
+        <li><strong>System Master:</strong> Custom RISC-V Core</li>
+        <li><strong>Debug Master:</strong> JTAG to Avalon Master (Bypasses CPU for direct bus access)</li>
+    </ul>
+
+    <h3>1.1 Global Address Map</h3>
+    <table>
+        <tr>
+            <th>Base Address</th>
+            <th>End Address</th>
+            <th>Module Name</th>
+            <th>Description</th>
+        </tr>
+        <tr>
+            <td><code>0x0000_0000</code></td>
+            <td>Variable</td>
+            <td><strong>SDRAM Controller</strong></td>
+            <td>Main Memory (Data/Heap)</td>
+        </tr>
+        <tr>
+            <td><code>0x0200_0000</code></td>
+            <td><code>0x0200_77FF</code></td>
+            <td><strong>On-Chip RAM</strong></td>
+            <td>30 KB SRAM (Boot Code, Firmware, Stack)</td>
+        </tr>
+        <tr>
+            <td><code>0x0200_8000</code></td>
+            <td><code>0x0200_8067</code></td>
+            <td><strong>SHA-256 IP</strong></td>
+            <td>Hardware Crypto Accelerator</td>
+        </tr>
+        <tr>
+            <td><code>0x0200_8080</code></td>
+            <td><code>0x0200_809F</code></td>
+            <td><strong>Timer</strong></td>
+            <td>1ms System Timer</td>
+        </tr>
+        <tr>
+            <td><code>0x0200_80A0</code></td>
+            <td><code>0x0200_80A7</code></td>
+            <td><strong>JTAG UART</strong></td>
+            <td>Console I/O (printf)</td>
+        </tr>
+    </table>
+
+    <h2>2. RISC-V Core Specification</h2>
+    <ul>
+        <li><strong>Module Wrapper:</strong> <code>riscv_avalon_wrapper</code></li>
+        <li><strong>Bus Role:</strong> Avalon-MM Master</li>
+    </ul>
+
+    <h3>2.1 Datapath & Registers</h3>
+    <ul>
+        <li><strong>Internal Architecture:</strong> 64-bit ALU & Register File</li>
+        <li><strong>Register File:</strong> 32 x 64-bit General Purpose Registers (<code>x0</code> hardwired to 0)</li>
+        <li><strong>Bus Interface:</strong> 32-bit Address & Data Bus (<code>avm_writedata[31:0]</code>, <code>avm_readdata[31:0]</code>)</li>
+        <li><strong>Byte Enable:</strong> Fixed at <code>4'hf</code> (32-bit aligned memory access only)</li>
+    </ul>
+
+    <h3>2.2 Pipeline & Synchronization</h3>
+    <ul>
+        <li><strong>Execution Model:</strong> Multi-cycle FSM (<code>STATE_RUN</code>, <code>STATE_WAIT_READ</code>)</li>
+        <li><strong>Load Operation:</strong> CPU stalls in <code>STATE_WAIT_READ</code> until <code>avm_readdatavalid</code> is asserted</li>
+        <li><strong>Store Operation:</strong> CPU waits on <code>avm_waitrequest</code> assertion</li>
+    </ul>
+
+    <h3>2.3 Instruction Set Architecture (ISA) Support</h3>
+    <ul>
+        <li><strong>R-Type & I-Type:</strong> Standard Arithmetic, Logic, and Shift operations</li>
+        <li><strong>Branch & Jump:</strong> B-Type (Branch), JAL, JALR</li>
+        <li><strong>Memory:</strong> Load/Store instructions via Avalon-MM</li>
+        <li><strong>U-Type:</strong> LUI, AUIPC</li>
+        <li><strong>Custom Extension (Decoded but floating):</strong> <code>sha2rst</code>, <code>sha2push</code>, <code>sha2start</code>, <code>sha2perform</code>, <code>sha2finish</code>, <code>sha2read</code></li>
+    </ul>
+
+    <h2>3. SHA-256 Hardware Accelerator</h2>
+    <ul>
+        <li><strong>Bus Role:</strong> Avalon-MM Slave</li>
+        <li><strong>Read Latency:</strong> 0 Cycles (Combinational Read)</li>
+        <li><strong>Hash Throughput:</strong> ~64 clock cycles per 512-bit block</li>
+    </ul>
+
+    <h3>3.1 Register Map (32-bit Word Aligned)</h3>
+    <table>
+        <tr>
+            <th>Word Addr</th>
+            <th>Offset</th>
+            <th>Access</th>
+            <th>Register Name</th>
+            <th>Bitfield Description</th>
+        </tr>
+        <tr>
+            <td><code>0x00 - 0x0F</code></td>
+            <td><code>0x00 - 0x3C</code></td>
+            <td>R/W</td>
+            <td><strong>DATA_BLOCK</strong></td>
+            <td>
+                - 16-word (512-bit) message block<br>
+                - Big-Endian: Addr <code>0x00</code> = MSB, Addr <code>0x0F</code> = LSB<br>
+                - <em>Note: Software must perform NIST padding before loading</em>
+            </td>
+        </tr>
+        <tr>
+            <td><code>0x10</code></td>
+            <td><code>0x40</code></td>
+            <td>R/W</td>
+            <td><strong>CONTROL</strong></td>
+            <td>
+                - <code>Bit [0] start</code> : Write 1 to trigger hash execution (Auto-clears)<br>
+                - <code>Bit [1] init</code> : Write 1 to initialize NIST IV (First block only)<br>
+                - <code>Bit [2] irq_en</code>: Write 1 to enable hardware interrupt output
+            </td>
+        </tr>
+        <tr>
+            <td><code>0x11</code></td>
+            <td>R/W<br><em>(W-1-to-C)</em></td>
+            <td><strong>STATUS</strong></td>
+            <td>
+                - <code>Bit [0] ready</code> : 1 = Idle/Ready, 0 = Busy computing<br>
+                - <code>Bit [1] hash_valid</code> : 1 = Hash computation complete<br>
+                - <code>Bit [2] irq_pending</code>: 1 = Interrupt pending (Write 1 to clear)
+            </td>
+        </tr>
+        <tr>
+            <td><code>0x12 - 0x19</code></td>
+            <td><code>0x48 - 0x64</code></td>
+            <td>R-Only</td>
+            <td><strong>HASH_OUT</strong></td>
+            <td>
+                - 8-word (256-bit) computed digest<br>
+                - Sequential read from Addr <code>0x12</code> (MSB) to <code>0x19</code> (LSB)
+            </td>
+        </tr>
+    </table>
+
+    <h3>3.2 Operational Protocol (Polling Mode)</h3>
+    <ul>
+        <li><strong>Step 1:</strong> Write 16-word padded block to <code>DATA_BLOCK</code> (<code>0x00 - 0x0F</code>).</li>
+        <li><strong>Step 2:</strong> Write <code>0x3</code> (<code>start=1, init=1</code>) to <code>CONTROL</code> (<code>0x10</code>).</li>
+        <li><strong>Step 3:</strong> Poll <code>STATUS</code> (<code>0x11</code>). Wait until <code>(STATUS & 0x2) != 0</code>.</li>
+        <li><strong>Step 4:</strong> Sequential Read 8 words from <code>HASH_OUT</code> (<code>0x12 - 0x19</code>).</li>
+    </ul>
+    
+    <div class="note">
+        <strong>Interrupt Mode Protocol:</strong> Enable <code>irq_en</code> in CONTROL. Await hardware IRQ assertion. Read HASH_OUT. Write <code>0x4</code> to STATUS to clear <code>irq_pending</code>.
+    </div>
+
+    <h2>4. Suggested Testcases (Coverage Driven)</h2>
+    <p>To achieve 100% Code Coverage (Line, Toggle, and FSM) for the SHA-256 IP, implement the following sequences in your UVM testbench:</p>
+    
+    <table>
+        <tr>
+            <th>Testcase Name</th>
+            <th>Description & Execution</th>
+            <th>Targeted Coverage Logic</th>
+        </tr>
+        <tr>
+            <td><strong>TC01: Multi-Block Hash</strong></td>
+            <td>Hash a string longer than 55 bytes (e.g., 200 bytes). This will force the sequence to chunk the data into multiple 512-bit blocks.</td>
+            <td>Exercises the <code>init = 0</code> logic path in the hardware, ensuring the core successfully re-uses previous <code>h_reg</code> states without resetting NIST constants.</td>
+        </tr>
+        <tr>
+            <td><strong>TC02: Interrupt (IRQ) Mode</strong></td>
+            <td>Write <code>0x7</code> to CONTROL (start=1, init=1, irq_en=1). Do not poll STATUS. Wait for the physical <code>irq</code> pin to assert. Then write <code>0x4</code> to STATUS to clear it.</td>
+            <td>Exercises the <code>irq_enable</code>, <code>irq_pending</code> flip-flops, and the Write-1-to-Clear logic in the Avalon Wrapper.</td>
+        </tr>
+        <tr>
+            <td><strong>TC03: Byte-Enable Write</strong></td>
+            <td>Instead of writing full 32-bit words, write data byte-by-byte or half-word by half-word by controlling the Avalon <code>avm_byteenable</code> signal (e.g., <code>4'b0001</code>, <code>4'b0011</code>).</td>
+            <td>Directly covers the 4 separate <code>if (avs_byteenable[X])</code> branch conditions inside the <code>sha256Wrapper.sv</code> write logic.</td>
+        </tr>
+        <tr>
+            <td><strong>TC04: Zero-Length Edge Case</strong></td>
+            <td>Hash an empty string (Length = 0 bytes). The data block will only contain the <code>0x80</code> byte at Word 0 and the length <code>0x0</code> at Word 15.</td>
+            <td>Verifies algorithm robustness and mathematical correctness against the minimum boundary edge case.</td>
+        </tr>
+    </table>
+
+</body>
+</html>

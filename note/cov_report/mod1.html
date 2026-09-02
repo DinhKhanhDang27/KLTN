@@ -48,7 +48,7 @@
 <td class='moduleSummaryTable'>89.3617</td>
 <td class='moduleSummaryTable'>61.2903</td>
 <td class='moduleSummaryTable'>25</td>
-<td class='moduleSummaryTable'>10.7</td>
+<td class='moduleSummaryTable'>7.71</td>
 <td class='moduleSummaryTable'>1</td>
 <td class='moduleSummaryTable' align='left'>
 <label class = 'moduleLineCovContainer'>
@@ -543,7 +543,7 @@ openFileContent('button_instance1_condcov');">
 <tr class='lineTableHoverGreen'>
 <td class='lineTable'>62</td>
 <td class='lineTable'> <pre class='codegreen'>        if (!reset_n) begin</pre> </td>
-<td class='lineTable'>129</td>
+<td class='lineTable'>131</td>
 <td class='lineTable'>1</td>
 </tr>
 <tr class='lineTableHoverGrey'>
@@ -603,13 +603,13 @@ openFileContent('button_instance1_condcov');">
 <tr class='lineTableHoverGreen'>
 <td class='lineTable'>72</td>
 <td class='lineTable'> <pre class='codegreen'>            start_reg &lt= 1'b0;</pre> </td>
-<td class='lineTable'>126</td>
+<td class='lineTable'>128</td>
 <td class='lineTable'>1</td>
 </tr>
 <tr class='lineTableHoverGreen'>
 <td class='lineTable'>73</td>
 <td class='lineTable'> <pre class='codegreen'>            hash_valid_d &lt= hash_valid;</pre> </td>
-<td class='lineTable'>126</td>
+<td class='lineTable'>128</td>
 <td class='lineTable'>1</td>
 </tr>
 <tr class='lineTableHoverGrey'>
@@ -621,7 +621,7 @@ openFileContent('button_instance1_condcov');">
 <tr class='lineTableHoverGreen'>
 <td class='lineTable'>75</td>
 <td class='lineTable'> <pre class='codegreen'>            if (hash_valid & ~hash_valid_d)</pre> </td>
-<td class='lineTable'>126</td>
+<td class='lineTable'>128</td>
 <td class='lineTable'>1</td>
 </tr>
 <tr class='lineTableHoverGreen'>
@@ -639,37 +639,37 @@ openFileContent('button_instance1_condcov');">
 <tr class='lineTableHoverGreen'>
 <td class='lineTable'>78</td>
 <td class='lineTable'> <pre class='codegreen'>            if (write_en) begin</pre> </td>
-<td class='lineTable'>126</td>
+<td class='lineTable'>128</td>
 <td class='lineTable'>1</td>
 </tr>
 <tr class='lineTableHoverGreen'>
 <td class='lineTable'>79</td>
 <td class='lineTable'> <pre class='codegreen'>                if (avs_address &lt= 5'd15) begin</pre> </td>
-<td class='lineTable'>16</td>
+<td class='lineTable'>17</td>
 <td class='lineTable'>1</td>
 </tr>
 <tr class='lineTableHoverGreen'>
 <td class='lineTable'>80</td>
 <td class='lineTable'> <pre class='codegreen'>                    if (avs_byteenable[0]) data_in_regs[avs_address][7:0]   &lt= avs_writedata[7:0];</pre> </td>
-<td class='lineTable'>30</td>
+<td class='lineTable'>32</td>
 <td class='lineTable'>2</td>
 </tr>
 <tr class='lineTableHoverGreen'>
 <td class='lineTable'>81</td>
 <td class='lineTable'> <pre class='codegreen'>                    if (avs_byteenable[1]) data_in_regs[avs_address][15:8]  &lt= avs_writedata[15:8];</pre> </td>
-<td class='lineTable'>30</td>
+<td class='lineTable'>32</td>
 <td class='lineTable'>2</td>
 </tr>
 <tr class='lineTableHoverGreen'>
 <td class='lineTable'>82</td>
 <td class='lineTable'> <pre class='codegreen'>                    if (avs_byteenable[2]) data_in_regs[avs_address][23:16] &lt= avs_writedata[23:16];</pre> </td>
-<td class='lineTable'>30</td>
+<td class='lineTable'>32</td>
 <td class='lineTable'>2</td>
 </tr>
 <tr class='lineTableHoverGreen'>
 <td class='lineTable'>83</td>
 <td class='lineTable'> <pre class='codegreen'>                    if (avs_byteenable[3]) data_in_regs[avs_address][31:24] &lt= avs_writedata[31:24];</pre> </td>
-<td class='lineTable'>30</td>
+<td class='lineTable'>32</td>
 <td class='lineTable'>2</td>
 </tr>
 <tr class='lineTableHoverGreen'>
@@ -771,13 +771,13 @@ openFileContent('button_instance1_condcov');">
 <tr class='lineTableHoverGreen'>
 <td class='lineTable'>100</td>
 <td class='lineTable'> <pre class='codegreen'>        avs_readdata = 32'd0;</pre> </td>
-<td class='lineTable'>113</td>
+<td class='lineTable'>108</td>
 <td class='lineTable'>1</td>
 </tr>
 <tr class='lineTableHoverGreen'>
 <td class='lineTable'>101</td>
 <td class='lineTable'> <pre class='codegreen'>        if (read_en) begin</pre> </td>
-<td class='lineTable'>113</td>
+<td class='lineTable'>108</td>
 <td class='lineTable'>1</td>
 </tr>
 <tr class='lineTableHoverGreen'>
@@ -1345,8 +1345,8 @@ Branch Coverage Summary for Module : sha256_avalon_wrapper
 <td class='lineTable'>62</td>
 <td class='lineTable'> <pre class='codegreen'>        if (!reset_n) begin</pre>
  <font face='arial' color=orange style='font-size: 12px'><b> Branch 1</b></font></td>
-<td class='lineTable'>129</td>
-<td class='lineTable'>3T 126F </td>
+<td class='lineTable'>131</td>
+<td class='lineTable'>3T 128F </td>
 </tr>
 <tr class='lineTableHoverGrey'>
 <td class='lineTable'>63</td>
@@ -1424,14 +1424,14 @@ Branch Coverage Summary for Module : sha256_avalon_wrapper
 <td class='lineTable'>75</td>
 <td class='lineTable'> <pre class='codegreen'>            if (hash_valid & ~hash_valid_d)</pre>
  <font face='arial' color=orange style='font-size: 12px'><b> Branch 2</b></font></td>
-<td class='lineTable'>126</td>
-<td class='lineTable'>1T 125F </td>
+<td class='lineTable'>128</td>
+<td class='lineTable'>1T 127F </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
 <td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 3</b></font></td>
 <td class='lineTable'> </td>
-<td class='lineTable'> 125</td>
+<td class='lineTable'> 127</td>
 </tr>
 <tr class='lineTableHoverGrey'>
 <td class='lineTable'>76</td>
@@ -1455,7 +1455,7 @@ Branch Coverage Summary for Module : sha256_avalon_wrapper
 <td class='lineTable'> </td>
 <td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 4</b></font></td>
 <td class='lineTable'> </td>
-<td class='lineTable'> 110</td>
+<td class='lineTable'> 111</td>
 </tr>
 <tr class='lineTableHoverGrey'>
 <td class='lineTable'>79</td>
@@ -1467,8 +1467,8 @@ Branch Coverage Summary for Module : sha256_avalon_wrapper
 <td class='lineTable'>80</td>
 <td class='lineTable'> <pre class='codegreen'>                    if (avs_byteenable[0]) data_in_regs[avs_address][7:0]   &lt= avs_writedata[7:0];</pre>
  <font face='arial' color=orange style='font-size: 12px'><b> Branch 5</b></font></td>
-<td class='lineTable'>15</td>
-<td class='lineTable'>15T 0F </td>
+<td class='lineTable'>16</td>
+<td class='lineTable'>16T 0F </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
@@ -1480,8 +1480,8 @@ Branch Coverage Summary for Module : sha256_avalon_wrapper
 <td class='lineTable'>81</td>
 <td class='lineTable'> <pre class='codegreen'>                    if (avs_byteenable[1]) data_in_regs[avs_address][15:8]  &lt= avs_writedata[15:8];</pre>
  <font face='arial' color=orange style='font-size: 12px'><b> Branch 7</b></font></td>
-<td class='lineTable'>15</td>
-<td class='lineTable'>15T 0F </td>
+<td class='lineTable'>16</td>
+<td class='lineTable'>16T 0F </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
@@ -1493,8 +1493,8 @@ Branch Coverage Summary for Module : sha256_avalon_wrapper
 <td class='lineTable'>82</td>
 <td class='lineTable'> <pre class='codegreen'>                    if (avs_byteenable[2]) data_in_regs[avs_address][23:16] &lt= avs_writedata[23:16];</pre>
  <font face='arial' color=orange style='font-size: 12px'><b> Branch 9</b></font></td>
-<td class='lineTable'>15</td>
-<td class='lineTable'>15T 0F </td>
+<td class='lineTable'>16</td>
+<td class='lineTable'>16T 0F </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
@@ -1506,8 +1506,8 @@ Branch Coverage Summary for Module : sha256_avalon_wrapper
 <td class='lineTable'>83</td>
 <td class='lineTable'> <pre class='codegreen'>                    if (avs_byteenable[3]) data_in_regs[avs_address][31:24] &lt= avs_writedata[31:24];</pre>
  <font face='arial' color=orange style='font-size: 12px'><b> Branch 11</b></font></td>
-<td class='lineTable'>15</td>
-<td class='lineTable'>15T 0F </td>
+<td class='lineTable'>16</td>
+<td class='lineTable'>16T 0F </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
@@ -1647,7 +1647,7 @@ Branch Coverage Summary for Module : sha256_avalon_wrapper
 <td class='lineTable'> </td>
 <td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 18</b></font></td>
 <td class='lineTable'> </td>
-<td class='lineTable'> 69</td>
+<td class='lineTable'> 64</td>
 </tr>
 <tr class='lineTableHoverGreen'>
 <td class='lineTable'>102</td>
@@ -1868,7 +1868,7 @@ Condition Coverage Summary for Module : sha256_avalon_wrapper
 <tr class='lineTableHoverGreen'>
 <td class='lineTable'>79</td>
 <td class='lineTable'> <pre class='codegreen'>(avs_address <= 5'b01111)__TRUE</pre> </td>
-<td class='lineTable'>15 </td>
+<td class='lineTable'>16 </td>
 </tr>
 <tr class='lineTableHoverGreen'>
 <td class='lineTable'> </td>
@@ -1985,14 +1985,14 @@ Toggle Coverage Summary for Module : sha256_avalon_wrapper
 <tr>
 <td class='fileScoreTable'> <font size='2'> Total Bits </font> </td>
 <td class='fileScoreTable'> <font size='2'>2710</font> </td>
-<td class='fileScoreTable'> <font size='2'>290</font> </td>
-<td class='fileScoreTable' bgcolor='#FFD2D2'> <font size='2'>10.7</td>
+<td class='fileScoreTable'> <font size='2'>209</font> </td>
+<td class='fileScoreTable' bgcolor='#FF0000'> <font size='2'>7.71</td>
 </tr>
 <tr>
 <td class='fileScoreTable'> <font size='2'> Bits 0->1 </font> </td>
 <td class='fileScoreTable'> <font size='2'>1355</font> </td>
-<td class='fileScoreTable'> <font size='2'>253 </font> </td>
-<td class='fileScoreTable' bgcolor='#FFD2D2'> <font size='2'>18.67</font> </td>
+<td class='fileScoreTable'> <font size='2'>172 </font> </td>
+<td class='fileScoreTable' bgcolor='#FFD2D2'> <font size='2'>12.69</font> </td>
 </tr>
 <tr>
 <td class='fileScoreTable'> <font size='2'> Bits 1->0 </font> </td>
@@ -2035,140 +2035,126 @@ Toggle Coverage Summary for Module : sha256_avalon_wrapper
 <tr class='lineTableHoverRed'>
 <td class='lineTable'>31</td>
 <td class='lineTable'>wire</td>
-<td class='lineTable'> <pre class='codered'>hash_out [1:4]</pre> </td>
+<td class='lineTable'> <pre class='codered'>hash_out [0]</pre> </td>
 <td class='lineTable'> <pre class='codegreen'> 1 </pre> </td>
 <td class='lineTable'> <pre class='codered'> 0 </pre> </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable' style='color:white;opacity:0'>31</td>
 <td class='lineTable' style='color:white;opacity:0'>wire</td>
-<td class='lineTable'> <pre class='codered'>hash_out [7]</pre> </td>
+<td class='lineTable'> <pre class='codered'>hash_out [2:3]</pre> </td>
 <td class='lineTable'> <pre class='codegreen'> 1 </pre> </td>
 <td class='lineTable'> <pre class='codered'> 0 </pre> </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable' style='color:white;opacity:0'>31</td>
 <td class='lineTable' style='color:white;opacity:0'>wire</td>
-<td class='lineTable'> <pre class='codered'>hash_out [9]</pre> </td>
+<td class='lineTable'> <pre class='codered'>hash_out [5]</pre> </td>
 <td class='lineTable'> <pre class='codegreen'> 1 </pre> </td>
 <td class='lineTable'> <pre class='codered'> 0 </pre> </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable' style='color:white;opacity:0'>31</td>
 <td class='lineTable' style='color:white;opacity:0'>wire</td>
-<td class='lineTable'> <pre class='codered'>hash_out [11]</pre> </td>
+<td class='lineTable'> <pre class='codered'>hash_out [7:8]</pre> </td>
 <td class='lineTable'> <pre class='codegreen'> 1 </pre> </td>
 <td class='lineTable'> <pre class='codered'> 0 </pre> </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable' style='color:white;opacity:0'>31</td>
 <td class='lineTable' style='color:white;opacity:0'>wire</td>
-<td class='lineTable'> <pre class='codered'>hash_out [13:14]</pre> </td>
+<td class='lineTable'> <pre class='codered'>hash_out [10]</pre> </td>
 <td class='lineTable'> <pre class='codegreen'> 1 </pre> </td>
 <td class='lineTable'> <pre class='codered'> 0 </pre> </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable' style='color:white;opacity:0'>31</td>
 <td class='lineTable' style='color:white;opacity:0'>wire</td>
-<td class='lineTable'> <pre class='codered'>hash_out [18:19]</pre> </td>
+<td class='lineTable'> <pre class='codered'>hash_out [12]</pre> </td>
 <td class='lineTable'> <pre class='codegreen'> 1 </pre> </td>
 <td class='lineTable'> <pre class='codered'> 0 </pre> </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable' style='color:white;opacity:0'>31</td>
 <td class='lineTable' style='color:white;opacity:0'>wire</td>
-<td class='lineTable'> <pre class='codered'>hash_out [21]</pre> </td>
+<td class='lineTable'> <pre class='codered'>hash_out [25]</pre> </td>
 <td class='lineTable'> <pre class='codegreen'> 1 </pre> </td>
 <td class='lineTable'> <pre class='codered'> 0 </pre> </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable' style='color:white;opacity:0'>31</td>
 <td class='lineTable' style='color:white;opacity:0'>wire</td>
-<td class='lineTable'> <pre class='codered'>hash_out [29]</pre> </td>
+<td class='lineTable'> <pre class='codered'>hash_out [28:32]</pre> </td>
 <td class='lineTable'> <pre class='codegreen'> 1 </pre> </td>
 <td class='lineTable'> <pre class='codered'> 0 </pre> </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable' style='color:white;opacity:0'>31</td>
 <td class='lineTable' style='color:white;opacity:0'>wire</td>
-<td class='lineTable'> <pre class='codered'>hash_out [31]</pre> </td>
+<td class='lineTable'> <pre class='codered'>hash_out [37:38]</pre> </td>
 <td class='lineTable'> <pre class='codegreen'> 1 </pre> </td>
 <td class='lineTable'> <pre class='codered'> 0 </pre> </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable' style='color:white;opacity:0'>31</td>
 <td class='lineTable' style='color:white;opacity:0'>wire</td>
-<td class='lineTable'> <pre class='codered'>hash_out [35:36]</pre> </td>
+<td class='lineTable'> <pre class='codered'>hash_out [40:47]</pre> </td>
 <td class='lineTable'> <pre class='codegreen'> 1 </pre> </td>
 <td class='lineTable'> <pre class='codered'> 0 </pre> </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable' style='color:white;opacity:0'>31</td>
 <td class='lineTable' style='color:white;opacity:0'>wire</td>
-<td class='lineTable'> <pre class='codered'>hash_out [39:41]</pre> </td>
+<td class='lineTable'> <pre class='codered'>hash_out [52]</pre> </td>
 <td class='lineTable'> <pre class='codegreen'> 1 </pre> </td>
 <td class='lineTable'> <pre class='codered'> 0 </pre> </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable' style='color:white;opacity:0'>31</td>
 <td class='lineTable' style='color:white;opacity:0'>wire</td>
-<td class='lineTable'> <pre class='codered'>hash_out [44:47]</pre> </td>
+<td class='lineTable'> <pre class='codered'>hash_out [58]</pre> </td>
 <td class='lineTable'> <pre class='codegreen'> 1 </pre> </td>
 <td class='lineTable'> <pre class='codered'> 0 </pre> </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable' style='color:white;opacity:0'>31</td>
 <td class='lineTable' style='color:white;opacity:0'>wire</td>
-<td class='lineTable'> <pre class='codered'>hash_out [54]</pre> </td>
+<td class='lineTable'> <pre class='codered'>hash_out [60:61]</pre> </td>
 <td class='lineTable'> <pre class='codegreen'> 1 </pre> </td>
 <td class='lineTable'> <pre class='codered'> 0 </pre> </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable' style='color:white;opacity:0'>31</td>
 <td class='lineTable' style='color:white;opacity:0'>wire</td>
-<td class='lineTable'> <pre class='codered'>hash_out [57:59]</pre> </td>
+<td class='lineTable'> <pre class='codered'>hash_out [63]</pre> </td>
 <td class='lineTable'> <pre class='codegreen'> 1 </pre> </td>
 <td class='lineTable'> <pre class='codered'> 0 </pre> </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable' style='color:white;opacity:0'>31</td>
 <td class='lineTable' style='color:white;opacity:0'>wire</td>
-<td class='lineTable'> <pre class='codered'>hash_out [62]</pre> </td>
+<td class='lineTable'> <pre class='codered'>hash_out [66:68]</pre> </td>
 <td class='lineTable'> <pre class='codegreen'> 1 </pre> </td>
 <td class='lineTable'> <pre class='codered'> 0 </pre> </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable' style='color:white;opacity:0'>31</td>
 <td class='lineTable' style='color:white;opacity:0'>wire</td>
-<td class='lineTable'> <pre class='codered'>hash_out [64:66]</pre> </td>
+<td class='lineTable'> <pre class='codered'>hash_out [71]</pre> </td>
 <td class='lineTable'> <pre class='codegreen'> 1 </pre> </td>
 <td class='lineTable'> <pre class='codered'> 0 </pre> </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable' style='color:white;opacity:0'>31</td>
 <td class='lineTable' style='color:white;opacity:0'>wire</td>
-<td class='lineTable'> <pre class='codered'>hash_out [68]</pre> </td>
+<td class='lineTable'> <pre class='codered'>hash_out [73]</pre> </td>
 <td class='lineTable'> <pre class='codegreen'> 1 </pre> </td>
 <td class='lineTable'> <pre class='codered'> 0 </pre> </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable' style='color:white;opacity:0'>31</td>
 <td class='lineTable' style='color:white;opacity:0'>wire</td>
-<td class='lineTable'> <pre class='codered'>hash_out [70:71]</pre> </td>
-<td class='lineTable'> <pre class='codegreen'> 1 </pre> </td>
-<td class='lineTable'> <pre class='codered'> 0 </pre> </td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable' style='color:white;opacity:0'>31</td>
-<td class='lineTable' style='color:white;opacity:0'>wire</td>
-<td class='lineTable'> <pre class='codered'>hash_out [75]</pre> </td>
-<td class='lineTable'> <pre class='codegreen'> 1 </pre> </td>
-<td class='lineTable'> <pre class='codered'> 0 </pre> </td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable' style='color:white;opacity:0'>31</td>
-<td class='lineTable' style='color:white;opacity:0'>wire</td>
-<td class='lineTable'> <pre class='codered'>hash_out [77]</pre> </td>
+<td class='lineTable'> <pre class='codered'>hash_out [75:78]</pre> </td>
 <td class='lineTable'> <pre class='codegreen'> 1 </pre> </td>
 <td class='lineTable'> <pre class='codered'> 0 </pre> </td>
 </tr>
@@ -2182,77 +2168,77 @@ Toggle Coverage Summary for Module : sha256_avalon_wrapper
 <tr class='lineTableHoverRed'>
 <td class='lineTable' style='color:white;opacity:0'>31</td>
 <td class='lineTable' style='color:white;opacity:0'>wire</td>
-<td class='lineTable'> <pre class='codered'>hash_out [90]</pre> </td>
+<td class='lineTable'> <pre class='codered'>hash_out [84]</pre> </td>
 <td class='lineTable'> <pre class='codegreen'> 1 </pre> </td>
 <td class='lineTable'> <pre class='codered'> 0 </pre> </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable' style='color:white;opacity:0'>31</td>
 <td class='lineTable' style='color:white;opacity:0'>wire</td>
-<td class='lineTable'> <pre class='codered'>hash_out [92:95]</pre> </td>
+<td class='lineTable'> <pre class='codered'>hash_out [89:90]</pre> </td>
 <td class='lineTable'> <pre class='codegreen'> 1 </pre> </td>
 <td class='lineTable'> <pre class='codered'> 0 </pre> </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable' style='color:white;opacity:0'>31</td>
 <td class='lineTable' style='color:white;opacity:0'>wire</td>
-<td class='lineTable'> <pre class='codered'>hash_out [102]</pre> </td>
+<td class='lineTable'> <pre class='codered'>hash_out [92]</pre> </td>
 <td class='lineTable'> <pre class='codegreen'> 1 </pre> </td>
 <td class='lineTable'> <pre class='codered'> 0 </pre> </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable' style='color:white;opacity:0'>31</td>
 <td class='lineTable' style='color:white;opacity:0'>wire</td>
-<td class='lineTable'> <pre class='codered'>hash_out [104:107]</pre> </td>
+<td class='lineTable'> <pre class='codered'>hash_out [95:97]</pre> </td>
 <td class='lineTable'> <pre class='codegreen'> 1 </pre> </td>
 <td class='lineTable'> <pre class='codered'> 0 </pre> </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable' style='color:white;opacity:0'>31</td>
 <td class='lineTable' style='color:white;opacity:0'>wire</td>
-<td class='lineTable'> <pre class='codered'>hash_out [109:111]</pre> </td>
+<td class='lineTable'> <pre class='codered'>hash_out [101]</pre> </td>
 <td class='lineTable'> <pre class='codegreen'> 1 </pre> </td>
 <td class='lineTable'> <pre class='codered'> 0 </pre> </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable' style='color:white;opacity:0'>31</td>
 <td class='lineTable' style='color:white;opacity:0'>wire</td>
-<td class='lineTable'> <pre class='codered'>hash_out [116]</pre> </td>
+<td class='lineTable'> <pre class='codered'>hash_out [103:104]</pre> </td>
 <td class='lineTable'> <pre class='codegreen'> 1 </pre> </td>
 <td class='lineTable'> <pre class='codered'> 0 </pre> </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable' style='color:white;opacity:0'>31</td>
 <td class='lineTable' style='color:white;opacity:0'>wire</td>
-<td class='lineTable'> <pre class='codered'>hash_out [118]</pre> </td>
+<td class='lineTable'> <pre class='codered'>hash_out [109:110]</pre> </td>
 <td class='lineTable'> <pre class='codegreen'> 1 </pre> </td>
 <td class='lineTable'> <pre class='codered'> 0 </pre> </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable' style='color:white;opacity:0'>31</td>
 <td class='lineTable' style='color:white;opacity:0'>wire</td>
-<td class='lineTable'> <pre class='codered'>hash_out [121:123]</pre> </td>
+<td class='lineTable'> <pre class='codered'>hash_out [112:113]</pre> </td>
 <td class='lineTable'> <pre class='codegreen'> 1 </pre> </td>
 <td class='lineTable'> <pre class='codered'> 0 </pre> </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable' style='color:white;opacity:0'>31</td>
 <td class='lineTable' style='color:white;opacity:0'>wire</td>
-<td class='lineTable'> <pre class='codered'>hash_out [125:127]</pre> </td>
+<td class='lineTable'> <pre class='codered'>hash_out [124:125]</pre> </td>
 <td class='lineTable'> <pre class='codegreen'> 1 </pre> </td>
 <td class='lineTable'> <pre class='codered'> 0 </pre> </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable' style='color:white;opacity:0'>31</td>
 <td class='lineTable' style='color:white;opacity:0'>wire</td>
-<td class='lineTable'> <pre class='codered'>hash_out [130:131]</pre> </td>
+<td class='lineTable'> <pre class='codered'>hash_out [127:129]</pre> </td>
 <td class='lineTable'> <pre class='codegreen'> 1 </pre> </td>
 <td class='lineTable'> <pre class='codered'> 0 </pre> </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable' style='color:white;opacity:0'>31</td>
 <td class='lineTable' style='color:white;opacity:0'>wire</td>
-<td class='lineTable'> <pre class='codered'>hash_out [135]</pre> </td>
+<td class='lineTable'> <pre class='codered'>hash_out [133]</pre> </td>
 <td class='lineTable'> <pre class='codegreen'> 1 </pre> </td>
 <td class='lineTable'> <pre class='codered'> 0 </pre> </td>
 </tr>
@@ -2266,28 +2252,35 @@ Toggle Coverage Summary for Module : sha256_avalon_wrapper
 <tr class='lineTableHoverRed'>
 <td class='lineTable' style='color:white;opacity:0'>31</td>
 <td class='lineTable' style='color:white;opacity:0'>wire</td>
-<td class='lineTable'> <pre class='codered'>hash_out [141:143]</pre> </td>
+<td class='lineTable'> <pre class='codered'>hash_out [141]</pre> </td>
 <td class='lineTable'> <pre class='codegreen'> 1 </pre> </td>
 <td class='lineTable'> <pre class='codered'> 0 </pre> </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable' style='color:white;opacity:0'>31</td>
 <td class='lineTable' style='color:white;opacity:0'>wire</td>
-<td class='lineTable'> <pre class='codered'>hash_out [145]</pre> </td>
+<td class='lineTable'> <pre class='codered'>hash_out [145:147]</pre> </td>
 <td class='lineTable'> <pre class='codegreen'> 1 </pre> </td>
 <td class='lineTable'> <pre class='codered'> 0 </pre> </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable' style='color:white;opacity:0'>31</td>
 <td class='lineTable' style='color:white;opacity:0'>wire</td>
-<td class='lineTable'> <pre class='codered'>hash_out [150:152]</pre> </td>
+<td class='lineTable'> <pre class='codered'>hash_out [149]</pre> </td>
 <td class='lineTable'> <pre class='codegreen'> 1 </pre> </td>
 <td class='lineTable'> <pre class='codered'> 0 </pre> </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable' style='color:white;opacity:0'>31</td>
 <td class='lineTable' style='color:white;opacity:0'>wire</td>
-<td class='lineTable'> <pre class='codered'>hash_out [154]</pre> </td>
+<td class='lineTable'> <pre class='codered'>hash_out [151:152]</pre> </td>
+<td class='lineTable'> <pre class='codegreen'> 1 </pre> </td>
+<td class='lineTable'> <pre class='codered'> 0 </pre> </td>
+</tr>
+<tr class='lineTableHoverRed'>
+<td class='lineTable' style='color:white;opacity:0'>31</td>
+<td class='lineTable' style='color:white;opacity:0'>wire</td>
+<td class='lineTable'> <pre class='codered'>hash_out [154:156]</pre> </td>
 <td class='lineTable'> <pre class='codegreen'> 1 </pre> </td>
 <td class='lineTable'> <pre class='codered'> 0 </pre> </td>
 </tr>
@@ -2301,56 +2294,63 @@ Toggle Coverage Summary for Module : sha256_avalon_wrapper
 <tr class='lineTableHoverRed'>
 <td class='lineTable' style='color:white;opacity:0'>31</td>
 <td class='lineTable' style='color:white;opacity:0'>wire</td>
-<td class='lineTable'> <pre class='codered'>hash_out [161]</pre> </td>
+<td class='lineTable'> <pre class='codered'>hash_out [161:164]</pre> </td>
 <td class='lineTable'> <pre class='codegreen'> 1 </pre> </td>
 <td class='lineTable'> <pre class='codered'> 0 </pre> </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable' style='color:white;opacity:0'>31</td>
 <td class='lineTable' style='color:white;opacity:0'>wire</td>
-<td class='lineTable'> <pre class='codered'>hash_out [164]</pre> </td>
+<td class='lineTable'> <pre class='codered'>hash_out [166:167]</pre> </td>
 <td class='lineTable'> <pre class='codegreen'> 1 </pre> </td>
 <td class='lineTable'> <pre class='codered'> 0 </pre> </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable' style='color:white;opacity:0'>31</td>
 <td class='lineTable' style='color:white;opacity:0'>wire</td>
-<td class='lineTable'> <pre class='codered'>hash_out [169]</pre> </td>
+<td class='lineTable'> <pre class='codered'>hash_out [174]</pre> </td>
 <td class='lineTable'> <pre class='codegreen'> 1 </pre> </td>
 <td class='lineTable'> <pre class='codered'> 0 </pre> </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable' style='color:white;opacity:0'>31</td>
 <td class='lineTable' style='color:white;opacity:0'>wire</td>
-<td class='lineTable'> <pre class='codered'>hash_out [178]</pre> </td>
+<td class='lineTable'> <pre class='codered'>hash_out [176]</pre> </td>
 <td class='lineTable'> <pre class='codegreen'> 1 </pre> </td>
 <td class='lineTable'> <pre class='codered'> 0 </pre> </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable' style='color:white;opacity:0'>31</td>
 <td class='lineTable' style='color:white;opacity:0'>wire</td>
-<td class='lineTable'> <pre class='codered'>hash_out [182:183]</pre> </td>
+<td class='lineTable'> <pre class='codered'>hash_out [182]</pre> </td>
 <td class='lineTable'> <pre class='codegreen'> 1 </pre> </td>
 <td class='lineTable'> <pre class='codered'> 0 </pre> </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable' style='color:white;opacity:0'>31</td>
 <td class='lineTable' style='color:white;opacity:0'>wire</td>
-<td class='lineTable'> <pre class='codered'>hash_out [185:189]</pre> </td>
+<td class='lineTable'> <pre class='codered'>hash_out [184]</pre> </td>
 <td class='lineTable'> <pre class='codegreen'> 1 </pre> </td>
 <td class='lineTable'> <pre class='codered'> 0 </pre> </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable' style='color:white;opacity:0'>31</td>
 <td class='lineTable' style='color:white;opacity:0'>wire</td>
-<td class='lineTable'> <pre class='codered'>hash_out [192]</pre> </td>
+<td class='lineTable'> <pre class='codered'>hash_out [190]</pre> </td>
 <td class='lineTable'> <pre class='codegreen'> 1 </pre> </td>
 <td class='lineTable'> <pre class='codered'> 0 </pre> </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable' style='color:white;opacity:0'>31</td>
 <td class='lineTable' style='color:white;opacity:0'>wire</td>
-<td class='lineTable'> <pre class='codered'>hash_out [194:195]</pre> </td>
+<td class='lineTable'> <pre class='codered'>hash_out [193]</pre> </td>
+<td class='lineTable'> <pre class='codegreen'> 1 </pre> </td>
+<td class='lineTable'> <pre class='codered'> 0 </pre> </td>
+</tr>
+<tr class='lineTableHoverRed'>
+<td class='lineTable' style='color:white;opacity:0'>31</td>
+<td class='lineTable' style='color:white;opacity:0'>wire</td>
+<td class='lineTable'> <pre class='codered'>hash_out [195]</pre> </td>
 <td class='lineTable'> <pre class='codegreen'> 1 </pre> </td>
 <td class='lineTable'> <pre class='codered'> 0 </pre> </td>
 </tr>
@@ -2371,84 +2371,42 @@ Toggle Coverage Summary for Module : sha256_avalon_wrapper
 <tr class='lineTableHoverRed'>
 <td class='lineTable' style='color:white;opacity:0'>31</td>
 <td class='lineTable' style='color:white;opacity:0'>wire</td>
-<td class='lineTable'> <pre class='codered'>hash_out [211]</pre> </td>
+<td class='lineTable'> <pre class='codered'>hash_out [216:219]</pre> </td>
 <td class='lineTable'> <pre class='codegreen'> 1 </pre> </td>
 <td class='lineTable'> <pre class='codered'> 0 </pre> </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable' style='color:white;opacity:0'>31</td>
 <td class='lineTable' style='color:white;opacity:0'>wire</td>
-<td class='lineTable'> <pre class='codered'>hash_out [213:214]</pre> </td>
+<td class='lineTable'> <pre class='codered'>hash_out [223:229]</pre> </td>
 <td class='lineTable'> <pre class='codegreen'> 1 </pre> </td>
 <td class='lineTable'> <pre class='codered'> 0 </pre> </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable' style='color:white;opacity:0'>31</td>
 <td class='lineTable' style='color:white;opacity:0'>wire</td>
-<td class='lineTable'> <pre class='codered'>hash_out [216]</pre> </td>
+<td class='lineTable'> <pre class='codered'>hash_out [231]</pre> </td>
 <td class='lineTable'> <pre class='codegreen'> 1 </pre> </td>
 <td class='lineTable'> <pre class='codered'> 0 </pre> </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable' style='color:white;opacity:0'>31</td>
 <td class='lineTable' style='color:white;opacity:0'>wire</td>
-<td class='lineTable'> <pre class='codered'>hash_out [218]</pre> </td>
+<td class='lineTable'> <pre class='codered'>hash_out [233:234]</pre> </td>
 <td class='lineTable'> <pre class='codegreen'> 1 </pre> </td>
 <td class='lineTable'> <pre class='codered'> 0 </pre> </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable' style='color:white;opacity:0'>31</td>
 <td class='lineTable' style='color:white;opacity:0'>wire</td>
-<td class='lineTable'> <pre class='codered'>hash_out [220]</pre> </td>
+<td class='lineTable'> <pre class='codered'>hash_out [236]</pre> </td>
 <td class='lineTable'> <pre class='codegreen'> 1 </pre> </td>
 <td class='lineTable'> <pre class='codered'> 0 </pre> </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable' style='color:white;opacity:0'>31</td>
 <td class='lineTable' style='color:white;opacity:0'>wire</td>
-<td class='lineTable'> <pre class='codered'>hash_out [222:225]</pre> </td>
-<td class='lineTable'> <pre class='codegreen'> 1 </pre> </td>
-<td class='lineTable'> <pre class='codered'> 0 </pre> </td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable' style='color:white;opacity:0'>31</td>
-<td class='lineTable' style='color:white;opacity:0'>wire</td>
-<td class='lineTable'> <pre class='codered'>hash_out [227:229]</pre> </td>
-<td class='lineTable'> <pre class='codegreen'> 1 </pre> </td>
-<td class='lineTable'> <pre class='codered'> 0 </pre> </td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable' style='color:white;opacity:0'>31</td>
-<td class='lineTable' style='color:white;opacity:0'>wire</td>
-<td class='lineTable'> <pre class='codered'>hash_out [231:234]</pre> </td>
-<td class='lineTable'> <pre class='codegreen'> 1 </pre> </td>
-<td class='lineTable'> <pre class='codered'> 0 </pre> </td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable' style='color:white;opacity:0'>31</td>
-<td class='lineTable' style='color:white;opacity:0'>wire</td>
-<td class='lineTable'> <pre class='codered'>hash_out [237:238]</pre> </td>
-<td class='lineTable'> <pre class='codegreen'> 1 </pre> </td>
-<td class='lineTable'> <pre class='codered'> 0 </pre> </td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable' style='color:white;opacity:0'>31</td>
-<td class='lineTable' style='color:white;opacity:0'>wire</td>
-<td class='lineTable'> <pre class='codered'>hash_out [240]</pre> </td>
-<td class='lineTable'> <pre class='codegreen'> 1 </pre> </td>
-<td class='lineTable'> <pre class='codered'> 0 </pre> </td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable' style='color:white;opacity:0'>31</td>
-<td class='lineTable' style='color:white;opacity:0'>wire</td>
-<td class='lineTable'> <pre class='codered'>hash_out [243:244]</pre> </td>
-<td class='lineTable'> <pre class='codegreen'> 1 </pre> </td>
-<td class='lineTable'> <pre class='codered'> 0 </pre> </td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable' style='color:white;opacity:0'>31</td>
-<td class='lineTable' style='color:white;opacity:0'>wire</td>
-<td class='lineTable'> <pre class='codered'>hash_out [246:247]</pre> </td>
+<td class='lineTable'> <pre class='codered'>hash_out [243:246]</pre> </td>
 <td class='lineTable'> <pre class='codegreen'> 1 </pre> </td>
 <td class='lineTable'> <pre class='codered'> 0 </pre> </td>
 </tr>
@@ -2462,7 +2420,7 @@ Toggle Coverage Summary for Module : sha256_avalon_wrapper
 <tr class='lineTableHoverRed'>
 <td class='lineTable' style='color:white;opacity:0'>31</td>
 <td class='lineTable' style='color:white;opacity:0'>wire</td>
-<td class='lineTable'> <pre class='codered'>hash_out [253]</pre> </td>
+<td class='lineTable'> <pre class='codered'>hash_out [251:253]</pre> </td>
 <td class='lineTable'> <pre class='codegreen'> 1 </pre> </td>
 <td class='lineTable'> <pre class='codered'> 0 </pre> </td>
 </tr>
@@ -2518,287 +2476,14 @@ Toggle Coverage Summary for Module : sha256_avalon_wrapper
 <tr class='lineTableHoverRed'>
 <td class='lineTable'>23</td>
 <td class='lineTable'>reg</td>
-<td class='lineTable'> <pre class='codered'>data_in_regs [15] [6:7]</pre> </td>
+<td class='lineTable'> <pre class='codered'>data_in_regs [15] [3:4]</pre> </td>
 <td class='lineTable'> <pre class='codegreen'> 1 </pre> </td>
 <td class='lineTable'> <pre class='codered'> 0 </pre> </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable' style='color:white;opacity:0'>23</td>
 <td class='lineTable' style='color:white;opacity:0'>reg</td>
-<td class='lineTable'> <pre class='codered'>data_in_regs [6] [31]</pre> </td>
-<td class='lineTable'> <pre class='codegreen'> 1 </pre> </td>
-<td class='lineTable'> <pre class='codered'> 0 </pre> </td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable' style='color:white;opacity:0'>23</td>
-<td class='lineTable' style='color:white;opacity:0'>reg</td>
-<td class='lineTable'> <pre class='codered'>data_in_regs [5] [0]</pre> </td>
-<td class='lineTable'> <pre class='codegreen'> 1 </pre> </td>
-<td class='lineTable'> <pre class='codered'> 0 </pre> </td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable' style='color:white;opacity:0'>23</td>
-<td class='lineTable' style='color:white;opacity:0'>reg</td>
-<td class='lineTable'> <pre class='codered'>data_in_regs [5] [5:6]</pre> </td>
-<td class='lineTable'> <pre class='codegreen'> 1 </pre> </td>
-<td class='lineTable'> <pre class='codered'> 0 </pre> </td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable' style='color:white;opacity:0'>23</td>
-<td class='lineTable' style='color:white;opacity:0'>reg</td>
-<td class='lineTable'> <pre class='codered'>data_in_regs [5] [11]</pre> </td>
-<td class='lineTable'> <pre class='codegreen'> 1 </pre> </td>
-<td class='lineTable'> <pre class='codered'> 0 </pre> </td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable' style='color:white;opacity:0'>23</td>
-<td class='lineTable' style='color:white;opacity:0'>reg</td>
-<td class='lineTable'> <pre class='codered'>data_in_regs [5] [13:14]</pre> </td>
-<td class='lineTable'> <pre class='codegreen'> 1 </pre> </td>
-<td class='lineTable'> <pre class='codered'> 0 </pre> </td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable' style='color:white;opacity:0'>23</td>
-<td class='lineTable' style='color:white;opacity:0'>reg</td>
-<td class='lineTable'> <pre class='codered'>data_in_regs [5] [17:19]</pre> </td>
-<td class='lineTable'> <pre class='codegreen'> 1 </pre> </td>
-<td class='lineTable'> <pre class='codered'> 0 </pre> </td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable' style='color:white;opacity:0'>23</td>
-<td class='lineTable' style='color:white;opacity:0'>reg</td>
-<td class='lineTable'> <pre class='codered'>data_in_regs [5] [21:22]</pre> </td>
-<td class='lineTable'> <pre class='codegreen'> 1 </pre> </td>
-<td class='lineTable'> <pre class='codered'> 0 </pre> </td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable' style='color:white;opacity:0'>23</td>
-<td class='lineTable' style='color:white;opacity:0'>reg</td>
-<td class='lineTable'> <pre class='codered'>data_in_regs [5] [29]</pre> </td>
-<td class='lineTable'> <pre class='codegreen'> 1 </pre> </td>
-<td class='lineTable'> <pre class='codered'> 0 </pre> </td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable' style='color:white;opacity:0'>23</td>
-<td class='lineTable' style='color:white;opacity:0'>reg</td>
-<td class='lineTable'> <pre class='codered'>data_in_regs [4] [0:2]</pre> </td>
-<td class='lineTable'> <pre class='codegreen'> 1 </pre> </td>
-<td class='lineTable'> <pre class='codered'> 0 </pre> </td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable' style='color:white;opacity:0'>23</td>
-<td class='lineTable' style='color:white;opacity:0'>reg</td>
-<td class='lineTable'> <pre class='codered'>data_in_regs [4] [5:6]</pre> </td>
-<td class='lineTable'> <pre class='codegreen'> 1 </pre> </td>
-<td class='lineTable'> <pre class='codered'> 0 </pre> </td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable' style='color:white;opacity:0'>23</td>
-<td class='lineTable' style='color:white;opacity:0'>reg</td>
-<td class='lineTable'> <pre class='codered'>data_in_regs [4] [9:11]</pre> </td>
-<td class='lineTable'> <pre class='codegreen'> 1 </pre> </td>
-<td class='lineTable'> <pre class='codered'> 0 </pre> </td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable' style='color:white;opacity:0'>23</td>
-<td class='lineTable' style='color:white;opacity:0'>reg</td>
-<td class='lineTable'> <pre class='codered'>data_in_regs [4] [13:14]</pre> </td>
-<td class='lineTable'> <pre class='codegreen'> 1 </pre> </td>
-<td class='lineTable'> <pre class='codered'> 0 </pre> </td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable' style='color:white;opacity:0'>23</td>
-<td class='lineTable' style='color:white;opacity:0'>reg</td>
-<td class='lineTable'> <pre class='codered'>data_in_regs [4] [16:19]</pre> </td>
-<td class='lineTable'> <pre class='codegreen'> 1 </pre> </td>
-<td class='lineTable'> <pre class='codered'> 0 </pre> </td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable' style='color:white;opacity:0'>23</td>
-<td class='lineTable' style='color:white;opacity:0'>reg</td>
-<td class='lineTable'> <pre class='codered'>data_in_regs [4] [21:22]</pre> </td>
-<td class='lineTable'> <pre class='codegreen'> 1 </pre> </td>
-<td class='lineTable'> <pre class='codered'> 0 </pre> </td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable' style='color:white;opacity:0'>23</td>
-<td class='lineTable' style='color:white;opacity:0'>reg</td>
-<td class='lineTable'> <pre class='codered'>data_in_regs [4] [25]</pre> </td>
-<td class='lineTable'> <pre class='codegreen'> 1 </pre> </td>
-<td class='lineTable'> <pre class='codered'> 0 </pre> </td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable' style='color:white;opacity:0'>23</td>
-<td class='lineTable' style='color:white;opacity:0'>reg</td>
-<td class='lineTable'> <pre class='codered'>data_in_regs [4] [28:30]</pre> </td>
-<td class='lineTable'> <pre class='codegreen'> 1 </pre> </td>
-<td class='lineTable'> <pre class='codered'> 0 </pre> </td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable' style='color:white;opacity:0'>23</td>
-<td class='lineTable' style='color:white;opacity:0'>reg</td>
-<td class='lineTable'> <pre class='codered'>data_in_regs [3] [2]</pre> </td>
-<td class='lineTable'> <pre class='codegreen'> 1 </pre> </td>
-<td class='lineTable'> <pre class='codered'> 0 </pre> </td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable' style='color:white;opacity:0'>23</td>
-<td class='lineTable' style='color:white;opacity:0'>reg</td>
-<td class='lineTable'> <pre class='codered'>data_in_regs [3] [4:6]</pre> </td>
-<td class='lineTable'> <pre class='codegreen'> 1 </pre> </td>
-<td class='lineTable'> <pre class='codered'> 0 </pre> </td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable' style='color:white;opacity:0'>23</td>
-<td class='lineTable' style='color:white;opacity:0'>reg</td>
-<td class='lineTable'> <pre class='codered'>data_in_regs [3] [13]</pre> </td>
-<td class='lineTable'> <pre class='codegreen'> 1 </pre> </td>
-<td class='lineTable'> <pre class='codered'> 0 </pre> </td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable' style='color:white;opacity:0'>23</td>
-<td class='lineTable' style='color:white;opacity:0'>reg</td>
-<td class='lineTable'> <pre class='codered'>data_in_regs [3] [16:19]</pre> </td>
-<td class='lineTable'> <pre class='codegreen'> 1 </pre> </td>
-<td class='lineTable'> <pre class='codered'> 0 </pre> </td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable' style='color:white;opacity:0'>23</td>
-<td class='lineTable' style='color:white;opacity:0'>reg</td>
-<td class='lineTable'> <pre class='codered'>data_in_regs [3] [21:22]</pre> </td>
-<td class='lineTable'> <pre class='codegreen'> 1 </pre> </td>
-<td class='lineTable'> <pre class='codered'> 0 </pre> </td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable' style='color:white;opacity:0'>23</td>
-<td class='lineTable' style='color:white;opacity:0'>reg</td>
-<td class='lineTable'> <pre class='codered'>data_in_regs [3] [24:25]</pre> </td>
-<td class='lineTable'> <pre class='codegreen'> 1 </pre> </td>
-<td class='lineTable'> <pre class='codered'> 0 </pre> </td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable' style='color:white;opacity:0'>23</td>
-<td class='lineTable' style='color:white;opacity:0'>reg</td>
-<td class='lineTable'> <pre class='codered'>data_in_regs [3] [29:30]</pre> </td>
-<td class='lineTable'> <pre class='codegreen'> 1 </pre> </td>
-<td class='lineTable'> <pre class='codered'> 0 </pre> </td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable' style='color:white;opacity:0'>23</td>
-<td class='lineTable' style='color:white;opacity:0'>reg</td>
-<td class='lineTable'> <pre class='codered'>data_in_regs [2] [5]</pre> </td>
-<td class='lineTable'> <pre class='codegreen'> 1 </pre> </td>
-<td class='lineTable'> <pre class='codered'> 0 </pre> </td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable' style='color:white;opacity:0'>23</td>
-<td class='lineTable' style='color:white;opacity:0'>reg</td>
-<td class='lineTable'> <pre class='codered'>data_in_regs [2] [9:11]</pre> </td>
-<td class='lineTable'> <pre class='codegreen'> 1 </pre> </td>
-<td class='lineTable'> <pre class='codered'> 0 </pre> </td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable' style='color:white;opacity:0'>23</td>
-<td class='lineTable' style='color:white;opacity:0'>reg</td>
-<td class='lineTable'> <pre class='codered'>data_in_regs [2] [13:14]</pre> </td>
-<td class='lineTable'> <pre class='codegreen'> 1 </pre> </td>
-<td class='lineTable'> <pre class='codered'> 0 </pre> </td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable' style='color:white;opacity:0'>23</td>
-<td class='lineTable' style='color:white;opacity:0'>reg</td>
-<td class='lineTable'> <pre class='codered'>data_in_regs [2] [16]</pre> </td>
-<td class='lineTable'> <pre class='codegreen'> 1 </pre> </td>
-<td class='lineTable'> <pre class='codered'> 0 </pre> </td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable' style='color:white;opacity:0'>23</td>
-<td class='lineTable' style='color:white;opacity:0'>reg</td>
-<td class='lineTable'> <pre class='codered'>data_in_regs [2] [21:22]</pre> </td>
-<td class='lineTable'> <pre class='codegreen'> 1 </pre> </td>
-<td class='lineTable'> <pre class='codered'> 0 </pre> </td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable' style='color:white;opacity:0'>23</td>
-<td class='lineTable' style='color:white;opacity:0'>reg</td>
-<td class='lineTable'> <pre class='codered'>data_in_regs [2] [24]</pre> </td>
-<td class='lineTable'> <pre class='codegreen'> 1 </pre> </td>
-<td class='lineTable'> <pre class='codered'> 0 </pre> </td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable' style='color:white;opacity:0'>23</td>
-<td class='lineTable' style='color:white;opacity:0'>reg</td>
-<td class='lineTable'> <pre class='codered'>data_in_regs [2] [26]</pre> </td>
-<td class='lineTable'> <pre class='codegreen'> 1 </pre> </td>
-<td class='lineTable'> <pre class='codered'> 0 </pre> </td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable' style='color:white;opacity:0'>23</td>
-<td class='lineTable' style='color:white;opacity:0'>reg</td>
-<td class='lineTable'> <pre class='codered'>data_in_regs [2] [28:30]</pre> </td>
-<td class='lineTable'> <pre class='codegreen'> 1 </pre> </td>
-<td class='lineTable'> <pre class='codered'> 0 </pre> </td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable' style='color:white;opacity:0'>23</td>
-<td class='lineTable' style='color:white;opacity:0'>reg</td>
-<td class='lineTable'> <pre class='codered'>data_in_regs [1] [0]</pre> </td>
-<td class='lineTable'> <pre class='codegreen'> 1 </pre> </td>
-<td class='lineTable'> <pre class='codered'> 0 </pre> </td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable' style='color:white;opacity:0'>23</td>
-<td class='lineTable' style='color:white;opacity:0'>reg</td>
-<td class='lineTable'> <pre class='codered'>data_in_regs [1] [4:6]</pre> </td>
-<td class='lineTable'> <pre class='codegreen'> 1 </pre> </td>
-<td class='lineTable'> <pre class='codered'> 0 </pre> </td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable' style='color:white;opacity:0'>23</td>
-<td class='lineTable' style='color:white;opacity:0'>reg</td>
-<td class='lineTable'> <pre class='codered'>data_in_regs [1] [13]</pre> </td>
-<td class='lineTable'> <pre class='codegreen'> 1 </pre> </td>
-<td class='lineTable'> <pre class='codered'> 0 </pre> </td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable' style='color:white;opacity:0'>23</td>
-<td class='lineTable' style='color:white;opacity:0'>reg</td>
-<td class='lineTable'> <pre class='codered'>data_in_regs [1] [16:19]</pre> </td>
-<td class='lineTable'> <pre class='codegreen'> 1 </pre> </td>
-<td class='lineTable'> <pre class='codered'> 0 </pre> </td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable' style='color:white;opacity:0'>23</td>
-<td class='lineTable' style='color:white;opacity:0'>reg</td>
-<td class='lineTable'> <pre class='codered'>data_in_regs [1] [21:22]</pre> </td>
-<td class='lineTable'> <pre class='codegreen'> 1 </pre> </td>
-<td class='lineTable'> <pre class='codered'> 0 </pre> </td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable' style='color:white;opacity:0'>23</td>
-<td class='lineTable' style='color:white;opacity:0'>reg</td>
-<td class='lineTable'> <pre class='codered'>data_in_regs [1] [27]</pre> </td>
-<td class='lineTable'> <pre class='codegreen'> 1 </pre> </td>
-<td class='lineTable'> <pre class='codered'> 0 </pre> </td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable' style='color:white;opacity:0'>23</td>
-<td class='lineTable' style='color:white;opacity:0'>reg</td>
-<td class='lineTable'> <pre class='codered'>data_in_regs [1] [29:30]</pre> </td>
-<td class='lineTable'> <pre class='codegreen'> 1 </pre> </td>
-<td class='lineTable'> <pre class='codered'> 0 </pre> </td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable' style='color:white;opacity:0'>23</td>
-<td class='lineTable' style='color:white;opacity:0'>reg</td>
-<td class='lineTable'> <pre class='codered'>data_in_regs [0] [5]</pre> </td>
-<td class='lineTable'> <pre class='codegreen'> 1 </pre> </td>
-<td class='lineTable'> <pre class='codered'> 0 </pre> </td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable' style='color:white;opacity:0'>23</td>
-<td class='lineTable' style='color:white;opacity:0'>reg</td>
-<td class='lineTable'> <pre class='codered'>data_in_regs [0] [11]</pre> </td>
+<td class='lineTable'> <pre class='codered'>data_in_regs [0] [7:9]</pre> </td>
 <td class='lineTable'> <pre class='codegreen'> 1 </pre> </td>
 <td class='lineTable'> <pre class='codered'> 0 </pre> </td>
 </tr>
@@ -2812,7 +2497,7 @@ Toggle Coverage Summary for Module : sha256_avalon_wrapper
 <tr class='lineTableHoverRed'>
 <td class='lineTable' style='color:white;opacity:0'>23</td>
 <td class='lineTable' style='color:white;opacity:0'>reg</td>
-<td class='lineTable'> <pre class='codered'>data_in_regs [0] [17:19]</pre> </td>
+<td class='lineTable'> <pre class='codered'>data_in_regs [0] [17]</pre> </td>
 <td class='lineTable'> <pre class='codegreen'> 1 </pre> </td>
 <td class='lineTable'> <pre class='codered'> 0 </pre> </td>
 </tr>
@@ -3303,7 +2988,7 @@ Toggle Coverage Summary for Module : sha256_avalon_wrapper
 <tr class='lineTableHoverGreen'>
 <td class='lineTable'>62</td>
 <td class='lineTable'> <pre class='codegreen'>        if (!reset_n) begin</pre> </td>
-<td class='lineTable'>129</td>
+<td class='lineTable'>131</td>
 <td class='lineTable'>1</td>
 </tr>
 <tr class='lineTableHoverGrey'>
@@ -3363,13 +3048,13 @@ Toggle Coverage Summary for Module : sha256_avalon_wrapper
 <tr class='lineTableHoverGreen'>
 <td class='lineTable'>72</td>
 <td class='lineTable'> <pre class='codegreen'>            start_reg &lt= 1'b0;</pre> </td>
-<td class='lineTable'>126</td>
+<td class='lineTable'>128</td>
 <td class='lineTable'>1</td>
 </tr>
 <tr class='lineTableHoverGreen'>
 <td class='lineTable'>73</td>
 <td class='lineTable'> <pre class='codegreen'>            hash_valid_d &lt= hash_valid;</pre> </td>
-<td class='lineTable'>126</td>
+<td class='lineTable'>128</td>
 <td class='lineTable'>1</td>
 </tr>
 <tr class='lineTableHoverGrey'>
@@ -3381,7 +3066,7 @@ Toggle Coverage Summary for Module : sha256_avalon_wrapper
 <tr class='lineTableHoverGreen'>
 <td class='lineTable'>75</td>
 <td class='lineTable'> <pre class='codegreen'>            if (hash_valid & ~hash_valid_d)</pre> </td>
-<td class='lineTable'>126</td>
+<td class='lineTable'>128</td>
 <td class='lineTable'>1</td>
 </tr>
 <tr class='lineTableHoverGreen'>
@@ -3399,37 +3084,37 @@ Toggle Coverage Summary for Module : sha256_avalon_wrapper
 <tr class='lineTableHoverGreen'>
 <td class='lineTable'>78</td>
 <td class='lineTable'> <pre class='codegreen'>            if (write_en) begin</pre> </td>
-<td class='lineTable'>126</td>
+<td class='lineTable'>128</td>
 <td class='lineTable'>1</td>
 </tr>
 <tr class='lineTableHoverGreen'>
 <td class='lineTable'>79</td>
 <td class='lineTable'> <pre class='codegreen'>                if (avs_address &lt= 5'd15) begin</pre> </td>
-<td class='lineTable'>16</td>
+<td class='lineTable'>17</td>
 <td class='lineTable'>1</td>
 </tr>
 <tr class='lineTableHoverGreen'>
 <td class='lineTable'>80</td>
 <td class='lineTable'> <pre class='codegreen'>                    if (avs_byteenable[0]) data_in_regs[avs_address][7:0]   &lt= avs_writedata[7:0];</pre> </td>
-<td class='lineTable'>30</td>
+<td class='lineTable'>32</td>
 <td class='lineTable'>2</td>
 </tr>
 <tr class='lineTableHoverGreen'>
 <td class='lineTable'>81</td>
 <td class='lineTable'> <pre class='codegreen'>                    if (avs_byteenable[1]) data_in_regs[avs_address][15:8]  &lt= avs_writedata[15:8];</pre> </td>
-<td class='lineTable'>30</td>
+<td class='lineTable'>32</td>
 <td class='lineTable'>2</td>
 </tr>
 <tr class='lineTableHoverGreen'>
 <td class='lineTable'>82</td>
 <td class='lineTable'> <pre class='codegreen'>                    if (avs_byteenable[2]) data_in_regs[avs_address][23:16] &lt= avs_writedata[23:16];</pre> </td>
-<td class='lineTable'>30</td>
+<td class='lineTable'>32</td>
 <td class='lineTable'>2</td>
 </tr>
 <tr class='lineTableHoverGreen'>
 <td class='lineTable'>83</td>
 <td class='lineTable'> <pre class='codegreen'>                    if (avs_byteenable[3]) data_in_regs[avs_address][31:24] &lt= avs_writedata[31:24];</pre> </td>
-<td class='lineTable'>30</td>
+<td class='lineTable'>32</td>
 <td class='lineTable'>2</td>
 </tr>
 <tr class='lineTableHoverGreen'>
@@ -3531,13 +3216,13 @@ Toggle Coverage Summary for Module : sha256_avalon_wrapper
 <tr class='lineTableHoverGreen'>
 <td class='lineTable'>100</td>
 <td class='lineTable'> <pre class='codegreen'>        avs_readdata = 32'd0;</pre> </td>
-<td class='lineTable'>113</td>
+<td class='lineTable'>108</td>
 <td class='lineTable'>1</td>
 </tr>
 <tr class='lineTableHoverGreen'>
 <td class='lineTable'>101</td>
 <td class='lineTable'> <pre class='codegreen'>        if (read_en) begin</pre> </td>
-<td class='lineTable'>113</td>
+<td class='lineTable'>108</td>
 <td class='lineTable'>1</td>
 </tr>
 <tr class='lineTableHoverGreen'>
@@ -4113,8 +3798,8 @@ Toggle Coverage Summary for Module : sha256_avalon_wrapper
 <td class='lineTable'>62</td>
 <td class='lineTable'> <pre class='codegreen'>        if (!reset_n) begin</pre>
  <font face='arial' color=orange style='font-size: 12px'><b> Branch 1</b></font></td>
-<td class='lineTable'>129</td>
-<td class='lineTable'>3T 126F </td>
+<td class='lineTable'>131</td>
+<td class='lineTable'>3T 128F </td>
 </tr>
 <tr class='lineTableHoverGrey'>
 <td class='lineTable'>63</td>
@@ -4192,14 +3877,14 @@ Toggle Coverage Summary for Module : sha256_avalon_wrapper
 <td class='lineTable'>75</td>
 <td class='lineTable'> <pre class='codegreen'>            if (hash_valid & ~hash_valid_d)</pre>
  <font face='arial' color=orange style='font-size: 12px'><b> Branch 2</b></font></td>
-<td class='lineTable'>126</td>
-<td class='lineTable'>1T 125F </td>
+<td class='lineTable'>128</td>
+<td class='lineTable'>1T 127F </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
 <td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 3</b></font></td>
 <td class='lineTable'> </td>
-<td class='lineTable'> 125</td>
+<td class='lineTable'> 127</td>
 </tr>
 <tr class='lineTableHoverGrey'>
 <td class='lineTable'>76</td>
@@ -4223,7 +3908,7 @@ Toggle Coverage Summary for Module : sha256_avalon_wrapper
 <td class='lineTable'> </td>
 <td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 4</b></font></td>
 <td class='lineTable'> </td>
-<td class='lineTable'> 110</td>
+<td class='lineTable'> 111</td>
 </tr>
 <tr class='lineTableHoverGrey'>
 <td class='lineTable'>79</td>
@@ -4235,8 +3920,8 @@ Toggle Coverage Summary for Module : sha256_avalon_wrapper
 <td class='lineTable'>80</td>
 <td class='lineTable'> <pre class='codegreen'>                    if (avs_byteenable[0]) data_in_regs[avs_address][7:0]   &lt= avs_writedata[7:0];</pre>
  <font face='arial' color=orange style='font-size: 12px'><b> Branch 5</b></font></td>
-<td class='lineTable'>15</td>
-<td class='lineTable'>15T 0F </td>
+<td class='lineTable'>16</td>
+<td class='lineTable'>16T 0F </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
@@ -4248,8 +3933,8 @@ Toggle Coverage Summary for Module : sha256_avalon_wrapper
 <td class='lineTable'>81</td>
 <td class='lineTable'> <pre class='codegreen'>                    if (avs_byteenable[1]) data_in_regs[avs_address][15:8]  &lt= avs_writedata[15:8];</pre>
  <font face='arial' color=orange style='font-size: 12px'><b> Branch 7</b></font></td>
-<td class='lineTable'>15</td>
-<td class='lineTable'>15T 0F </td>
+<td class='lineTable'>16</td>
+<td class='lineTable'>16T 0F </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
@@ -4261,8 +3946,8 @@ Toggle Coverage Summary for Module : sha256_avalon_wrapper
 <td class='lineTable'>82</td>
 <td class='lineTable'> <pre class='codegreen'>                    if (avs_byteenable[2]) data_in_regs[avs_address][23:16] &lt= avs_writedata[23:16];</pre>
  <font face='arial' color=orange style='font-size: 12px'><b> Branch 9</b></font></td>
-<td class='lineTable'>15</td>
-<td class='lineTable'>15T 0F </td>
+<td class='lineTable'>16</td>
+<td class='lineTable'>16T 0F </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
@@ -4274,8 +3959,8 @@ Toggle Coverage Summary for Module : sha256_avalon_wrapper
 <td class='lineTable'>83</td>
 <td class='lineTable'> <pre class='codegreen'>                    if (avs_byteenable[3]) data_in_regs[avs_address][31:24] &lt= avs_writedata[31:24];</pre>
  <font face='arial' color=orange style='font-size: 12px'><b> Branch 11</b></font></td>
-<td class='lineTable'>15</td>
-<td class='lineTable'>15T 0F </td>
+<td class='lineTable'>16</td>
+<td class='lineTable'>16T 0F </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
@@ -4415,7 +4100,7 @@ Toggle Coverage Summary for Module : sha256_avalon_wrapper
 <td class='lineTable'> </td>
 <td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 18</b></font></td>
 <td class='lineTable'> </td>
-<td class='lineTable'> 69</td>
+<td class='lineTable'> 64</td>
 </tr>
 <tr class='lineTableHoverGreen'>
 <td class='lineTable'>102</td>
@@ -4636,7 +4321,7 @@ Condition Coverage Summary for Instance : tb_sha256_top.dut
 <tr class='lineTableHoverGreen'>
 <td class='lineTable'>79</td>
 <td class='lineTable'> <pre class='codegreen'>(avs_address <= 5'b01111)__TRUE</pre> </td>
-<td class='lineTable'>15 </td>
+<td class='lineTable'>16 </td>
 </tr>
 <tr class='lineTableHoverGreen'>
 <td class='lineTable'> </td>

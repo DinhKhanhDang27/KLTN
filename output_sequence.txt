@@ -1,0 +1,38 @@
+        // ==========================================
+        // Generated UVM Sequence for input: "\x00bc"
+        // Input in hex: 00 62 63. Padding added.
+        // Total length: 3 bytes = 24 bits
+        // ==========================================
+
+        logic [31:0] rdata;
+
+        // --- BLOCK 0 ---
+        // Block 0: 00626380
+        write_reg(5'd0, 32'h00626380);
+        // Block 1..13: 0
+        for(int i=1; i<=13; i++) write_reg(i[4:0], 32'h0);
+        // Block 14: MSB length
+        write_reg(5'd14, 32'h00000000);
+        // Block 15: length in bits = 24 = 0x18
+        write_reg(5'd15, 32'h00000018);
+
+        // Control (init=1, start=1)
+        write_reg(5'd16, 32'h00000003); // bit 0: start, bit 1: init
+
+        // Wait for done
+        do begin
+            read_reg(5'd17, rdata);
+        end while((rdata & 32'h2) == 0); // bit 1 is done/hash_valid
+
+        // Read hash
+        for(int i=18; i<=25; i++) begin
+            read_reg(i[4:0], rdata);
+        end
+
+        // ==========================================
+        // [COPY TO SCOREBOARD] EXPECTED HASH (Golden Model)
+        // ==========================================
+        logic [31:0] expected_hash [8] = '{
+            32'h4075b6a6, 32'h8556aaa0, 32'h3188190d, 32'h90619974,
+            32'h3692269d, 32'hd8556b03, 32'h4c418f19, 32'h4a70e188
+        };

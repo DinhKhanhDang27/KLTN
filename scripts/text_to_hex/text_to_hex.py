@@ -17,7 +17,8 @@ def generate_sequence():
     with open(input_file, 'r', encoding='utf-8') as f:
         text = f.read().strip()
     
-    data = text.encode('utf-8')
+    # Parse escape characters like \x00 into actual raw bytes
+    data = bytes(text, 'utf-8').decode('unicode_escape').encode('latin1')
     orig_len_bits = len(data) * 8
 
     # Tính toán mã băm chuẩn (Golden Hash) bằng thư viện Python

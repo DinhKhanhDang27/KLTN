@@ -1,32 +1,20 @@
         // ==========================================
-        // Generated UVM Sequence for input: "anh ho quan co trong nha
-anh ho quan co trong nha"
-        // Input in hex: 61 6E 68 20 68 6F 20 71 75 61 6E 20 63 6F 20 74 72 6F 6E 67 20 6E 68 61 0A 61 6E 68 20 68 6F 20 71 75 61 6E 20 63 6F 20 74 72 6F 6E 67 20 6E 68 61. Padding added.
-        // Total length: 49 bytes = 392 bits
+        // Generated UVM Sequence for input: "\x00bc"
+        // Input in hex: 00 62 63. Padding added.
+        // Total length: 3 bytes = 24 bits
         // ==========================================
 
         logic [31:0] rdata;
 
         // --- BLOCK 0 ---
-        // Block 0: 616E6820
-        write_reg(5'd0, 32'h616E6820);
-        write_reg(5'd1, 32'h686F2071);
-        write_reg(5'd2, 32'h75616E20);
-        write_reg(5'd3, 32'h636F2074);
-        write_reg(5'd4, 32'h726F6E67);
-        write_reg(5'd5, 32'h206E6861);
-        write_reg(5'd6, 32'h0A616E68);
-        write_reg(5'd7, 32'h20686F20);
-        write_reg(5'd8, 32'h7175616E);
-        write_reg(5'd9, 32'h20636F20);
-        write_reg(5'd10, 32'h74726F6E);
-        write_reg(5'd11, 32'h67206E68);
-        write_reg(5'd12, 32'h61800000);
-        write_reg(5'd13, 32'h00000000);
+        // Block 0: 00626380
+        write_reg(5'd0, 32'h00626380);
+        // Block 1..13: 0
+        for(int i=1; i<=13; i++) write_reg(i[4:0], 32'h0);
         // Block 14: MSB length
         write_reg(5'd14, 32'h00000000);
-        // Block 15: length in bits = 392 = 0x188
-        write_reg(5'd15, 32'h00000188);
+        // Block 15: length in bits = 24 = 0x18
+        write_reg(5'd15, 32'h00000018);
 
         // Control (init=1, start=1)
         write_reg(5'd16, 32'h00000003); // bit 0: start, bit 1: init
@@ -45,6 +33,6 @@ anh ho quan co trong nha"
         // [COPY TO SCOREBOARD] EXPECTED HASH (Golden Model)
         // ==========================================
         logic [31:0] expected_hash [8] = '{
-            32'h9d96d33d, 32'h5ab76dab, 32'h477d9a07, 32'h7e57f411,
-            32'h760f12cd, 32'ha36296da, 32'h96194fd3, 32'h537dc020
+            32'h4075b6a6, 32'h8556aaa0, 32'h3188190d, 32'h90619974,
+            32'h3692269d, 32'hd8556b03, 32'h4c418f19, 32'h4a70e188
         };

@@ -350,7 +350,7 @@ openFileContent('button_file_togglecov');">
 </tr>
 <tr class='lineTableHoverGrey'>
 <td class='lineTable'>39</td>
-<td class='lineTable'> <pre class='codegrey'>        logic [31:0] rdata;</pre> </td>
+<td class='lineTable'> <pre class='codegrey'> </pre> </td>
 <td class='lineTable'> </td>
 <td class='lineTable'> </td>
 </tr>
@@ -362,169 +362,169 @@ openFileContent('button_file_togglecov');">
 </tr>
 <tr class='lineTableHoverGrey'>
 <td class='lineTable'>41</td>
-<td class='lineTable'> <pre class='codegrey'>        // --- BLOCK 0 ---</pre> </td>
+<td class='lineTable'> <pre class='codegrey'>        logic [31:0] rdata;</pre> </td>
 <td class='lineTable'> </td>
 <td class='lineTable'> </td>
 </tr>
 <tr class='lineTableHoverGrey'>
 <td class='lineTable'>42</td>
-<td class='lineTable'> <pre class='codegrey'>        // Block 0: 616E6820</pre> </td>
+<td class='lineTable'> <pre class='codegrey'> </pre> </td>
 <td class='lineTable'> </td>
 <td class='lineTable'> </td>
 </tr>
 <tr class='lineTableHoverGrey'>
 <td class='lineTable'>43</td>
-<td class='lineTable'> <pre class='codegrey'>        write_reg(5'd0, 32'h616E6820);</pre> </td>
+<td class='lineTable'> <pre class='codegrey'>        // --- BLOCK 0 ---</pre> </td>
 <td class='lineTable'> </td>
 <td class='lineTable'> </td>
 </tr>
 <tr class='lineTableHoverGrey'>
 <td class='lineTable'>44</td>
-<td class='lineTable'> <pre class='codegrey'>        write_reg(5'd1, 32'h686F2071);</pre> </td>
+<td class='lineTable'> <pre class='codegrey'>        // Block 0: 61626380</pre> </td>
 <td class='lineTable'> </td>
 <td class='lineTable'> </td>
 </tr>
 <tr class='lineTableHoverGrey'>
 <td class='lineTable'>45</td>
-<td class='lineTable'> <pre class='codegrey'>        write_reg(5'd2, 32'h75616E20);</pre> </td>
+<td class='lineTable'> <pre class='codegrey'>        write_reg(5'd0, 32'h61626380);</pre> </td>
 <td class='lineTable'> </td>
 <td class='lineTable'> </td>
 </tr>
 <tr class='lineTableHoverGrey'>
 <td class='lineTable'>46</td>
-<td class='lineTable'> <pre class='codegrey'>        write_reg(5'd3, 32'h636F2074);</pre> </td>
+<td class='lineTable'> <pre class='codegrey'>        // Block 1..13: 0</pre> </td>
 <td class='lineTable'> </td>
 <td class='lineTable'> </td>
 </tr>
 <tr class='lineTableHoverGrey'>
 <td class='lineTable'>47</td>
-<td class='lineTable'> <pre class='codegrey'>        write_reg(5'd4, 32'h726F6E67);</pre> </td>
+<td class='lineTable'> <pre class='codegrey'>        for(int i=1; i&lt=13; i++) write_reg(i[4:0], 32'h0);</pre> </td>
 <td class='lineTable'> </td>
 <td class='lineTable'> </td>
 </tr>
 <tr class='lineTableHoverGrey'>
 <td class='lineTable'>48</td>
-<td class='lineTable'> <pre class='codegrey'>        write_reg(5'd5, 32'h206E6861);</pre> </td>
+<td class='lineTable'> <pre class='codegrey'>        // Block 14: MSB length</pre> </td>
 <td class='lineTable'> </td>
 <td class='lineTable'> </td>
 </tr>
 <tr class='lineTableHoverGrey'>
 <td class='lineTable'>49</td>
-<td class='lineTable'> <pre class='codegrey'>        write_reg(5'd6, 32'h80000000);</pre> </td>
+<td class='lineTable'> <pre class='codegrey'>        write_reg(5'd14, 32'h00000000);</pre> </td>
 <td class='lineTable'> </td>
 <td class='lineTable'> </td>
 </tr>
 <tr class='lineTableHoverGrey'>
 <td class='lineTable'>50</td>
-<td class='lineTable'> <pre class='codegrey'>        // Block 7..13: 0</pre> </td>
+<td class='lineTable'> <pre class='codegrey'>        // Block 15: length in bits = 24 = 0x18</pre> </td>
 <td class='lineTable'> </td>
 <td class='lineTable'> </td>
 </tr>
 <tr class='lineTableHoverGrey'>
 <td class='lineTable'>51</td>
-<td class='lineTable'> <pre class='codegrey'>        for(int i=7; i&lt=13; i++) write_reg(i[4:0], 32'h0);</pre> </td>
+<td class='lineTable'> <pre class='codegrey'>        write_reg(5'd15, 32'h00000018);</pre> </td>
 <td class='lineTable'> </td>
 <td class='lineTable'> </td>
 </tr>
 <tr class='lineTableHoverGrey'>
 <td class='lineTable'>52</td>
-<td class='lineTable'> <pre class='codegrey'>        // Block 15: length in bits = 192 = 0xC0</pre> </td>
+<td class='lineTable'> <pre class='codegrey'> </pre> </td>
 <td class='lineTable'> </td>
 <td class='lineTable'> </td>
 </tr>
 <tr class='lineTableHoverGrey'>
 <td class='lineTable'>53</td>
-<td class='lineTable'> <pre class='codegrey'>        write_reg(5'd15, 32'h000000C0);</pre> </td>
-<td class='lineTable'> </td>
-<td class='lineTable'> </td>
-</tr>
-<tr class='lineTableHoverGrey'>
-<td class='lineTable'>54</td>
-<td class='lineTable'> <pre class='codegrey'> </pre> </td>
-<td class='lineTable'> </td>
-<td class='lineTable'> </td>
-</tr>
-<tr class='lineTableHoverGrey'>
-<td class='lineTable'>55</td>
 <td class='lineTable'> <pre class='codegrey'>        // Control (init=1, start=1)</pre> </td>
 <td class='lineTable'> </td>
 <td class='lineTable'> </td>
 </tr>
 <tr class='lineTableHoverGrey'>
-<td class='lineTable'>56</td>
+<td class='lineTable'>54</td>
 <td class='lineTable'> <pre class='codegrey'>        write_reg(5'd16, 32'h00000003); // bit 0: start, bit 1: init</pre> </td>
 <td class='lineTable'> </td>
 <td class='lineTable'> </td>
 </tr>
 <tr class='lineTableHoverGrey'>
-<td class='lineTable'>57</td>
+<td class='lineTable'>55</td>
 <td class='lineTable'> <pre class='codegrey'> </pre> </td>
 <td class='lineTable'> </td>
 <td class='lineTable'> </td>
 </tr>
 <tr class='lineTableHoverGrey'>
-<td class='lineTable'>58</td>
+<td class='lineTable'>56</td>
 <td class='lineTable'> <pre class='codegrey'>        // Wait for done</pre> </td>
 <td class='lineTable'> </td>
 <td class='lineTable'> </td>
 </tr>
 <tr class='lineTableHoverGrey'>
-<td class='lineTable'>59</td>
+<td class='lineTable'>57</td>
 <td class='lineTable'> <pre class='codegrey'>        do begin</pre> </td>
 <td class='lineTable'> </td>
 <td class='lineTable'> </td>
 </tr>
 <tr class='lineTableHoverGrey'>
-<td class='lineTable'>60</td>
+<td class='lineTable'>58</td>
 <td class='lineTable'> <pre class='codegrey'>            read_reg(5'd17, rdata);</pre> </td>
 <td class='lineTable'> </td>
 <td class='lineTable'> </td>
 </tr>
 <tr class='lineTableHoverGrey'>
-<td class='lineTable'>61</td>
+<td class='lineTable'>59</td>
 <td class='lineTable'> <pre class='codegrey'>        end while((rdata & 32'h2) == 0); // bit 1 is done/hash_valid</pre> </td>
 <td class='lineTable'> </td>
 <td class='lineTable'> </td>
 </tr>
 <tr class='lineTableHoverGrey'>
-<td class='lineTable'>62</td>
+<td class='lineTable'>60</td>
 <td class='lineTable'> <pre class='codegrey'> </pre> </td>
 <td class='lineTable'> </td>
 <td class='lineTable'> </td>
 </tr>
 <tr class='lineTableHoverGrey'>
-<td class='lineTable'>63</td>
+<td class='lineTable'>61</td>
 <td class='lineTable'> <pre class='codegrey'>        // Read hash</pre> </td>
 <td class='lineTable'> </td>
 <td class='lineTable'> </td>
 </tr>
 <tr class='lineTableHoverGrey'>
-<td class='lineTable'>64</td>
+<td class='lineTable'>62</td>
 <td class='lineTable'> <pre class='codegrey'>        for(int i=18; i&lt=25; i++) begin</pre> </td>
 <td class='lineTable'> </td>
 <td class='lineTable'> </td>
 </tr>
 <tr class='lineTableHoverGrey'>
-<td class='lineTable'>65</td>
+<td class='lineTable'>63</td>
 <td class='lineTable'> <pre class='codegrey'>            read_reg(i[4:0], rdata);</pre> </td>
 <td class='lineTable'> </td>
 <td class='lineTable'> </td>
 </tr>
 <tr class='lineTableHoverGrey'>
-<td class='lineTable'>66</td>
+<td class='lineTable'>64</td>
 <td class='lineTable'> <pre class='codegrey'>        end</pre> </td>
 <td class='lineTable'> </td>
 <td class='lineTable'> </td>
 </tr>
 <tr class='lineTableHoverGrey'>
-<td class='lineTable'>67</td>
+<td class='lineTable'>65</td>
+<td class='lineTable'> <pre class='codegrey'> </pre> </td>
+<td class='lineTable'> </td>
+<td class='lineTable'> </td>
+</tr>
+<tr class='lineTableHoverGrey'>
+<td class='lineTable'>66</td>
 <td class='lineTable'> <pre class='codegrey'>    endtask</pre> </td>
 <td class='lineTable'> </td>
 <td class='lineTable'> </td>
 </tr>
 <tr class='lineTableHoverGrey'>
-<td class='lineTable'>68</td>
+<td class='lineTable'>67</td>
 <td class='lineTable'> <pre class='codegrey'>endclass</pre> </td>
+<td class='lineTable'> </td>
+<td class='lineTable'> </td>
+</tr>
+<tr class='lineTableHoverGrey'>
+<td class='lineTable'>68</td>
+<td class='lineTable'> <pre class='codegrey'> </pre> </td>
 <td class='lineTable'> </td>
 <td class='lineTable'> </td>
 </tr>
@@ -536,12 +536,6 @@ openFileContent('button_file_togglecov');">
 </tr>
 <tr class='lineTableHoverGrey'>
 <td class='lineTable'>70</td>
-<td class='lineTable'> <pre class='codegrey'> </pre> </td>
-<td class='lineTable'> </td>
-<td class='lineTable'> </td>
-</tr>
-<tr class='lineTableHoverGrey'>
-<td class='lineTable'>71</td>
 <td class='lineTable'> <pre class='codegrey'> </pre> </td>
 <td class='lineTable'> </td>
 <td class='lineTable'> </td>
@@ -647,14 +641,14 @@ Toggle Coverage Summary for File : /home/dinhkhanhdang/Study/KLtN/code/tb_uvm/uv
 <th class='lineTable' style='background-color:#80FFBF; line-height:1;' width='120px'> Toggle 1->0 </th>
 </tr>
 <tr class='lineTableHoverRed'>
-<td class='lineTable'>51</td>
+<td class='lineTable'>47</td>
 <td class='lineTable'>int</td>
 <td class='lineTable'> <pre class='codered'> All bits of i</pre> </td>
 <td class='lineTable'> <pre class='codered'> 0 </pre> </td>
 <td class='lineTable'> <pre class='codered'> 0 </pre> </td>
 </tr>
 <tr class='lineTableHoverRed'>
-<td class='lineTable'>64</td>
+<td class='lineTable'>62</td>
 <td class='lineTable'>int</td>
 <td class='lineTable'> <pre class='codered'> All bits of i</pre> </td>
 <td class='lineTable'> <pre class='codered'> 0 </pre> </td>

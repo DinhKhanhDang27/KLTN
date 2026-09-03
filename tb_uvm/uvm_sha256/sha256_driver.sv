@@ -24,6 +24,7 @@ class sha256_driver extends uvm_driver#(sha256_seq_item);
             vif.avs_chipselect <= 1;
             vif.avs_address <= req.addr;
             if(req.op == WRITE) begin
+                vif.avs_byteenable <= 4'hf;
                 vif.avs_write <= 1;
                 vif.avs_writedata <= req.data;
                 @(posedge vif.clk);

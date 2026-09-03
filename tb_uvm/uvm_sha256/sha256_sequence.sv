@@ -74,7 +74,7 @@ class sha256_sanity_sequence extends sha256_base_sequence;
         for(int i=18; i<=25; i++) begin
             read_reg(i[4:0], rdata);
         end
-
+        write_reg(5'd17, 32'h00000004);
     endtask
 endclass
 
@@ -102,7 +102,8 @@ class sha256_test_avsByteEnable extends sha256_base_sequence;
         write_reg(5'd15, 32'h00000018);
 
         // Control (init=1, start=1)
-        write_reg(5'd16, 32'h00000003); // bit 0: start, bit 1: init
+        write_reg(5'd16, 32'h00000003); // init=0, start=1
+
 
         // Wait for done
         do begin
@@ -113,7 +114,45 @@ class sha256_test_avsByteEnable extends sha256_base_sequence;
         for(int i=18; i<=25; i++) begin
             read_reg(i[4:0], rdata2);
         end
-
+        write_reg(5'd17, 32'h00000004);
     endtask
 endclass //sha26_next_testcase extends superClass
 
+    class sha256_zero_length extends sha256_base_sequence;
+        `uvm_object_utils(sha256_zero_length)
+        
+        function new(string name="sha256_zero_length");
+            super.new(name);
+        endfunction
+  
+        virtual task body();
+            logic [31:0] rdata;
+  
+            // --- BLOCK 0 ---
+            // Chuỗi rỗng: Byte đầu tiên là padding 0x80, còn lại là 0x00
+            write_reg(5'd0, 32'h80000000);
+            
+            // Block 1..13: 0
+            for(int i=1; i<=13; i++) write_reg(i[4:0], 32'h0);
+            
+            // Block 14: MSB length = 0
+            write_reg(5'd14, 32'h00000000);
+            
+            // Block 15: LSB length in bits = 0 (vì chuỗi rỗng)
+            write_reg(5'd15, 32'h00000000);
+  
+            // Control (init=1, start=1)
+            write_reg(5'd16, 32'h00000003); // bit 0: start, bit 1: init
+  
+            // Wait for done
+            do begin
+                read_reg(5'd17, rdata);
+            end while((rdata & 32'h2) == 0); // bit 1 is done/hash_valid
+  
+            // Read hash
+            for(int i=18; i<=25; i++) begin
+                read_reg(i[4:0], rdata);
+            end
+            write_reg(5'd17, 32'h00000004);
+        endtask
+    endclass

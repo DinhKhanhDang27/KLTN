@@ -37,6 +37,6 @@ module tb_sha256_top;
         uvm_config_db#(virtual sha256_if)::set(null, "*", "vif", vif);
         // Bạn có thể để trống run_test() và truyền +UVM_TESTNAME từ Vivado
         // hoặc ghi cứng tên test muốn chạy vào đây:
-        run_test("sha256_with_masktest");
+        run_test("sha256_all_test");
     end
 endmodule

@@ -24,9 +24,10 @@ class sha256_monitor extends uvm_monitor;
             if (vif.avs_chipselect) begin
                 if (vif.avs_write) begin
                     item = sha256_seq_item::type_id::create("item");
-                    item.op = WRITE;
+                    item.op = (vif.avs_byteenable == 4'hf) ? WRITE : WRITE_MASK;
                     item.addr = vif.avs_address;
                     item.data = vif.avs_writedata;
+                    item.avsByteEnable = vif.avs_byteenable;
                     ap.write(item);
                 end 
                 

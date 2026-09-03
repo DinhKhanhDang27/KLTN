@@ -1,0 +1,13 @@
+# compile verilog/system verilog design source files
+sv xil_defaultlib  \
+"../../../../../../../rtl_sha256/sha256Core.sv" \
+"../../../../../../../rtl_sha256/sha256Wrapper.sv" \
+"../../../../../../../tb_uvm/uvm_sha256/sha256_if.sv" \
+"../../../../../../../tb_uvm/uvm_sha256/sha256_pkg.sv" \
+"../../../../../../../tb_uvm/uvm_sha256/tb_sha256_top.sv" \
+
+# compile glbl module
+verilog xil_defaultlib "glbl.v"
+
+# Do not sort compile order
+nosort

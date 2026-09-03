@@ -1,8 +1,38 @@
-# Quartus temporary and generated files
-db/
-incremental_db/
-output_files/
-simulation/
-*.qws
-*.bak
-*.flock
+# ==========================================
+# VIVADO & XSIM IGNORE LIST
+# Bỏ qua các file rác, file sinh tự động, file waveform nặng
+# ==========================================
+
+# Xilinx / Vivado project temp folders
+.Xil/
+*.cache/
+*.hw/
+*.ip_user_files/
+
+# Log and Journal files
+*.jou
+*.log
+*.str
+*.pb
+
+# Simulation heavy files (Database, Waveforms, Compiled objects)
+xsim.dir/
+*.wdb
+*.vcd
+*.vpd
+*.fsdb
+*.asdb
+
+# Bỏ qua toàn bộ các thư mục báo cáo Coverage (vì DB chứa bên trong rất nặng)
+xcrg_report/
+xcrg_mdb/
+xsim.covdb/
+xsim.codeCov/
+cov_db/
+
+# ==========================================
+# NGOẠI LỆ: GIỮ LẠI CÁC FILE QUAN TRỌNG
+# ==========================================
+
+# KHÔNG bỏ qua các file HTML (Giữ lại báo cáo Code Coverage dưới dạng Web)
+!*.html

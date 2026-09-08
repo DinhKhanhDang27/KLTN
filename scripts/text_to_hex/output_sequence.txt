@@ -1,23 +1,137 @@
         // ==========================================
-        // Generated UVM Sequence for input: "\x00bc"
-        // Input in hex: 00 62 63. Padding added.
-        // Total length: 3 bytes = 24 bits
+        // Generated UVM Sequence for input: "tuoi thanh xuan cung giong nhu may troi lam sao de co thanh xuan tuyet voi tuoi thanh xuan cung giong nhu may troi lam sao de co thanh xuan tuyet voi tuoi thanh xuan cung giong nhu may troi lam sao de co thanh xuan tuyet voi tuoi thanh xuan cung giong nhu may troi lam sao de co thanh xuan tuyet voi"
+        // Input in hex: 74 75 6F 69 20 74 68 61 6E 68 20 78 75 61 6E 20 63 75 6E 67 20 67 69 6F 6E 67 20 6E 68 75 20 6D 61 79 20 74 72 6F 69 20 6C 61 6D 20 73 61 6F 20 64 65 20 63 6F 20 74 68 61 6E 68 20 78 75 61 6E 20 74 75 79 65 74 20 76 6F 69 20 74 75 6F 69 20 74 68 61 6E 68 20 78 75 61 6E 20 63 75 6E 67 20 67 69 6F 6E 67 20 6E 68 75 20 6D 61 79 20 74 72 6F 69 20 6C 61 6D 20 73 61 6F 20 64 65 20 63 6F 20 74 68 61 6E 68 20 78 75 61 6E 20 74 75 79 65 74 20 76 6F 69 20 74 75 6F 69 20 74 68 61 6E 68 20 78 75 61 6E 20 63 75 6E 67 20 67 69 6F 6E 67 20 6E 68 75 20 6D 61 79 20 74 72 6F 69 20 6C 61 6D 20 73 61 6F 20 64 65 20 63 6F 20 74 68 61 6E 68 20 78 75 61 6E 20 74 75 79 65 74 20 76 6F 69 20 74 75 6F 69 20 74 68 61 6E 68 20 78 75 61 6E 20 63 75 6E 67 20 67 69 6F 6E 67 20 6E 68 75 20 6D 61 79 20 74 72 6F 69 20 6C 61 6D 20 73 61 6F 20 64 65 20 63 6F 20 74 68 61 6E 68 20 78 75 61 6E 20 74 75 79 65 74 20 76 6F 69. Padding added.
+        // Total length: 299 bytes = 2392 bits
         // ==========================================
 
         logic [31:0] rdata;
 
         // --- BLOCK 0 ---
-        // Block 0: 00626380
-        write_reg(5'd0, 32'h00626380);
-        // Block 1..13: 0
-        for(int i=1; i<=13; i++) write_reg(i[4:0], 32'h0);
-        // Block 14: MSB length
-        write_reg(5'd14, 32'h00000000);
-        // Block 15: length in bits = 24 = 0x18
-        write_reg(5'd15, 32'h00000018);
+        // Block 0: 74756F69
+        write_reg(5'd0, 32'h74756F69);
+        write_reg(5'd1, 32'h20746861);
+        write_reg(5'd2, 32'h6E682078);
+        write_reg(5'd3, 32'h75616E20);
+        write_reg(5'd4, 32'h63756E67);
+        write_reg(5'd5, 32'h2067696F);
+        write_reg(5'd6, 32'h6E67206E);
+        write_reg(5'd7, 32'h6875206D);
+        write_reg(5'd8, 32'h61792074);
+        write_reg(5'd9, 32'h726F6920);
+        write_reg(5'd10, 32'h6C616D20);
+        write_reg(5'd11, 32'h73616F20);
+        write_reg(5'd12, 32'h64652063);
+        write_reg(5'd13, 32'h6F207468);
+        write_reg(5'd14, 32'h616E6820);
+        write_reg(5'd15, 32'h7875616E);
 
         // Control (init=1, start=1)
         write_reg(5'd16, 32'h00000003); // bit 0: start, bit 1: init
+
+        // Wait for done
+        do begin
+            read_reg(5'd17, rdata);
+        end while((rdata & 32'h2) == 0); // bit 1 is done/hash_valid
+
+        // --- BLOCK 1 ---
+        write_reg(5'd0, 32'h20747579);
+        write_reg(5'd1, 32'h65742076);
+        write_reg(5'd2, 32'h6F692074);
+        write_reg(5'd3, 32'h756F6920);
+        write_reg(5'd4, 32'h7468616E);
+        write_reg(5'd5, 32'h68207875);
+        write_reg(5'd6, 32'h616E2063);
+        write_reg(5'd7, 32'h756E6720);
+        write_reg(5'd8, 32'h67696F6E);
+        write_reg(5'd9, 32'h67206E68);
+        write_reg(5'd10, 32'h75206D61);
+        write_reg(5'd11, 32'h79207472);
+        write_reg(5'd12, 32'h6F69206C);
+        write_reg(5'd13, 32'h616D2073);
+        write_reg(5'd14, 32'h616F2064);
+        write_reg(5'd15, 32'h6520636F);
+
+        // Control (init=0, start=1) - Tiếp tục tính toán
+        write_reg(5'd16, 32'h00000001); // bit 0: start, bit 1: init
+
+        // Wait for done
+        do begin
+            read_reg(5'd17, rdata);
+        end while((rdata & 32'h2) == 0); // bit 1 is done/hash_valid
+
+        // --- BLOCK 2 ---
+        write_reg(5'd0, 32'h20746861);
+        write_reg(5'd1, 32'h6E682078);
+        write_reg(5'd2, 32'h75616E20);
+        write_reg(5'd3, 32'h74757965);
+        write_reg(5'd4, 32'h7420766F);
+        write_reg(5'd5, 32'h69207475);
+        write_reg(5'd6, 32'h6F692074);
+        write_reg(5'd7, 32'h68616E68);
+        write_reg(5'd8, 32'h20787561);
+        write_reg(5'd9, 32'h6E206375);
+        write_reg(5'd10, 32'h6E672067);
+        write_reg(5'd11, 32'h696F6E67);
+        write_reg(5'd12, 32'h206E6875);
+        write_reg(5'd13, 32'h206D6179);
+        write_reg(5'd14, 32'h2074726F);
+        write_reg(5'd15, 32'h69206C61);
+
+        // Control (init=0, start=1) - Tiếp tục tính toán
+        write_reg(5'd16, 32'h00000001); // bit 0: start, bit 1: init
+
+        // Wait for done
+        do begin
+            read_reg(5'd17, rdata);
+        end while((rdata & 32'h2) == 0); // bit 1 is done/hash_valid
+
+        // --- BLOCK 3 ---
+        write_reg(5'd0, 32'h6D207361);
+        write_reg(5'd1, 32'h6F206465);
+        write_reg(5'd2, 32'h20636F20);
+        write_reg(5'd3, 32'h7468616E);
+        write_reg(5'd4, 32'h68207875);
+        write_reg(5'd5, 32'h616E2074);
+        write_reg(5'd6, 32'h75796574);
+        write_reg(5'd7, 32'h20766F69);
+        write_reg(5'd8, 32'h2074756F);
+        write_reg(5'd9, 32'h69207468);
+        write_reg(5'd10, 32'h616E6820);
+        write_reg(5'd11, 32'h7875616E);
+        write_reg(5'd12, 32'h2063756E);
+        write_reg(5'd13, 32'h67206769);
+        write_reg(5'd14, 32'h6F6E6720);
+        write_reg(5'd15, 32'h6E687520);
+
+        // Control (init=0, start=1) - Tiếp tục tính toán
+        write_reg(5'd16, 32'h00000001); // bit 0: start, bit 1: init
+
+        // Wait for done
+        do begin
+            read_reg(5'd17, rdata);
+        end while((rdata & 32'h2) == 0); // bit 1 is done/hash_valid
+
+        // --- BLOCK 4 ---
+        write_reg(5'd0, 32'h6D617920);
+        write_reg(5'd1, 32'h74726F69);
+        write_reg(5'd2, 32'h206C616D);
+        write_reg(5'd3, 32'h2073616F);
+        write_reg(5'd4, 32'h20646520);
+        write_reg(5'd5, 32'h636F2074);
+        write_reg(5'd6, 32'h68616E68);
+        write_reg(5'd7, 32'h20787561);
+        write_reg(5'd8, 32'h6E207475);
+        write_reg(5'd9, 32'h79657420);
+        write_reg(5'd10, 32'h766F6980);
+        // Block 11..13: 0
+        for(int i=11; i<=13; i++) write_reg(i[4:0], 32'h0);
+        // Block 14: MSB length
+        write_reg(5'd14, 32'h00000000);
+        // Block 15: length in bits = 2392 = 0x958
+        write_reg(5'd15, 32'h00000958);
+
+        // Control (init=0, start=1) - Tiếp tục tính toán
+        write_reg(5'd16, 32'h00000001); // bit 0: start, bit 1: init
 
         // Wait for done
         do begin
@@ -33,6 +147,6 @@
         // [COPY TO SCOREBOARD] EXPECTED HASH (Golden Model)
         // ==========================================
         logic [31:0] expected_hash [8] = '{
-            32'h4075b6a6, 32'h8556aaa0, 32'h3188190d, 32'h90619974,
-            32'h3692269d, 32'hd8556b03, 32'h4c418f19, 32'h4a70e188
+            32'h6504843d, 32'hde7ba0f6, 32'hfe2e9bfc, 32'h8dc7ad8c,
+            32'hc4d2122a, 32'h9ce90fcb, 32'he1555cf3, 32'h9eb04578
         };

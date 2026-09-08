@@ -45,9 +45,9 @@
 </tr>
 <tr>
 <td class='moduleSummaryTable'>1</td>
-<td class='moduleSummaryTable'>100</td>
-<td class='moduleSummaryTable'>7.05128</td>
-<td class='moduleSummaryTable'>14.2857</td>
+<td class='moduleSummaryTable'>98.004</td>
+<td class='moduleSummaryTable'>12.4352</td>
+<td class='moduleSummaryTable'>38.7097</td>
 <td class='moduleSummaryTable'>0</td>
 <td class='moduleSummaryTable'>7</td>
 <td class='moduleSummaryTable' align='left'>
@@ -101,9 +101,9 @@ openFileContent('button_module_togglecov');">
 <tr>
 <td class='instancesSummaryTable'>
 sha256_pkg </td>
-<td class='instancesSummaryTable'>100</td>
-<td class='instancesSummaryTable'>7.05128</td>
-<td class='instancesSummaryTable'>14.2857</td>
+<td class='instancesSummaryTable'>98.004</td>
+<td class='instancesSummaryTable'>12.4352</td>
+<td class='instancesSummaryTable'>38.7097</td>
 <td class='instancesSummaryTable'>7</td>
 <td class='instancesSummaryTable' align='left'> 
 <label class = 'instanceLineCovContainer'>
@@ -150,11 +150,11 @@ openFileContent('button_instance1_condcov');">
 <th class='fileScoreTable' bgcolor='#DEE8EE'> Statement Coverage Score </th>
 </tr>
 <tr>
-<td class='fileScoreTable'>42</td>
-<td class='fileScoreTable'>368</td>
-<td class='fileScoreTable' bgcolor='#98FF98'>368</td>
-<td class='fileScoreTable' bgcolor='#98FF98'> 0 </td>
-<td class='fileScoreTable' bgcolor='#98FF98'>100</td>
+<td class='fileScoreTable'>94</td>
+<td class='fileScoreTable'>501</td>
+<td class='fileScoreTable' bgcolor='#FFFFC2'>491</td>
+<td class='fileScoreTable' bgcolor='#FFD2D2'>10</td>
+<td class='fileScoreTable' bgcolor='#98FF98'>98.004</td>
 </tr>
 </table>
 <br clear=all>
@@ -183,8 +183,8 @@ openFileContent('button_instance1_condcov');">
 <tr class='lineTableHoverGreen'>
 <td class='lineTable'>2</td>
 <td class='lineTable'> <pre class='codegreen'>    import uvm_pkg::*;</pre> </td>
-<td class='lineTable'>12</td>
-<td class='lineTable'>45</td>
+<td class='lineTable'>10</td>
+<td class='lineTable'>41</td>
 </tr>
 <tr class='lineTableHoverGrey'>
 <td class='lineTable'>3</td>
@@ -195,12 +195,12 @@ openFileContent('button_instance1_condcov');">
 <tr class='lineTableHoverGreen'>
 <td class='lineTable'>4</td>
 <td class='lineTable'> <pre class='codegreen'> </pre> </td>
-<td class='lineTable'>2</td>
+<td class='lineTable'>4</td>
 <td class='lineTable'>2</td>
 </tr>
 <tr class='lineTableHoverGrey'>
 <td class='lineTable'>5</td>
-<td class='lineTable'> <pre class='codegrey'>    typedef enum {READ, WRITE} op_t;</pre> </td>
+<td class='lineTable'> <pre class='codegrey'>    typedef enum {READ, WRITE, WRITE_MASK} op_t;</pre> </td>
 <td class='lineTable'> </td>
 <td class='lineTable'> </td>
 </tr>
@@ -213,164 +213,170 @@ openFileContent('button_instance1_condcov');">
 <tr class='lineTableHoverGreen'>
 <td class='lineTable'>7</td>
 <td class='lineTable'> <pre class='codegreen'>    class sha256_seq_item extends uvm_sequence_item;</pre> </td>
-<td class='lineTable'>1</td>
-<td class='lineTable'>1</td>
+<td class='lineTable'>3</td>
+<td class='lineTable'>5</td>
 </tr>
 <tr class='lineTableHoverGreen'>
 <td class='lineTable'>8</td>
 <td class='lineTable'> <pre class='codegreen'>        rand op_t op;</pre> </td>
-<td class='lineTable'>19</td>
+<td class='lineTable'>56</td>
 <td class='lineTable'>3</td>
 </tr>
 <tr class='lineTableHoverGreen'>
 <td class='lineTable'>9</td>
 <td class='lineTable'> <pre class='codegreen'>        rand logic [4:0]  addr;</pre> </td>
-<td class='lineTable'>18</td>
+<td class='lineTable'>55</td>
 <td class='lineTable'>2</td>
 </tr>
 <tr class='lineTableHoverGreen'>
 <td class='lineTable'>10</td>
 <td class='lineTable'> <pre class='codegreen'>        rand logic [31:0] data;</pre> </td>
-<td class='lineTable'>19</td>
+<td class='lineTable'>56</td>
 <td class='lineTable'>3</td>
 </tr>
 <tr class='lineTableHoverGreen'>
 <td class='lineTable'>11</td>
-<td class='lineTable'> <pre class='codegreen'>        logic [31:0]      rdata;</pre> </td>
-<td class='lineTable'>20</td>
+<td class='lineTable'> <pre class='codegreen'>        rand logic [3:0] avsByteEnable;</pre> </td>
+<td class='lineTable'>57</td>
 <td class='lineTable'>4</td>
 </tr>
 <tr class='lineTableHoverGreen'>
 <td class='lineTable'>12</td>
-<td class='lineTable'> <pre class='codegreen'> </pre> </td>
-<td class='lineTable'>19</td>
+<td class='lineTable'> <pre class='codegreen'>        logic [31:0]      rdata;</pre> </td>
+<td class='lineTable'>56</td>
 <td class='lineTable'>5</td>
 </tr>
 <tr class='lineTableHoverGreen'>
 <td class='lineTable'>13</td>
-<td class='lineTable'> <pre class='codegreen'>        `uvm_object_utils_begin(sha256_seq_item)</pre> </td>
-<td class='lineTable'>386</td>
-<td class='lineTable'>21</td>
+<td class='lineTable'> <pre class='codegreen'> </pre> </td>
+<td class='lineTable'>57</td>
+<td class='lineTable'>4</td>
 </tr>
 <tr class='lineTableHoverGreen'>
 <td class='lineTable'>14</td>
-<td class='lineTable'> <pre class='codegreen'>            `uvm_field_enum(op_t, op, UVM_ALL_ON)</pre> </td>
-<td class='lineTable'>3</td>
-<td class='lineTable'>45</td>
+<td class='lineTable'> <pre class='codegreen'>        `uvm_object_utils_begin(sha256_seq_item)</pre> </td>
+<td class='lineTable'>1113</td>
+<td class='lineTable'>20</td>
 </tr>
 <tr class='lineTableHoverGreen'>
 <td class='lineTable'>15</td>
-<td class='lineTable'> <pre class='codegreen'>            `uvm_field_int(addr, UVM_ALL_ON)</pre> </td>
-<td class='lineTable'>2</td>
-<td class='lineTable'>51</td>
+<td class='lineTable'> <pre class='codegreen'>            `uvm_field_enum(op_t, op, UVM_ALL_ON)</pre> </td>
+<td class='lineTable'>1</td>
+<td class='lineTable'>45</td>
 </tr>
 <tr class='lineTableHoverGreen'>
 <td class='lineTable'>16</td>
-<td class='lineTable'> <pre class='codegreen'>            `uvm_field_int(data, UVM_ALL_ON)</pre> </td>
+<td class='lineTable'> <pre class='codegreen'>            `uvm_field_int(addr, UVM_ALL_ON)</pre> </td>
 <td class='lineTable'>1</td>
 <td class='lineTable'>49</td>
 </tr>
 <tr class='lineTableHoverGreen'>
 <td class='lineTable'>17</td>
-<td class='lineTable'> <pre class='codegreen'>            `uvm_field_int(rdata, UVM_ALL_ON)</pre> </td>
-<td class='lineTable'>44</td>
-<td class='lineTable'>50</td>
+<td class='lineTable'> <pre class='codegreen'>            `uvm_field_int(data, UVM_ALL_ON)</pre> </td>
+<td class='lineTable'>2</td>
+<td class='lineTable'>49</td>
 </tr>
 <tr class='lineTableHoverGreen'>
 <td class='lineTable'>18</td>
-<td class='lineTable'> <pre class='codegreen'>        `uvm_object_utils_end</pre> </td>
-<td class='lineTable'>44</td>
-<td class='lineTable'>3</td>
+<td class='lineTable'> <pre class='codegreen'>            `uvm_field_int(rdata, UVM_ALL_ON)</pre> </td>
+<td class='lineTable'>4</td>
+<td class='lineTable'>51</td>
 </tr>
 <tr class='lineTableHoverGreen'>
 <td class='lineTable'>19</td>
-<td class='lineTable'> <pre class='codegreen'> </pre> </td>
-<td class='lineTable'>44</td>
-<td class='lineTable'>3</td>
+<td class='lineTable'> <pre class='codegreen'>        `uvm_object_utils_end</pre> </td>
+<td class='lineTable'>4</td>
+<td class='lineTable'>4</td>
 </tr>
 <tr class='lineTableHoverGreen'>
 <td class='lineTable'>20</td>
-<td class='lineTable'> <pre class='codegreen'>        function new(string name = "sha256_seq_item");</pre> </td>
-<td class='lineTable'>45</td>
+<td class='lineTable'> <pre class='codegreen'> </pre> </td>
+<td class='lineTable'>4</td>
 <td class='lineTable'>4</td>
 </tr>
 <tr class='lineTableHoverGreen'>
 <td class='lineTable'>21</td>
-<td class='lineTable'> <pre class='codegreen'>            super.new(name);</pre> </td>
-<td class='lineTable'>165</td>
-<td class='lineTable'>7</td>
+<td class='lineTable'> <pre class='codegreen'>        function new(string name = "sha256_seq_item");</pre> </td>
+<td class='lineTable'>2</td>
+<td class='lineTable'>6</td>
 </tr>
 <tr class='lineTableHoverGreen'>
 <td class='lineTable'>22</td>
-<td class='lineTable'> <pre class='codegreen'>        endfunction</pre> </td>
-<td class='lineTable'>162</td>
+<td class='lineTable'> <pre class='codegreen'>            super.new(name);</pre> </td>
+<td class='lineTable'>546</td>
 <td class='lineTable'>4</td>
 </tr>
-<tr class='lineTableHoverGrey'>
+<tr class='lineTableHoverGreen'>
 <td class='lineTable'>23</td>
-<td class='lineTable'> <pre class='codegrey'>    endclass</pre> </td>
-<td class='lineTable'> </td>
-<td class='lineTable'> </td>
+<td class='lineTable'> <pre class='codegreen'>        endfunction</pre> </td>
+<td class='lineTable'>1</td>
+<td class='lineTable'>1</td>
 </tr>
 <tr class='lineTableHoverGreen'>
 <td class='lineTable'>24</td>
-<td class='lineTable'> <pre class='codegreen'> </pre> </td>
-<td class='lineTable'>386</td>
-<td class='lineTable'>3</td>
+<td class='lineTable'> <pre class='codegreen'>    endclass</pre> </td>
+<td class='lineTable'>393</td>
+<td class='lineTable'>4</td>
 </tr>
 <tr class='lineTableHoverGreen'>
 <td class='lineTable'>25</td>
-<td class='lineTable'> <pre class='codegreen'>    `include "sha256_sequencer.sv"</pre> </td>
-<td class='lineTable'>386</td>
-<td class='lineTable'>2</td>
+<td class='lineTable'> <pre class='codegreen'> </pre> </td>
+<td class='lineTable'>1113</td>
+<td class='lineTable'>3</td>
 </tr>
 <tr class='lineTableHoverGreen'>
 <td class='lineTable'>26</td>
-<td class='lineTable'> <pre class='codegreen'>    `include "sha256_sequence.sv"</pre> </td>
-<td class='lineTable'>76</td>
+<td class='lineTable'> <pre class='codegreen'>    `include "sha256_sequencer.sv"</pre> </td>
+<td class='lineTable'>236</td>
 <td class='lineTable'>2</td>
 </tr>
 <tr class='lineTableHoverGreen'>
 <td class='lineTable'>27</td>
-<td class='lineTable'> <pre class='codegreen'>    `include "sha256_driver.sv"</pre> </td>
-<td class='lineTable'>25</td>
-<td class='lineTable'>5</td>
+<td class='lineTable'> <pre class='codegreen'>    `include "sha256_sequence.sv"</pre> </td>
+<td class='lineTable'>109</td>
+<td class='lineTable'>3</td>
 </tr>
 <tr class='lineTableHoverGreen'>
 <td class='lineTable'>28</td>
-<td class='lineTable'> <pre class='codegreen'>    `include "sha256_monitor.sv"</pre> </td>
-<td class='lineTable'>386</td>
-<td class='lineTable'>4</td>
+<td class='lineTable'> <pre class='codegreen'>    `include "sha256_driver.sv"</pre> </td>
+<td class='lineTable'>126</td>
+<td class='lineTable'>3</td>
 </tr>
 <tr class='lineTableHoverGreen'>
 <td class='lineTable'>29</td>
-<td class='lineTable'> <pre class='codegreen'>    `include "sha256_agents.sv"</pre> </td>
-<td class='lineTable'>386</td>
-<td class='lineTable'>1</td>
+<td class='lineTable'> <pre class='codegreen'>    `include "sha256_monitor.sv"</pre> </td>
+<td class='lineTable'>126</td>
+<td class='lineTable'>3</td>
 </tr>
 <tr class='lineTableHoverGreen'>
 <td class='lineTable'>30</td>
-<td class='lineTable'> <pre class='codegreen'>    `include "sha256_scoreboard.sv"</pre> </td>
-<td class='lineTable'>386</td>
-<td class='lineTable'>5</td>
+<td class='lineTable'> <pre class='codegreen'>    `include "sha256_agents.sv"</pre> </td>
+<td class='lineTable'>175</td>
+<td class='lineTable'>4</td>
 </tr>
-<tr class='lineTableHoverGrey'>
+<tr class='lineTableHoverGreen'>
 <td class='lineTable'>31</td>
-<td class='lineTable'> <pre class='codegrey'>    `include "sha256_env.sv"</pre> </td>
-<td class='lineTable'> </td>
-<td class='lineTable'> </td>
+<td class='lineTable'> <pre class='codegreen'>    `include "sha256_scoreboard.sv"</pre> </td>
+<td class='lineTable'>126</td>
+<td class='lineTable'>4</td>
 </tr>
 <tr class='lineTableHoverGreen'>
 <td class='lineTable'>32</td>
-<td class='lineTable'> <pre class='codegreen'>    `include "sha256_test.sv"</pre> </td>
-<td class='lineTable'>45</td>
-<td class='lineTable'>19</td>
+<td class='lineTable'> <pre class='codegreen'>    `include "sha256_env.sv"</pre> </td>
+<td class='lineTable'>253</td>
+<td class='lineTable'>3</td>
 </tr>
 <tr class='lineTableHoverGreen'>
 <td class='lineTable'>33</td>
+<td class='lineTable'> <pre class='codegreen'>    `include "sha256_test.sv"</pre> </td>
+<td class='lineTable'>225</td>
+<td class='lineTable'>5</td>
+</tr>
+<tr class='lineTableHoverGreen'>
+<td class='lineTable'>34</td>
 <td class='lineTable'> <pre class='codegreen'>endpackage</pre> </td>
-<td class='lineTable'>60</td>
-<td class='lineTable'>2</td>
+<td class='lineTable'>405</td>
+<td class='lineTable'>6</td>
 </tr>
 </table>
 </div>
@@ -396,10 +402,10 @@ Branch Coverage Summary for Module : sha256_pkg
 <th class='fileScoreTable' bgcolor='#DEE8EE'> Branch Coverage Score </th>
 </tr>
 <tr>
-<td class='fileScoreTable'>156</td>
-<td class='fileScoreTable'>11</td>
-<td class='fileScoreTable'>145</td>
-<td class='fileScoreTable' bgcolor='#FF0000'>7.05128</td>
+<td class='fileScoreTable'>193</td>
+<td class='fileScoreTable'>24</td>
+<td class='fileScoreTable'>169</td>
+<td class='fileScoreTable' bgcolor='#FFD2D2'>12.4352</td>
 </tr>
 </table>
 <br clear=all>
@@ -484,7 +490,7 @@ Branch Coverage Summary for Module : sha256_pkg
 </tr>
 <tr class='lineTableHoverGrey'>
 <td class='lineTable'>5</td>
-<td class='lineTable'> <pre class='codegrey'>    typedef enum {READ, WRITE} op_t;</pre> </td>
+<td class='lineTable'> <pre class='codegrey'>    typedef enum {READ, WRITE, WRITE_MASK} op_t;</pre> </td>
 <td class='lineTable'> </td>
 <td class='lineTable'> </td>
 </tr>
@@ -520,7 +526,7 @@ Branch Coverage Summary for Module : sha256_pkg
 </tr>
 <tr class='lineTableHoverGrey'>
 <td class='lineTable'>11</td>
-<td class='lineTable'> <pre class='codegrey'>        logic [31:0]      rdata;</pre> </td>
+<td class='lineTable'> <pre class='codegrey'>        rand logic [3:0] avsByteEnable;</pre> </td>
 <td class='lineTable'> </td>
 <td class='lineTable'> </td>
 </tr>
@@ -532,7 +538,7 @@ Branch Coverage Summary for Module : sha256_pkg
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'>12</td>
-<td class='lineTable'> <pre class='codered'> </pre>
+<td class='lineTable'> <pre class='codered'>        logic [31:0]      rdata;</pre>
  <font face='arial' color=orange style='font-size: 12px'><b> Branch 10</b></font></td>
 <td class='lineTable'>0</td>
 <td class='lineTable'>0T 0F </td>
@@ -543,8 +549,14 @@ Branch Coverage Summary for Module : sha256_pkg
 <td class='lineTable'> </td>
 <td class='lineTable'> 0</td>
 </tr>
-<tr class='lineTableHoverRed'>
+<tr class='lineTableHoverGrey'>
 <td class='lineTable'>13</td>
+<td class='lineTable'> <pre class='codegrey'> </pre> </td>
+<td class='lineTable'> </td>
+<td class='lineTable'> </td>
+</tr>
+<tr class='lineTableHoverRed'>
+<td class='lineTable'>14</td>
 <td class='lineTable'> <pre class='codered'>        `uvm_object_utils_begin(sha256_seq_item)</pre>
  <font face='arial' color=orange style='font-size: 12px'><b> Branch 12</b></font></td>
 <td class='lineTable'>0</td>
@@ -597,50 +609,50 @@ Branch Coverage Summary for Module : sha256_pkg
 <td class='lineTable'> 0</td>
 </tr>
 <tr class='lineTableHoverRed'>
-<td class='lineTable'>14</td>
+<td class='lineTable'> </td>
+<td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 20</b></font></td>
+<td class='lineTable'> </td>
+<td class='lineTable'> 1</td>
+</tr>
+<tr class='lineTableHoverRed'>
+<td class='lineTable'>15</td>
 <td class='lineTable'> <pre class='codered'>            `uvm_field_enum(op_t, op, UVM_ALL_ON)</pre>
- <font face='arial' color=orange style='font-size: 12px'><b> Branch 20</b></font></td>
+ <font face='arial' color=orange style='font-size: 12px'><b> Branch 21</b></font></td>
 <td class='lineTable'> </td>
 <td class='lineTable'>0T </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
 <td class='lineTable'> <pre class='codered'> </pre>
- <font face='arial' color=orange style='font-size: 12px'><b> Branch 21</b></font></td>
+ <font face='arial' color=orange style='font-size: 12px'><b> Branch 22</b></font></td>
 <td class='lineTable'>0</td>
 <td class='lineTable'>0T 0F </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
-<td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 22</b></font></td>
+<td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 23</b></font></td>
 <td class='lineTable'> </td>
 <td class='lineTable'> 0</td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
 <td class='lineTable'> <pre class='codered'> </pre>
- <font face='arial' color=orange style='font-size: 12px'><b> Branch 23</b></font></td>
+ <font face='arial' color=orange style='font-size: 12px'><b> Branch 24</b></font></td>
 <td class='lineTable'>0</td>
 <td class='lineTable'>0T 0F </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
-<td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 24</b></font></td>
+<td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 25</b></font></td>
 <td class='lineTable'> </td>
 <td class='lineTable'> 0</td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
 <td class='lineTable'> <pre class='codered'> </pre>
- <font face='arial' color=orange style='font-size: 12px'><b> Branch 25</b></font></td>
+ <font face='arial' color=orange style='font-size: 12px'><b> Branch 26</b></font></td>
 <td class='lineTable'>0</td>
 <td class='lineTable'>0T 0F </td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable'> </td>
-<td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 26</b></font></td>
-<td class='lineTable'> </td>
-<td class='lineTable'> 0</td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
@@ -656,68 +668,68 @@ Branch Coverage Summary for Module : sha256_pkg
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
-<td class='lineTable'> <pre class='codered'> </pre>
- <font face='arial' color=orange style='font-size: 12px'><b> Branch 29</b></font></td>
-<td class='lineTable'>0</td>
-<td class='lineTable'>0T 0F </td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable'> </td>
-<td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 30</b></font></td>
+<td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 29</b></font></td>
 <td class='lineTable'> </td>
 <td class='lineTable'> 0</td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
 <td class='lineTable'> <pre class='codered'> </pre>
- <font face='arial' color=orange style='font-size: 12px'><b> Branch 31</b></font></td>
+ <font face='arial' color=orange style='font-size: 12px'><b> Branch 30</b></font></td>
 <td class='lineTable'>0</td>
 <td class='lineTable'>0T 0F </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
-<td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 32</b></font></td>
+<td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 31</b></font></td>
 <td class='lineTable'> </td>
 <td class='lineTable'> 0</td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
 <td class='lineTable'> <pre class='codered'> </pre>
- <font face='arial' color=orange style='font-size: 12px'><b> Branch 33</b></font></td>
+ <font face='arial' color=orange style='font-size: 12px'><b> Branch 32</b></font></td>
 <td class='lineTable'>0</td>
 <td class='lineTable'>0T 0F </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
-<td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 34</b></font></td>
+<td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 33</b></font></td>
 <td class='lineTable'> </td>
 <td class='lineTable'> 0</td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
 <td class='lineTable'> <pre class='codered'> </pre>
- <font face='arial' color=orange style='font-size: 12px'><b> Branch 35</b></font></td>
+ <font face='arial' color=orange style='font-size: 12px'><b> Branch 34</b></font></td>
 <td class='lineTable'>0</td>
 <td class='lineTable'>0T 0F </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
-<td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 36</b></font></td>
+<td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 35</b></font></td>
 <td class='lineTable'> </td>
 <td class='lineTable'> 0</td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
 <td class='lineTable'> <pre class='codered'> </pre>
- <font face='arial' color=orange style='font-size: 12px'><b> Branch 37</b></font></td>
+ <font face='arial' color=orange style='font-size: 12px'><b> Branch 36</b></font></td>
 <td class='lineTable'>0</td>
 <td class='lineTable'>0T 0F </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
-<td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 38</b></font></td>
+<td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 37</b></font></td>
 <td class='lineTable'> </td>
 <td class='lineTable'> 0</td>
+</tr>
+<tr class='lineTableHoverRed'>
+<td class='lineTable'> </td>
+<td class='lineTable'> <pre class='codered'> </pre>
+ <font face='arial' color=orange style='font-size: 12px'><b> Branch 38</b></font></td>
+<td class='lineTable'>0</td>
+<td class='lineTable'>0T 0F </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
@@ -727,10 +739,9 @@ Branch Coverage Summary for Module : sha256_pkg
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
-<td class='lineTable'> <pre class='codered'> </pre>
- <font face='arial' color=orange style='font-size: 12px'><b> Branch 40</b></font></td>
-<td class='lineTable'>0</td>
-<td class='lineTable'>0T 0F </td>
+<td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 40</b></font></td>
+<td class='lineTable'> </td>
+<td class='lineTable'> 0</td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
@@ -741,9 +752,10 @@ Branch Coverage Summary for Module : sha256_pkg
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
-<td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 42</b></font></td>
-<td class='lineTable'> </td>
-<td class='lineTable'> 0</td>
+<td class='lineTable'> <pre class='codered'> </pre>
+ <font face='arial' color=orange style='font-size: 12px'><b> Branch 42</b></font></td>
+<td class='lineTable'>0</td>
+<td class='lineTable'>0T 0F </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
@@ -753,10 +765,9 @@ Branch Coverage Summary for Module : sha256_pkg
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
-<td class='lineTable'> <pre class='codered'> </pre>
- <font face='arial' color=orange style='font-size: 12px'><b> Branch 44</b></font></td>
-<td class='lineTable'>0</td>
-<td class='lineTable'>0T 0F </td>
+<td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 44</b></font></td>
+<td class='lineTable'> </td>
+<td class='lineTable'> 0</td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
@@ -767,9 +778,10 @@ Branch Coverage Summary for Module : sha256_pkg
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
-<td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 46</b></font></td>
-<td class='lineTable'> </td>
-<td class='lineTable'> 0</td>
+<td class='lineTable'> <pre class='codered'> </pre>
+ <font face='arial' color=orange style='font-size: 12px'><b> Branch 46</b></font></td>
+<td class='lineTable'>0</td>
+<td class='lineTable'>0T 0F </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
@@ -781,27 +793,27 @@ Branch Coverage Summary for Module : sha256_pkg
 <td class='lineTable'> </td>
 <td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 48</b></font></td>
 <td class='lineTable'> </td>
-<td class='lineTable'> 1</td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable'>15</td>
-<td class='lineTable'> <pre class='codered'>            `uvm_field_int(addr, UVM_ALL_ON)</pre>
- <font face='arial' color=orange style='font-size: 12px'><b> Branch 49</b></font></td>
-<td class='lineTable'> </td>
-<td class='lineTable'>0T </td>
+<td class='lineTable'> 0</td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
 <td class='lineTable'> <pre class='codered'> </pre>
- <font face='arial' color=orange style='font-size: 12px'><b> Branch 50</b></font></td>
+ <font face='arial' color=orange style='font-size: 12px'><b> Branch 49</b></font></td>
 <td class='lineTable'>0</td>
 <td class='lineTable'>0T 0F </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
-<td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 51</b></font></td>
+<td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 50</b></font></td>
 <td class='lineTable'> </td>
 <td class='lineTable'> 0</td>
+</tr>
+<tr class='lineTableHoverRed'>
+<td class='lineTable'>16</td>
+<td class='lineTable'> <pre class='codered'>            `uvm_field_int(addr, UVM_ALL_ON)</pre>
+ <font face='arial' color=orange style='font-size: 12px'><b> Branch 51</b></font></td>
+<td class='lineTable'> </td>
+<td class='lineTable'>0T </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
@@ -831,9 +843,10 @@ Branch Coverage Summary for Module : sha256_pkg
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
-<td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 56</b></font></td>
-<td class='lineTable'> </td>
-<td class='lineTable'> 0</td>
+<td class='lineTable'> <pre class='codered'> </pre>
+ <font face='arial' color=orange style='font-size: 12px'><b> Branch 56</b></font></td>
+<td class='lineTable'>0</td>
+<td class='lineTable'>0T 0F </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
@@ -843,10 +856,9 @@ Branch Coverage Summary for Module : sha256_pkg
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
-<td class='lineTable'> <pre class='codered'> </pre>
- <font face='arial' color=orange style='font-size: 12px'><b> Branch 58</b></font></td>
-<td class='lineTable'>0</td>
-<td class='lineTable'>0T 0F </td>
+<td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 58</b></font></td>
+<td class='lineTable'> </td>
+<td class='lineTable'> 0</td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
@@ -856,122 +868,122 @@ Branch Coverage Summary for Module : sha256_pkg
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
-<td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 60</b></font></td>
-<td class='lineTable'> </td>
-<td class='lineTable'> 0</td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable'> </td>
 <td class='lineTable'> <pre class='codered'> </pre>
- <font face='arial' color=orange style='font-size: 12px'><b> Branch 61</b></font></td>
+ <font face='arial' color=orange style='font-size: 12px'><b> Branch 60</b></font></td>
 <td class='lineTable'>0</td>
 <td class='lineTable'>0T 0F </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
-<td class='lineTable'> <pre class='codered'> </pre>
- <font face='arial' color=orange style='font-size: 12px'><b> Branch 62</b></font></td>
-<td class='lineTable'>0</td>
-<td class='lineTable'>0T </td>
+<td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 61</b></font></td>
+<td class='lineTable'> </td>
+<td class='lineTable'> 0</td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
-<td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 63</b></font></td>
+<td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 62</b></font></td>
 <td class='lineTable'> </td>
 <td class='lineTable'> 0</td>
+</tr>
+<tr class='lineTableHoverRed'>
+<td class='lineTable'> </td>
+<td class='lineTable'> <pre class='codered'> </pre>
+ <font face='arial' color=orange style='font-size: 12px'><b> Branch 63</b></font></td>
+<td class='lineTable'>0</td>
+<td class='lineTable'>0T 0F </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
 <td class='lineTable'> <pre class='codered'> </pre>
  <font face='arial' color=orange style='font-size: 12px'><b> Branch 64</b></font></td>
 <td class='lineTable'>0</td>
-<td class='lineTable'>0T 0F </td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable'> </td>
-<td class='lineTable'> <pre class='codered'> </pre>
- <font face='arial' color=orange style='font-size: 12px'><b> Branch 65</b></font></td>
-<td class='lineTable'>0</td>
 <td class='lineTable'>0T </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
-<td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 66</b></font></td>
+<td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 65</b></font></td>
 <td class='lineTable'> </td>
 <td class='lineTable'> 0</td>
+</tr>
+<tr class='lineTableHoverRed'>
+<td class='lineTable'> </td>
+<td class='lineTable'> <pre class='codered'> </pre>
+ <font face='arial' color=orange style='font-size: 12px'><b> Branch 66</b></font></td>
+<td class='lineTable'>0</td>
+<td class='lineTable'>0T 0F </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
 <td class='lineTable'> <pre class='codered'> </pre>
  <font face='arial' color=orange style='font-size: 12px'><b> Branch 67</b></font></td>
 <td class='lineTable'>0</td>
-<td class='lineTable'>0T 0F </td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable'> </td>
-<td class='lineTable'> <pre class='codered'> </pre>
- <font face='arial' color=orange style='font-size: 12px'><b> Branch 68</b></font></td>
-<td class='lineTable'>0</td>
 <td class='lineTable'>0T </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
-<td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 69</b></font></td>
+<td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 68</b></font></td>
 <td class='lineTable'> </td>
 <td class='lineTable'> 0</td>
+</tr>
+<tr class='lineTableHoverRed'>
+<td class='lineTable'> </td>
+<td class='lineTable'> <pre class='codered'> </pre>
+ <font face='arial' color=orange style='font-size: 12px'><b> Branch 69</b></font></td>
+<td class='lineTable'>0</td>
+<td class='lineTable'>0T 0F </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
 <td class='lineTable'> <pre class='codered'> </pre>
  <font face='arial' color=orange style='font-size: 12px'><b> Branch 70</b></font></td>
 <td class='lineTable'>0</td>
-<td class='lineTable'>0T 0F </td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable'> </td>
-<td class='lineTable'> <pre class='codered'> </pre>
- <font face='arial' color=orange style='font-size: 12px'><b> Branch 71</b></font></td>
-<td class='lineTable'>0</td>
 <td class='lineTable'>0T </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
-<td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 72</b></font></td>
+<td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 71</b></font></td>
 <td class='lineTable'> </td>
 <td class='lineTable'> 0</td>
+</tr>
+<tr class='lineTableHoverRed'>
+<td class='lineTable'> </td>
+<td class='lineTable'> <pre class='codered'> </pre>
+ <font face='arial' color=orange style='font-size: 12px'><b> Branch 72</b></font></td>
+<td class='lineTable'>0</td>
+<td class='lineTable'>0T 0F </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
 <td class='lineTable'> <pre class='codered'> </pre>
  <font face='arial' color=orange style='font-size: 12px'><b> Branch 73</b></font></td>
 <td class='lineTable'>0</td>
-<td class='lineTable'>0T 0F </td>
+<td class='lineTable'>0T </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
-<td class='lineTable'> <pre class='codered'> </pre>
- <font face='arial' color=orange style='font-size: 12px'><b> Branch 74</b></font></td>
-<td class='lineTable'>0</td>
-<td class='lineTable'>0T 0F </td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable'> </td>
-<td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 75</b></font></td>
-<td class='lineTable'> </td>
-<td class='lineTable'> 0</td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable'> </td>
-<td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 76</b></font></td>
+<td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 74</b></font></td>
 <td class='lineTable'> </td>
 <td class='lineTable'> 0</td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
 <td class='lineTable'> <pre class='codered'> </pre>
- <font face='arial' color=orange style='font-size: 12px'><b> Branch 77</b></font></td>
+ <font face='arial' color=orange style='font-size: 12px'><b> Branch 75</b></font></td>
 <td class='lineTable'>0</td>
 <td class='lineTable'>0T 0F </td>
+</tr>
+<tr class='lineTableHoverRed'>
+<td class='lineTable'> </td>
+<td class='lineTable'> <pre class='codered'> </pre>
+ <font face='arial' color=orange style='font-size: 12px'><b> Branch 76</b></font></td>
+<td class='lineTable'>0</td>
+<td class='lineTable'>0T 0F </td>
+</tr>
+<tr class='lineTableHoverRed'>
+<td class='lineTable'> </td>
+<td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 77</b></font></td>
+<td class='lineTable'> </td>
+<td class='lineTable'> 0</td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
@@ -980,7 +992,7 @@ Branch Coverage Summary for Module : sha256_pkg
 <td class='lineTable'> 0</td>
 </tr>
 <tr class='lineTableHoverRed'>
-<td class='lineTable'>16</td>
+<td class='lineTable'>17</td>
 <td class='lineTable'> <pre class='codered'>            `uvm_field_int(data, UVM_ALL_ON)</pre>
  <font face='arial' color=orange style='font-size: 12px'><b> Branch 79</b></font></td>
 <td class='lineTable'> </td>
@@ -1163,7 +1175,7 @@ Branch Coverage Summary for Module : sha256_pkg
 <td class='lineTable'> 0</td>
 </tr>
 <tr class='lineTableHoverRed'>
-<td class='lineTable'>17</td>
+<td class='lineTable'>18</td>
 <td class='lineTable'> <pre class='codered'>            `uvm_field_int(rdata, UVM_ALL_ON)</pre>
  <font face='arial' color=orange style='font-size: 12px'><b> Branch 107</b></font></td>
 <td class='lineTable'> </td>
@@ -1346,32 +1358,38 @@ Branch Coverage Summary for Module : sha256_pkg
 <td class='lineTable'> 0</td>
 </tr>
 <tr class='lineTableHoverGrey'>
-<td class='lineTable'>18</td>
+<td class='lineTable'>19</td>
 <td class='lineTable'> <pre class='codegrey'>        `uvm_object_utils_end</pre> </td>
 <td class='lineTable'> </td>
 <td class='lineTable'> </td>
 </tr>
 <tr class='lineTableHoverGrey'>
-<td class='lineTable'>19</td>
+<td class='lineTable'>20</td>
 <td class='lineTable'> <pre class='codegrey'> </pre> </td>
 <td class='lineTable'> </td>
 <td class='lineTable'> </td>
 </tr>
 <tr class='lineTableHoverGrey'>
-<td class='lineTable'>20</td>
+<td class='lineTable'>21</td>
 <td class='lineTable'> <pre class='codegrey'>        function new(string name = "sha256_seq_item");</pre> </td>
 <td class='lineTable'> </td>
 <td class='lineTable'> </td>
 </tr>
 <tr class='lineTableHoverGrey'>
-<td class='lineTable'>21</td>
+<td class='lineTable'>22</td>
 <td class='lineTable'> <pre class='codegrey'>            super.new(name);</pre> </td>
 <td class='lineTable'> </td>
 <td class='lineTable'> </td>
 </tr>
 <tr class='lineTableHoverGrey'>
-<td class='lineTable'>22</td>
+<td class='lineTable'>23</td>
 <td class='lineTable'> <pre class='codegrey'>        endfunction</pre> </td>
+<td class='lineTable'> </td>
+<td class='lineTable'> </td>
+</tr>
+<tr class='lineTableHoverGrey'>
+<td class='lineTable'>24</td>
+<td class='lineTable'> <pre class='codegrey'>    endclass</pre> </td>
 <td class='lineTable'> </td>
 <td class='lineTable'> </td>
 </tr>
@@ -1379,16 +1397,10 @@ Branch Coverage Summary for Module : sha256_pkg
 <td class='lineTable'> </td>
 <td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 135</b></font></td>
 <td class='lineTable'> </td>
-<td class='lineTable'> 51</td>
+<td class='lineTable'> 211</td>
 </tr>
 <tr class='lineTableHoverGrey'>
-<td class='lineTable'>23</td>
-<td class='lineTable'> <pre class='codegrey'>    endclass</pre> </td>
-<td class='lineTable'> </td>
-<td class='lineTable'> </td>
-</tr>
-<tr class='lineTableHoverGrey'>
-<td class='lineTable'>24</td>
+<td class='lineTable'>25</td>
 <td class='lineTable'> <pre class='codegrey'> </pre> </td>
 <td class='lineTable'> </td>
 <td class='lineTable'> </td>
@@ -1397,47 +1409,72 @@ Branch Coverage Summary for Module : sha256_pkg
 <td class='lineTable'> </td>
 <td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 136</b></font></td>
 <td class='lineTable'> </td>
-<td class='lineTable'> 69</td>
-</tr>
-<tr class='lineTableHoverGreen'>
-<td class='lineTable'>25</td>
-<td class='lineTable'> <pre class='codegreen'>    `include "sha256_sequencer.sv"</pre>
- <font face='arial' color=orange style='font-size: 12px'><b> Branch 137</b></font></td>
-<td class='lineTable'>59</td>
-<td class='lineTable'>17T 42F </td>
+<td class='lineTable'> 126</td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
-<td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 138</b></font></td>
+<td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 137</b></font></td>
 <td class='lineTable'> </td>
-<td class='lineTable'> 42</td>
+<td class='lineTable'> 126</td>
 </tr>
 <tr class='lineTableHoverGreen'>
 <td class='lineTable'>26</td>
-<td class='lineTable'> <pre class='codegreen'>    `include "sha256_sequence.sv"</pre>
- <font face='arial' color=orange style='font-size: 12px'><b> Branch 139</b></font></td>
-<td class='lineTable'>59</td>
-<td class='lineTable'>17T 42F </td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable'>27</td>
-<td class='lineTable'> <pre class='codered'>    `include "sha256_driver.sv"</pre>
- <font face='arial' color=orange style='font-size: 12px'><b> Branch 140</b></font></td>
-<td class='lineTable'>0</td>
-<td class='lineTable'>0T 0F </td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable'> </td>
-<td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 141</b></font></td>
-<td class='lineTable'> </td>
-<td class='lineTable'> 0</td>
+<td class='lineTable'> <pre class='codegreen'>    `include "sha256_sequencer.sv"</pre>
+ <font face='arial' color=orange style='font-size: 12px'><b> Branch 138</b></font></td>
+<td class='lineTable'>181</td>
+<td class='lineTable'>54T 127F </td>
 </tr>
 <tr class='lineTableHoverGreen'>
+<td class='lineTable'>27</td>
+<td class='lineTable'> <pre class='codegreen'>    `include "sha256_sequence.sv"</pre>
+ <font face='arial' color=orange style='font-size: 12px'><b> Branch 139</b></font></td>
+<td class='lineTable'>55</td>
+<td class='lineTable'>54T </td>
+</tr>
+<tr class='lineTableHoverRed'>
+<td class='lineTable'> </td>
+<td class='lineTable'> <pre class='codered'> </pre>
+ <font face='arial' color=orange style='font-size: 12px'><b> Branch 140</b></font></td>
+<td class='lineTable'> </td>
+<td class='lineTable'>1F </td>
+</tr>
+<tr class='lineTableHoverGrey'>
 <td class='lineTable'>28</td>
-<td class='lineTable'> <pre class='codegreen'>    `include "sha256_monitor.sv"</pre>
+<td class='lineTable'> <pre class='codegrey'>    `include "sha256_driver.sv"</pre> </td>
+<td class='lineTable'> </td>
+<td class='lineTable'> </td>
+</tr>
+<tr class='lineTableHoverGrey'>
+<td class='lineTable'>29</td>
+<td class='lineTable'> <pre class='codegrey'>    `include "sha256_monitor.sv"</pre> </td>
+<td class='lineTable'> </td>
+<td class='lineTable'> </td>
+</tr>
+<tr class='lineTableHoverGrey'>
+<td class='lineTable'>30</td>
+<td class='lineTable'> <pre class='codegrey'>    `include "sha256_agents.sv"</pre> </td>
+<td class='lineTable'> </td>
+<td class='lineTable'> </td>
+</tr>
+<tr class='lineTableHoverGrey'>
+<td class='lineTable'>31</td>
+<td class='lineTable'> <pre class='codegrey'>    `include "sha256_scoreboard.sv"</pre> </td>
+<td class='lineTable'> </td>
+<td class='lineTable'> </td>
+</tr>
+<tr class='lineTableHoverGreen'>
+<td class='lineTable'>32</td>
+<td class='lineTable'> <pre class='codegreen'>    `include "sha256_env.sv"</pre>
+ <font face='arial' color=orange style='font-size: 12px'><b> Branch 141</b></font></td>
+<td class='lineTable'>127</td>
+<td class='lineTable'>1T 126F </td>
+</tr>
+<tr class='lineTableHoverGreen'>
+<td class='lineTable'>33</td>
+<td class='lineTable'> <pre class='codegreen'>    `include "sha256_test.sv"</pre>
  <font face='arial' color=orange style='font-size: 12px'><b> Branch 142</b></font></td>
-<td class='lineTable'>8</td>
-<td class='lineTable'>8T 0F </td>
+<td class='lineTable'>49</td>
+<td class='lineTable'>49T 0F </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
@@ -1445,97 +1482,31 @@ Branch Coverage Summary for Module : sha256_pkg
 <td class='lineTable'> </td>
 <td class='lineTable'> 0</td>
 </tr>
-<tr class='lineTableHoverGrey'>
-<td class='lineTable'>29</td>
-<td class='lineTable'> <pre class='codegrey'>    `include "sha256_agents.sv"</pre> </td>
-<td class='lineTable'> </td>
-<td class='lineTable'> </td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable'>30</td>
-<td class='lineTable'> <pre class='codered'>    `include "sha256_scoreboard.sv"</pre>
+<tr class='lineTableHoverGreen'>
+<td class='lineTable'>34</td>
+<td class='lineTable'> <pre class='codegreen'>endpackage</pre>
  <font face='arial' color=orange style='font-size: 12px'><b> Branch 144</b></font></td>
-<td class='lineTable'>0</td>
-<td class='lineTable'>0T 0F </td>
+<td class='lineTable'>181</td>
+<td class='lineTable'>126T 55F </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
 <td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 145</b></font></td>
 <td class='lineTable'> </td>
-<td class='lineTable'> 0</td>
+<td class='lineTable'> 55</td>
 </tr>
 <tr class='lineTableHoverGreen'>
-<td class='lineTable'>31</td>
-<td class='lineTable'> <pre class='codegreen'>    `include "sha256_env.sv"</pre>
+<td class='lineTable'> </td>
+<td class='lineTable'> <pre class='codegreen'> </pre>
  <font face='arial' color=orange style='font-size: 12px'><b> Branch 146</b></font></td>
-<td class='lineTable'>42</td>
-<td class='lineTable'>42T </td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable'>32</td>
-<td class='lineTable'> <pre class='codered'>    `include "sha256_test.sv"</pre>
- <font face='arial' color=orange style='font-size: 12px'><b> Branch 147</b></font></td>
-<td class='lineTable'>0</td>
-<td class='lineTable'>0T 0F </td>
+<td class='lineTable'>49</td>
+<td class='lineTable'>49T 0F </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
-<td class='lineTable'> <pre class='codered'> </pre>
- <font face='arial' color=orange style='font-size: 12px'><b> Branch 148</b></font></td>
-<td class='lineTable'>0</td>
-<td class='lineTable'>0T </td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable'> </td>
-<td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 149</b></font></td>
+<td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 147</b></font></td>
 <td class='lineTable'> </td>
 <td class='lineTable'> 0</td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable'> </td>
-<td class='lineTable'> <pre class='codered'> </pre>
- <font face='arial' color=orange style='font-size: 12px'><b> Branch 150</b></font></td>
-<td class='lineTable'>0</td>
-<td class='lineTable'>0T 0F </td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable'> </td>
-<td class='lineTable'> <pre class='codered'> </pre>
- <font face='arial' color=orange style='font-size: 12px'><b> Branch 151</b></font></td>
-<td class='lineTable'>0</td>
-<td class='lineTable'>0T </td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable'> </td>
-<td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 152</b></font></td>
-<td class='lineTable'> </td>
-<td class='lineTable'> 0</td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable'> </td>
-<td class='lineTable'> <pre class='codered'> </pre>
- <font face='arial' color=orange style='font-size: 12px'><b> Branch 153</b></font></td>
-<td class='lineTable'>0</td>
-<td class='lineTable'>0T 0F </td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable'> </td>
-<td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 154</b></font></td>
-<td class='lineTable'> </td>
-<td class='lineTable'> 0</td>
-</tr>
-<tr class='lineTableHoverGreen'>
-<td class='lineTable'>33</td>
-<td class='lineTable'> <pre class='codegreen'>endpackage</pre>
- <font face='arial' color=orange style='font-size: 12px'><b> Branch 155</b></font></td>
-<td class='lineTable'>59</td>
-<td class='lineTable'>42T 17F </td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable'> </td>
-<td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 156</b></font></td>
-<td class='lineTable'> </td>
-<td class='lineTable'> 17</td>
 </tr>
 </table>
 </div>
@@ -1560,10 +1531,10 @@ Condition Coverage Summary for Module : sha256_pkg
 <th class='fileScoreTable' bgcolor='#DEE8EE'> Condition Coverage Score </th>
 </tr>
 <tr>
-<td class='fileScoreTable'>21</td>
-<td class='fileScoreTable'>3</td>
-<td class='fileScoreTable'>18</td>
-<td class='fileScoreTable' bgcolor='#FFD2D2'>14.2857</td>
+<td class='fileScoreTable'>31</td>
+<td class='fileScoreTable'>12</td>
+<td class='fileScoreTable'>19</td>
+<td class='fileScoreTable' bgcolor='#FFFFC2'>38.7097</td>
 </tr>
 </table>
 <br clear=all>
@@ -1575,16 +1546,6 @@ Condition Coverage Summary for Module : sha256_pkg
 <th class='lineTable' style='background-color:#80FFBF; line-height:1;' width='120px'> Evaluation Count </th>
 </tr>
 <tr class='lineTableHoverRed'>
-<td class='lineTable'>14</td>
-<td class='lineTable'> <pre class='codered'>(uvm_object::__m_uvm_status_container.comparer.show_max <= uvm_object::__m_uvm_status_container.comparer.result)__TRUE</pre> </td>
-<td class='lineTable'>0 </td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable'> </td>
-<td class='lineTable'> <pre class='codered'>(uvm_object::__m_uvm_status_container.comparer.show_max <= uvm_object::__m_uvm_status_container.comparer.result)__FALSE</pre> </td>
-<td class='lineTable'>0 </td>
-</tr>
-<tr class='lineTableHoverRed'>
 <td class='lineTable'>15</td>
 <td class='lineTable'> <pre class='codered'>(uvm_object::__m_uvm_status_container.comparer.show_max <= uvm_object::__m_uvm_status_container.comparer.result)__TRUE</pre> </td>
 <td class='lineTable'>0 </td>
@@ -1595,7 +1556,17 @@ Condition Coverage Summary for Module : sha256_pkg
 <td class='lineTable'>0 </td>
 </tr>
 <tr class='lineTableHoverRed'>
-<td class='lineTable'>15</td>
+<td class='lineTable'>16</td>
+<td class='lineTable'> <pre class='codered'>(uvm_object::__m_uvm_status_container.comparer.show_max <= uvm_object::__m_uvm_status_container.comparer.result)__TRUE</pre> </td>
+<td class='lineTable'>0 </td>
+</tr>
+<tr class='lineTableHoverRed'>
+<td class='lineTable'> </td>
+<td class='lineTable'> <pre class='codered'>(uvm_object::__m_uvm_status_container.comparer.show_max <= uvm_object::__m_uvm_status_container.comparer.result)__FALSE</pre> </td>
+<td class='lineTable'>0 </td>
+</tr>
+<tr class='lineTableHoverRed'>
+<td class='lineTable'>16</td>
 <td class='lineTable'> <pre class='codered'>($bits(\this .addr) <= 64)__TRUE</pre> </td>
 <td class='lineTable'>0 </td>
 </tr>
@@ -1605,7 +1576,7 @@ Condition Coverage Summary for Module : sha256_pkg
 <td class='lineTable'>0 </td>
 </tr>
 <tr class='lineTableHoverRed'>
-<td class='lineTable'>15</td>
+<td class='lineTable'>16</td>
 <td class='lineTable'> <pre class='codered'>($bits(\this .addr) <= 64)__TRUE</pre> </td>
 <td class='lineTable'>0 </td>
 </tr>
@@ -1615,17 +1586,7 @@ Condition Coverage Summary for Module : sha256_pkg
 <td class='lineTable'>0 </td>
 </tr>
 <tr class='lineTableHoverRed'>
-<td class='lineTable'>15</td>
-<td class='lineTable'> <pre class='codered'>($bits(\this .addr) > 64)__TRUE</pre> </td>
-<td class='lineTable'>0 </td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable'> </td>
-<td class='lineTable'> <pre class='codered'>($bits(\this .addr) > 64)__FALSE</pre> </td>
-<td class='lineTable'>0 </td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable'>15</td>
+<td class='lineTable'>16</td>
 <td class='lineTable'> <pre class='codered'>($bits(\this .addr) > 64)__TRUE</pre> </td>
 <td class='lineTable'>0 </td>
 </tr>
@@ -1636,52 +1597,12 @@ Condition Coverage Summary for Module : sha256_pkg
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'>16</td>
-<td class='lineTable'> <pre class='codered'>(uvm_object::__m_uvm_status_container.comparer.show_max <= uvm_object::__m_uvm_status_container.comparer.result)__TRUE</pre> </td>
+<td class='lineTable'> <pre class='codered'>($bits(\this .addr) > 64)__TRUE</pre> </td>
 <td class='lineTable'>0 </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
-<td class='lineTable'> <pre class='codered'>(uvm_object::__m_uvm_status_container.comparer.show_max <= uvm_object::__m_uvm_status_container.comparer.result)__FALSE</pre> </td>
-<td class='lineTable'>0 </td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable'>16</td>
-<td class='lineTable'> <pre class='codered'>($bits(\this .data) <= 64)__TRUE</pre> </td>
-<td class='lineTable'>0 </td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable'> </td>
-<td class='lineTable'> <pre class='codered'>($bits(\this .data) <= 64)__FALSE</pre> </td>
-<td class='lineTable'>0 </td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable'>16</td>
-<td class='lineTable'> <pre class='codered'>($bits(\this .data) <= 64)__TRUE</pre> </td>
-<td class='lineTable'>0 </td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable'> </td>
-<td class='lineTable'> <pre class='codered'>($bits(\this .data) <= 64)__FALSE</pre> </td>
-<td class='lineTable'>0 </td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable'>16</td>
-<td class='lineTable'> <pre class='codered'>($bits(\this .data) > 64)__TRUE</pre> </td>
-<td class='lineTable'>0 </td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable'> </td>
-<td class='lineTable'> <pre class='codered'>($bits(\this .data) > 64)__FALSE</pre> </td>
-<td class='lineTable'>0 </td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable'>16</td>
-<td class='lineTable'> <pre class='codered'>($bits(\this .data) > 64)__TRUE</pre> </td>
-<td class='lineTable'>0 </td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable'> </td>
-<td class='lineTable'> <pre class='codered'>($bits(\this .data) > 64)__FALSE</pre> </td>
+<td class='lineTable'> <pre class='codered'>($bits(\this .addr) > 64)__FALSE</pre> </td>
 <td class='lineTable'>0 </td>
 </tr>
 <tr class='lineTableHoverRed'>
@@ -1696,6 +1617,56 @@ Condition Coverage Summary for Module : sha256_pkg
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'>17</td>
+<td class='lineTable'> <pre class='codered'>($bits(\this .data) <= 64)__TRUE</pre> </td>
+<td class='lineTable'>0 </td>
+</tr>
+<tr class='lineTableHoverRed'>
+<td class='lineTable'> </td>
+<td class='lineTable'> <pre class='codered'>($bits(\this .data) <= 64)__FALSE</pre> </td>
+<td class='lineTable'>0 </td>
+</tr>
+<tr class='lineTableHoverRed'>
+<td class='lineTable'>17</td>
+<td class='lineTable'> <pre class='codered'>($bits(\this .data) <= 64)__TRUE</pre> </td>
+<td class='lineTable'>0 </td>
+</tr>
+<tr class='lineTableHoverRed'>
+<td class='lineTable'> </td>
+<td class='lineTable'> <pre class='codered'>($bits(\this .data) <= 64)__FALSE</pre> </td>
+<td class='lineTable'>0 </td>
+</tr>
+<tr class='lineTableHoverRed'>
+<td class='lineTable'>17</td>
+<td class='lineTable'> <pre class='codered'>($bits(\this .data) > 64)__TRUE</pre> </td>
+<td class='lineTable'>0 </td>
+</tr>
+<tr class='lineTableHoverRed'>
+<td class='lineTable'> </td>
+<td class='lineTable'> <pre class='codered'>($bits(\this .data) > 64)__FALSE</pre> </td>
+<td class='lineTable'>0 </td>
+</tr>
+<tr class='lineTableHoverRed'>
+<td class='lineTable'>17</td>
+<td class='lineTable'> <pre class='codered'>($bits(\this .data) > 64)__TRUE</pre> </td>
+<td class='lineTable'>0 </td>
+</tr>
+<tr class='lineTableHoverRed'>
+<td class='lineTable'> </td>
+<td class='lineTable'> <pre class='codered'>($bits(\this .data) > 64)__FALSE</pre> </td>
+<td class='lineTable'>0 </td>
+</tr>
+<tr class='lineTableHoverRed'>
+<td class='lineTable'>18</td>
+<td class='lineTable'> <pre class='codered'>(uvm_object::__m_uvm_status_container.comparer.show_max <= uvm_object::__m_uvm_status_container.comparer.result)__TRUE</pre> </td>
+<td class='lineTable'>0 </td>
+</tr>
+<tr class='lineTableHoverRed'>
+<td class='lineTable'> </td>
+<td class='lineTable'> <pre class='codered'>(uvm_object::__m_uvm_status_container.comparer.show_max <= uvm_object::__m_uvm_status_container.comparer.result)__FALSE</pre> </td>
+<td class='lineTable'>0 </td>
+</tr>
+<tr class='lineTableHoverRed'>
+<td class='lineTable'>18</td>
 <td class='lineTable'> <pre class='codered'>($bits(\this .rdata) <= 64)__TRUE</pre> </td>
 <td class='lineTable'>0 </td>
 </tr>
@@ -1705,7 +1676,7 @@ Condition Coverage Summary for Module : sha256_pkg
 <td class='lineTable'>0 </td>
 </tr>
 <tr class='lineTableHoverRed'>
-<td class='lineTable'>17</td>
+<td class='lineTable'>18</td>
 <td class='lineTable'> <pre class='codered'>($bits(\this .rdata) <= 64)__TRUE</pre> </td>
 <td class='lineTable'>0 </td>
 </tr>
@@ -1715,7 +1686,7 @@ Condition Coverage Summary for Module : sha256_pkg
 <td class='lineTable'>0 </td>
 </tr>
 <tr class='lineTableHoverRed'>
-<td class='lineTable'>17</td>
+<td class='lineTable'>18</td>
 <td class='lineTable'> <pre class='codered'>($bits(\this .rdata) > 64)__TRUE</pre> </td>
 <td class='lineTable'>0 </td>
 </tr>
@@ -1725,7 +1696,7 @@ Condition Coverage Summary for Module : sha256_pkg
 <td class='lineTable'>0 </td>
 </tr>
 <tr class='lineTableHoverRed'>
-<td class='lineTable'>17</td>
+<td class='lineTable'>18</td>
 <td class='lineTable'> <pre class='codered'>($bits(\this .rdata) > 64)__TRUE</pre> </td>
 <td class='lineTable'>0 </td>
 </tr>
@@ -1735,29 +1706,109 @@ Condition Coverage Summary for Module : sha256_pkg
 <td class='lineTable'>0 </td>
 </tr>
 <tr class='lineTableHoverGreen'>
-<td class='lineTable'>22</td>
+<td class='lineTable'>25</td>
+<td class='lineTable'> <pre class='codegreen'>(item.op == WRITE)__TRUE</pre> </td>
+<td class='lineTable'>54 </td>
+</tr>
+<tr class='lineTableHoverGreen'>
+<td class='lineTable'> </td>
+<td class='lineTable'> <pre class='codegreen'>(item.op == WRITE)__FALSE</pre> </td>
+<td class='lineTable'>89 </td>
+</tr>
+<tr class='lineTableHoverGreen'>
+<td class='lineTable'>25</td>
+<td class='lineTable'> <pre class='codegreen'>(item.op == WRITE_MASK)__TRUE</pre> </td>
+<td class='lineTable'>1 </td>
+</tr>
+<tr class='lineTableHoverGreen'>
+<td class='lineTable'> </td>
+<td class='lineTable'> <pre class='codegreen'>(item.op == WRITE_MASK)__FALSE</pre> </td>
+<td class='lineTable'>126 </td>
+</tr>
+<tr class='lineTableHoverGreen'>
+<td class='lineTable'>26</td>
+<td class='lineTable'> <pre class='codegreen'>(\this .req.op == WRITE)__TRUE</pre> </td>
+<td class='lineTable'>54 </td>
+</tr>
+<tr class='lineTableHoverGreen'>
+<td class='lineTable'> </td>
+<td class='lineTable'> <pre class='codegreen'>(\this .req.op == WRITE)__FALSE</pre> </td>
+<td class='lineTable'>89 </td>
+</tr>
+<tr class='lineTableHoverGreen'>
+<td class='lineTable'>27</td>
+<td class='lineTable'> <pre class='codegreen'>(\this .vif.avs_byteenable == 4'b1111)__TRUE</pre> </td>
+<td class='lineTable'>54 </td>
+</tr>
+<tr class='lineTableHoverRed'>
+<td class='lineTable'> </td>
+<td class='lineTable'> <pre class='codered'>(\this .vif.avs_byteenable == 4'b1111)__FALSE</pre> </td>
+<td class='lineTable'>0 </td>
+</tr>
+<tr class='lineTableHoverGreen'>
+<td class='lineTable'>27</td>
+<td class='lineTable'> <pre class='codegreen'>(item.addr >= 5'b0)__TRUE</pre> </td>
+<td class='lineTable'>55 </td>
+</tr>
+<tr class='lineTableHoverRed'>
+<td class='lineTable'> </td>
+<td class='lineTable'> <pre class='codered'>(item.addr >= 5'b0)__FALSE</pre> </td>
+<td class='lineTable'>0 </td>
+</tr>
+<tr class='lineTableHoverGreen'>
+<td class='lineTable'>27</td>
+<td class='lineTable'> <pre class='codegreen'>(item.addr <= 5'b01111)__TRUE</pre> </td>
+<td class='lineTable'>49 </td>
+</tr>
+<tr class='lineTableHoverGreen'>
+<td class='lineTable'> </td>
+<td class='lineTable'> <pre class='codegreen'>(item.addr <= 5'b01111)__FALSE</pre> </td>
+<td class='lineTable'>6 </td>
+</tr>
+<tr class='lineTableHoverGreen'>
+<td class='lineTable'>32</td>
+<td class='lineTable'> <pre class='codegreen'>(\this .req.op == WRITE_MASK)__TRUE</pre> </td>
+<td class='lineTable'>1 </td>
+</tr>
+<tr class='lineTableHoverGreen'>
+<td class='lineTable'> </td>
+<td class='lineTable'> <pre class='codegreen'>(\this .req.op == WRITE_MASK)__FALSE</pre> </td>
+<td class='lineTable'>126 </td>
+</tr>
+<tr class='lineTableHoverGreen'>
+<td class='lineTable'>41</td>
+<td class='lineTable'> <pre class='codegreen'>(item.addr == 5'b10000)__TRUE</pre> </td>
+<td class='lineTable'>3 </td>
+</tr>
+<tr class='lineTableHoverGreen'>
+<td class='lineTable'> </td>
+<td class='lineTable'> <pre class='codegreen'>(item.addr == 5'b10000)__FALSE</pre> </td>
+<td class='lineTable'>1 </td>
+</tr>
+<tr class='lineTableHoverGreen'>
+<td class='lineTable'>57</td>
 <td class='lineTable'> <pre class='codegreen'>(item.op == READ)__TRUE</pre> </td>
-<td class='lineTable'>42 </td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable'> </td>
-<td class='lineTable'> <pre class='codered'>(item.op == READ)__FALSE</pre> </td>
-<td class='lineTable'>0 </td>
+<td class='lineTable'>126 </td>
 </tr>
 <tr class='lineTableHoverGreen'>
-<td class='lineTable'>22</td>
+<td class='lineTable'> </td>
+<td class='lineTable'> <pre class='codegreen'>(item.op == READ)__FALSE</pre> </td>
+<td class='lineTable'>1 </td>
+</tr>
+<tr class='lineTableHoverGreen'>
+<td class='lineTable'>57</td>
 <td class='lineTable'> <pre class='codegreen'>(item.addr >= 5'b10010)__TRUE</pre> </td>
-<td class='lineTable'>8 </td>
+<td class='lineTable'>24 </td>
 </tr>
 <tr class='lineTableHoverGreen'>
 <td class='lineTable'> </td>
 <td class='lineTable'> <pre class='codegreen'>(item.addr >= 5'b10010)__FALSE</pre> </td>
-<td class='lineTable'>34 </td>
+<td class='lineTable'>102 </td>
 </tr>
 <tr class='lineTableHoverGreen'>
-<td class='lineTable'>22</td>
+<td class='lineTable'>57</td>
 <td class='lineTable'> <pre class='codegreen'>(item.addr <= 5'b11001)__TRUE</pre> </td>
-<td class='lineTable'>8 </td>
+<td class='lineTable'>24 </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
@@ -1765,17 +1816,37 @@ Condition Coverage Summary for Module : sha256_pkg
 <td class='lineTable'>0 </td>
 </tr>
 <tr class='lineTableHoverGreen'>
-<td class='lineTable'>26</td>
-<td class='lineTable'> <pre class='codegreen'>(\this .req.op == WRITE)__TRUE</pre> </td>
-<td class='lineTable'>17 </td>
+<td class='lineTable'>66</td>
+<td class='lineTable'> <pre class='codegreen'>(word_idx == 7)__TRUE</pre> </td>
+<td class='lineTable'>3 </td>
 </tr>
 <tr class='lineTableHoverGreen'>
 <td class='lineTable'> </td>
-<td class='lineTable'> <pre class='codegreen'>(\this .req.op == WRITE)__FALSE</pre> </td>
-<td class='lineTable'>42 </td>
+<td class='lineTable'> <pre class='codegreen'>(word_idx == 7)__FALSE</pre> </td>
+<td class='lineTable'>18 </td>
 </tr>
 <tr class='lineTableHoverGreen'>
-<td class='lineTable'>59</td>
+<td class='lineTable'>71</td>
+<td class='lineTable'> <pre class='codegreen'>((rdata & 32'b010) == 0)__TRUE</pre> </td>
+<td class='lineTable'>33 </td>
+</tr>
+<tr class='lineTableHoverGreen'>
+<td class='lineTable'> </td>
+<td class='lineTable'> <pre class='codegreen'>((rdata & 32'b010) == 0)__FALSE</pre> </td>
+<td class='lineTable'>1 </td>
+</tr>
+<tr class='lineTableHoverGreen'>
+<td class='lineTable'>111</td>
+<td class='lineTable'> <pre class='codegreen'>((rdata2 & 32'b010) == 0)__TRUE</pre> </td>
+<td class='lineTable'>33 </td>
+</tr>
+<tr class='lineTableHoverGreen'>
+<td class='lineTable'> </td>
+<td class='lineTable'> <pre class='codegreen'>((rdata2 & 32'b010) == 0)__FALSE</pre> </td>
+<td class='lineTable'>1 </td>
+</tr>
+<tr class='lineTableHoverGreen'>
+<td class='lineTable'>150</td>
 <td class='lineTable'> <pre class='codegreen'>((rdata & 32'b010) == 0)__TRUE</pre> </td>
 <td class='lineTable'>33 </td>
 </tr>
@@ -1820,11 +1891,11 @@ Condition Coverage Summary for Module : sha256_pkg
 <th class='fileScoreTable' bgcolor='#DEE8EE'> Statement Coverage Score </th>
 </tr>
 <tr>
-<td class='fileScoreTable'>42</td>
-<td class='fileScoreTable'>368</td>
-<td class='fileScoreTable' bgcolor='#98FF98'>368</td>
-<td class='fileScoreTable' bgcolor='#98FF98'> 0 </td>
-<td class='fileScoreTable' bgcolor='#98FF98'>100</td>
+<td class='fileScoreTable'>94</td>
+<td class='fileScoreTable'>501</td>
+<td class='fileScoreTable' bgcolor='#FFFFC2'>491</td>
+<td class='fileScoreTable' bgcolor='#FFD2D2'>10</td>
+<td class='fileScoreTable' bgcolor='#98FF98'>98.004</td>
 </tr>
 </table>
 <br clear=all>
@@ -1853,8 +1924,8 @@ Condition Coverage Summary for Module : sha256_pkg
 <tr class='lineTableHoverGreen'>
 <td class='lineTable'>2</td>
 <td class='lineTable'> <pre class='codegreen'>    import uvm_pkg::*;</pre> </td>
-<td class='lineTable'>12</td>
-<td class='lineTable'>45</td>
+<td class='lineTable'>10</td>
+<td class='lineTable'>41</td>
 </tr>
 <tr class='lineTableHoverGrey'>
 <td class='lineTable'>3</td>
@@ -1865,12 +1936,12 @@ Condition Coverage Summary for Module : sha256_pkg
 <tr class='lineTableHoverGreen'>
 <td class='lineTable'>4</td>
 <td class='lineTable'> <pre class='codegreen'> </pre> </td>
-<td class='lineTable'>2</td>
+<td class='lineTable'>4</td>
 <td class='lineTable'>2</td>
 </tr>
 <tr class='lineTableHoverGrey'>
 <td class='lineTable'>5</td>
-<td class='lineTable'> <pre class='codegrey'>    typedef enum {READ, WRITE} op_t;</pre> </td>
+<td class='lineTable'> <pre class='codegrey'>    typedef enum {READ, WRITE, WRITE_MASK} op_t;</pre> </td>
 <td class='lineTable'> </td>
 <td class='lineTable'> </td>
 </tr>
@@ -1883,164 +1954,170 @@ Condition Coverage Summary for Module : sha256_pkg
 <tr class='lineTableHoverGreen'>
 <td class='lineTable'>7</td>
 <td class='lineTable'> <pre class='codegreen'>    class sha256_seq_item extends uvm_sequence_item;</pre> </td>
-<td class='lineTable'>1</td>
-<td class='lineTable'>1</td>
+<td class='lineTable'>3</td>
+<td class='lineTable'>5</td>
 </tr>
 <tr class='lineTableHoverGreen'>
 <td class='lineTable'>8</td>
 <td class='lineTable'> <pre class='codegreen'>        rand op_t op;</pre> </td>
-<td class='lineTable'>19</td>
+<td class='lineTable'>56</td>
 <td class='lineTable'>3</td>
 </tr>
 <tr class='lineTableHoverGreen'>
 <td class='lineTable'>9</td>
 <td class='lineTable'> <pre class='codegreen'>        rand logic [4:0]  addr;</pre> </td>
-<td class='lineTable'>18</td>
+<td class='lineTable'>55</td>
 <td class='lineTable'>2</td>
 </tr>
 <tr class='lineTableHoverGreen'>
 <td class='lineTable'>10</td>
 <td class='lineTable'> <pre class='codegreen'>        rand logic [31:0] data;</pre> </td>
-<td class='lineTable'>19</td>
+<td class='lineTable'>56</td>
 <td class='lineTable'>3</td>
 </tr>
 <tr class='lineTableHoverGreen'>
 <td class='lineTable'>11</td>
-<td class='lineTable'> <pre class='codegreen'>        logic [31:0]      rdata;</pre> </td>
-<td class='lineTable'>20</td>
+<td class='lineTable'> <pre class='codegreen'>        rand logic [3:0] avsByteEnable;</pre> </td>
+<td class='lineTable'>57</td>
 <td class='lineTable'>4</td>
 </tr>
 <tr class='lineTableHoverGreen'>
 <td class='lineTable'>12</td>
-<td class='lineTable'> <pre class='codegreen'> </pre> </td>
-<td class='lineTable'>19</td>
+<td class='lineTable'> <pre class='codegreen'>        logic [31:0]      rdata;</pre> </td>
+<td class='lineTable'>56</td>
 <td class='lineTable'>5</td>
 </tr>
 <tr class='lineTableHoverGreen'>
 <td class='lineTable'>13</td>
-<td class='lineTable'> <pre class='codegreen'>        `uvm_object_utils_begin(sha256_seq_item)</pre> </td>
-<td class='lineTable'>386</td>
-<td class='lineTable'>21</td>
+<td class='lineTable'> <pre class='codegreen'> </pre> </td>
+<td class='lineTable'>57</td>
+<td class='lineTable'>4</td>
 </tr>
 <tr class='lineTableHoverGreen'>
 <td class='lineTable'>14</td>
-<td class='lineTable'> <pre class='codegreen'>            `uvm_field_enum(op_t, op, UVM_ALL_ON)</pre> </td>
-<td class='lineTable'>3</td>
-<td class='lineTable'>45</td>
+<td class='lineTable'> <pre class='codegreen'>        `uvm_object_utils_begin(sha256_seq_item)</pre> </td>
+<td class='lineTable'>1113</td>
+<td class='lineTable'>20</td>
 </tr>
 <tr class='lineTableHoverGreen'>
 <td class='lineTable'>15</td>
-<td class='lineTable'> <pre class='codegreen'>            `uvm_field_int(addr, UVM_ALL_ON)</pre> </td>
-<td class='lineTable'>2</td>
-<td class='lineTable'>51</td>
+<td class='lineTable'> <pre class='codegreen'>            `uvm_field_enum(op_t, op, UVM_ALL_ON)</pre> </td>
+<td class='lineTable'>1</td>
+<td class='lineTable'>45</td>
 </tr>
 <tr class='lineTableHoverGreen'>
 <td class='lineTable'>16</td>
-<td class='lineTable'> <pre class='codegreen'>            `uvm_field_int(data, UVM_ALL_ON)</pre> </td>
+<td class='lineTable'> <pre class='codegreen'>            `uvm_field_int(addr, UVM_ALL_ON)</pre> </td>
 <td class='lineTable'>1</td>
 <td class='lineTable'>49</td>
 </tr>
 <tr class='lineTableHoverGreen'>
 <td class='lineTable'>17</td>
-<td class='lineTable'> <pre class='codegreen'>            `uvm_field_int(rdata, UVM_ALL_ON)</pre> </td>
-<td class='lineTable'>44</td>
-<td class='lineTable'>50</td>
+<td class='lineTable'> <pre class='codegreen'>            `uvm_field_int(data, UVM_ALL_ON)</pre> </td>
+<td class='lineTable'>2</td>
+<td class='lineTable'>49</td>
 </tr>
 <tr class='lineTableHoverGreen'>
 <td class='lineTable'>18</td>
-<td class='lineTable'> <pre class='codegreen'>        `uvm_object_utils_end</pre> </td>
-<td class='lineTable'>44</td>
-<td class='lineTable'>3</td>
+<td class='lineTable'> <pre class='codegreen'>            `uvm_field_int(rdata, UVM_ALL_ON)</pre> </td>
+<td class='lineTable'>4</td>
+<td class='lineTable'>51</td>
 </tr>
 <tr class='lineTableHoverGreen'>
 <td class='lineTable'>19</td>
-<td class='lineTable'> <pre class='codegreen'> </pre> </td>
-<td class='lineTable'>44</td>
-<td class='lineTable'>3</td>
+<td class='lineTable'> <pre class='codegreen'>        `uvm_object_utils_end</pre> </td>
+<td class='lineTable'>4</td>
+<td class='lineTable'>4</td>
 </tr>
 <tr class='lineTableHoverGreen'>
 <td class='lineTable'>20</td>
-<td class='lineTable'> <pre class='codegreen'>        function new(string name = "sha256_seq_item");</pre> </td>
-<td class='lineTable'>45</td>
+<td class='lineTable'> <pre class='codegreen'> </pre> </td>
+<td class='lineTable'>4</td>
 <td class='lineTable'>4</td>
 </tr>
 <tr class='lineTableHoverGreen'>
 <td class='lineTable'>21</td>
-<td class='lineTable'> <pre class='codegreen'>            super.new(name);</pre> </td>
-<td class='lineTable'>165</td>
-<td class='lineTable'>7</td>
+<td class='lineTable'> <pre class='codegreen'>        function new(string name = "sha256_seq_item");</pre> </td>
+<td class='lineTable'>2</td>
+<td class='lineTable'>6</td>
 </tr>
 <tr class='lineTableHoverGreen'>
 <td class='lineTable'>22</td>
-<td class='lineTable'> <pre class='codegreen'>        endfunction</pre> </td>
-<td class='lineTable'>162</td>
+<td class='lineTable'> <pre class='codegreen'>            super.new(name);</pre> </td>
+<td class='lineTable'>546</td>
 <td class='lineTable'>4</td>
 </tr>
-<tr class='lineTableHoverGrey'>
+<tr class='lineTableHoverGreen'>
 <td class='lineTable'>23</td>
-<td class='lineTable'> <pre class='codegrey'>    endclass</pre> </td>
-<td class='lineTable'> </td>
-<td class='lineTable'> </td>
+<td class='lineTable'> <pre class='codegreen'>        endfunction</pre> </td>
+<td class='lineTable'>1</td>
+<td class='lineTable'>1</td>
 </tr>
 <tr class='lineTableHoverGreen'>
 <td class='lineTable'>24</td>
-<td class='lineTable'> <pre class='codegreen'> </pre> </td>
-<td class='lineTable'>386</td>
-<td class='lineTable'>3</td>
+<td class='lineTable'> <pre class='codegreen'>    endclass</pre> </td>
+<td class='lineTable'>393</td>
+<td class='lineTable'>4</td>
 </tr>
 <tr class='lineTableHoverGreen'>
 <td class='lineTable'>25</td>
-<td class='lineTable'> <pre class='codegreen'>    `include "sha256_sequencer.sv"</pre> </td>
-<td class='lineTable'>386</td>
-<td class='lineTable'>2</td>
+<td class='lineTable'> <pre class='codegreen'> </pre> </td>
+<td class='lineTable'>1113</td>
+<td class='lineTable'>3</td>
 </tr>
 <tr class='lineTableHoverGreen'>
 <td class='lineTable'>26</td>
-<td class='lineTable'> <pre class='codegreen'>    `include "sha256_sequence.sv"</pre> </td>
-<td class='lineTable'>76</td>
+<td class='lineTable'> <pre class='codegreen'>    `include "sha256_sequencer.sv"</pre> </td>
+<td class='lineTable'>236</td>
 <td class='lineTable'>2</td>
 </tr>
 <tr class='lineTableHoverGreen'>
 <td class='lineTable'>27</td>
-<td class='lineTable'> <pre class='codegreen'>    `include "sha256_driver.sv"</pre> </td>
-<td class='lineTable'>25</td>
-<td class='lineTable'>5</td>
+<td class='lineTable'> <pre class='codegreen'>    `include "sha256_sequence.sv"</pre> </td>
+<td class='lineTable'>109</td>
+<td class='lineTable'>3</td>
 </tr>
 <tr class='lineTableHoverGreen'>
 <td class='lineTable'>28</td>
-<td class='lineTable'> <pre class='codegreen'>    `include "sha256_monitor.sv"</pre> </td>
-<td class='lineTable'>386</td>
-<td class='lineTable'>4</td>
+<td class='lineTable'> <pre class='codegreen'>    `include "sha256_driver.sv"</pre> </td>
+<td class='lineTable'>126</td>
+<td class='lineTable'>3</td>
 </tr>
 <tr class='lineTableHoverGreen'>
 <td class='lineTable'>29</td>
-<td class='lineTable'> <pre class='codegreen'>    `include "sha256_agents.sv"</pre> </td>
-<td class='lineTable'>386</td>
-<td class='lineTable'>1</td>
+<td class='lineTable'> <pre class='codegreen'>    `include "sha256_monitor.sv"</pre> </td>
+<td class='lineTable'>126</td>
+<td class='lineTable'>3</td>
 </tr>
 <tr class='lineTableHoverGreen'>
 <td class='lineTable'>30</td>
-<td class='lineTable'> <pre class='codegreen'>    `include "sha256_scoreboard.sv"</pre> </td>
-<td class='lineTable'>386</td>
-<td class='lineTable'>5</td>
+<td class='lineTable'> <pre class='codegreen'>    `include "sha256_agents.sv"</pre> </td>
+<td class='lineTable'>175</td>
+<td class='lineTable'>4</td>
 </tr>
-<tr class='lineTableHoverGrey'>
+<tr class='lineTableHoverGreen'>
 <td class='lineTable'>31</td>
-<td class='lineTable'> <pre class='codegrey'>    `include "sha256_env.sv"</pre> </td>
-<td class='lineTable'> </td>
-<td class='lineTable'> </td>
+<td class='lineTable'> <pre class='codegreen'>    `include "sha256_scoreboard.sv"</pre> </td>
+<td class='lineTable'>126</td>
+<td class='lineTable'>4</td>
 </tr>
 <tr class='lineTableHoverGreen'>
 <td class='lineTable'>32</td>
-<td class='lineTable'> <pre class='codegreen'>    `include "sha256_test.sv"</pre> </td>
-<td class='lineTable'>45</td>
-<td class='lineTable'>19</td>
+<td class='lineTable'> <pre class='codegreen'>    `include "sha256_env.sv"</pre> </td>
+<td class='lineTable'>253</td>
+<td class='lineTable'>3</td>
 </tr>
 <tr class='lineTableHoverGreen'>
 <td class='lineTable'>33</td>
+<td class='lineTable'> <pre class='codegreen'>    `include "sha256_test.sv"</pre> </td>
+<td class='lineTable'>225</td>
+<td class='lineTable'>5</td>
+</tr>
+<tr class='lineTableHoverGreen'>
+<td class='lineTable'>34</td>
 <td class='lineTable'> <pre class='codegreen'>endpackage</pre> </td>
-<td class='lineTable'>60</td>
-<td class='lineTable'>2</td>
+<td class='lineTable'>405</td>
+<td class='lineTable'>6</td>
 </tr>
 </table>
 </div>
@@ -2066,10 +2143,10 @@ Condition Coverage Summary for Module : sha256_pkg
 <th class='fileScoreTable' bgcolor='#DEE8EE'> Branch Coverage Score </th>
 </tr>
 <tr>
-<td class='fileScoreTable'>156</td>
-<td class='fileScoreTable'>11</td>
-<td class='fileScoreTable'>145</td>
-<td class='fileScoreTable' bgcolor='#FF0000'>7.05128</td>
+<td class='fileScoreTable'>193</td>
+<td class='fileScoreTable'>24</td>
+<td class='fileScoreTable'>169</td>
+<td class='fileScoreTable' bgcolor='#FFD2D2'>12.4352</td>
 </tr>
 </table>
 <br clear=all>
@@ -2162,7 +2239,7 @@ Condition Coverage Summary for Module : sha256_pkg
 </tr>
 <tr class='lineTableHoverGrey'>
 <td class='lineTable'>5</td>
-<td class='lineTable'> <pre class='codegrey'>    typedef enum {READ, WRITE} op_t;</pre> </td>
+<td class='lineTable'> <pre class='codegrey'>    typedef enum {READ, WRITE, WRITE_MASK} op_t;</pre> </td>
 <td class='lineTable'> </td>
 <td class='lineTable'> </td>
 </tr>
@@ -2198,7 +2275,7 @@ Condition Coverage Summary for Module : sha256_pkg
 </tr>
 <tr class='lineTableHoverGrey'>
 <td class='lineTable'>11</td>
-<td class='lineTable'> <pre class='codegrey'>        logic [31:0]      rdata;</pre> </td>
+<td class='lineTable'> <pre class='codegrey'>        rand logic [3:0] avsByteEnable;</pre> </td>
 <td class='lineTable'> </td>
 <td class='lineTable'> </td>
 </tr>
@@ -2210,7 +2287,7 @@ Condition Coverage Summary for Module : sha256_pkg
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'>12</td>
-<td class='lineTable'> <pre class='codered'> </pre>
+<td class='lineTable'> <pre class='codered'>        logic [31:0]      rdata;</pre>
  <font face='arial' color=orange style='font-size: 12px'><b> Branch 10</b></font></td>
 <td class='lineTable'>0</td>
 <td class='lineTable'>0T 0F </td>
@@ -2221,8 +2298,14 @@ Condition Coverage Summary for Module : sha256_pkg
 <td class='lineTable'> </td>
 <td class='lineTable'> 0</td>
 </tr>
-<tr class='lineTableHoverRed'>
+<tr class='lineTableHoverGrey'>
 <td class='lineTable'>13</td>
+<td class='lineTable'> <pre class='codegrey'> </pre> </td>
+<td class='lineTable'> </td>
+<td class='lineTable'> </td>
+</tr>
+<tr class='lineTableHoverRed'>
+<td class='lineTable'>14</td>
 <td class='lineTable'> <pre class='codered'>        `uvm_object_utils_begin(sha256_seq_item)</pre>
  <font face='arial' color=orange style='font-size: 12px'><b> Branch 12</b></font></td>
 <td class='lineTable'>0</td>
@@ -2275,50 +2358,50 @@ Condition Coverage Summary for Module : sha256_pkg
 <td class='lineTable'> 0</td>
 </tr>
 <tr class='lineTableHoverRed'>
-<td class='lineTable'>14</td>
+<td class='lineTable'> </td>
+<td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 20</b></font></td>
+<td class='lineTable'> </td>
+<td class='lineTable'> 1</td>
+</tr>
+<tr class='lineTableHoverRed'>
+<td class='lineTable'>15</td>
 <td class='lineTable'> <pre class='codered'>            `uvm_field_enum(op_t, op, UVM_ALL_ON)</pre>
- <font face='arial' color=orange style='font-size: 12px'><b> Branch 20</b></font></td>
+ <font face='arial' color=orange style='font-size: 12px'><b> Branch 21</b></font></td>
 <td class='lineTable'> </td>
 <td class='lineTable'>0T </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
 <td class='lineTable'> <pre class='codered'> </pre>
- <font face='arial' color=orange style='font-size: 12px'><b> Branch 21</b></font></td>
+ <font face='arial' color=orange style='font-size: 12px'><b> Branch 22</b></font></td>
 <td class='lineTable'>0</td>
 <td class='lineTable'>0T 0F </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
-<td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 22</b></font></td>
+<td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 23</b></font></td>
 <td class='lineTable'> </td>
 <td class='lineTable'> 0</td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
 <td class='lineTable'> <pre class='codered'> </pre>
- <font face='arial' color=orange style='font-size: 12px'><b> Branch 23</b></font></td>
+ <font face='arial' color=orange style='font-size: 12px'><b> Branch 24</b></font></td>
 <td class='lineTable'>0</td>
 <td class='lineTable'>0T 0F </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
-<td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 24</b></font></td>
+<td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 25</b></font></td>
 <td class='lineTable'> </td>
 <td class='lineTable'> 0</td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
 <td class='lineTable'> <pre class='codered'> </pre>
- <font face='arial' color=orange style='font-size: 12px'><b> Branch 25</b></font></td>
+ <font face='arial' color=orange style='font-size: 12px'><b> Branch 26</b></font></td>
 <td class='lineTable'>0</td>
 <td class='lineTable'>0T 0F </td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable'> </td>
-<td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 26</b></font></td>
-<td class='lineTable'> </td>
-<td class='lineTable'> 0</td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
@@ -2334,68 +2417,68 @@ Condition Coverage Summary for Module : sha256_pkg
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
-<td class='lineTable'> <pre class='codered'> </pre>
- <font face='arial' color=orange style='font-size: 12px'><b> Branch 29</b></font></td>
-<td class='lineTable'>0</td>
-<td class='lineTable'>0T 0F </td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable'> </td>
-<td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 30</b></font></td>
+<td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 29</b></font></td>
 <td class='lineTable'> </td>
 <td class='lineTable'> 0</td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
 <td class='lineTable'> <pre class='codered'> </pre>
- <font face='arial' color=orange style='font-size: 12px'><b> Branch 31</b></font></td>
+ <font face='arial' color=orange style='font-size: 12px'><b> Branch 30</b></font></td>
 <td class='lineTable'>0</td>
 <td class='lineTable'>0T 0F </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
-<td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 32</b></font></td>
+<td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 31</b></font></td>
 <td class='lineTable'> </td>
 <td class='lineTable'> 0</td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
 <td class='lineTable'> <pre class='codered'> </pre>
- <font face='arial' color=orange style='font-size: 12px'><b> Branch 33</b></font></td>
+ <font face='arial' color=orange style='font-size: 12px'><b> Branch 32</b></font></td>
 <td class='lineTable'>0</td>
 <td class='lineTable'>0T 0F </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
-<td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 34</b></font></td>
+<td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 33</b></font></td>
 <td class='lineTable'> </td>
 <td class='lineTable'> 0</td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
 <td class='lineTable'> <pre class='codered'> </pre>
- <font face='arial' color=orange style='font-size: 12px'><b> Branch 35</b></font></td>
+ <font face='arial' color=orange style='font-size: 12px'><b> Branch 34</b></font></td>
 <td class='lineTable'>0</td>
 <td class='lineTable'>0T 0F </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
-<td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 36</b></font></td>
+<td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 35</b></font></td>
 <td class='lineTable'> </td>
 <td class='lineTable'> 0</td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
 <td class='lineTable'> <pre class='codered'> </pre>
- <font face='arial' color=orange style='font-size: 12px'><b> Branch 37</b></font></td>
+ <font face='arial' color=orange style='font-size: 12px'><b> Branch 36</b></font></td>
 <td class='lineTable'>0</td>
 <td class='lineTable'>0T 0F </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
-<td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 38</b></font></td>
+<td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 37</b></font></td>
 <td class='lineTable'> </td>
 <td class='lineTable'> 0</td>
+</tr>
+<tr class='lineTableHoverRed'>
+<td class='lineTable'> </td>
+<td class='lineTable'> <pre class='codered'> </pre>
+ <font face='arial' color=orange style='font-size: 12px'><b> Branch 38</b></font></td>
+<td class='lineTable'>0</td>
+<td class='lineTable'>0T 0F </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
@@ -2405,10 +2488,9 @@ Condition Coverage Summary for Module : sha256_pkg
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
-<td class='lineTable'> <pre class='codered'> </pre>
- <font face='arial' color=orange style='font-size: 12px'><b> Branch 40</b></font></td>
-<td class='lineTable'>0</td>
-<td class='lineTable'>0T 0F </td>
+<td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 40</b></font></td>
+<td class='lineTable'> </td>
+<td class='lineTable'> 0</td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
@@ -2419,9 +2501,10 @@ Condition Coverage Summary for Module : sha256_pkg
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
-<td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 42</b></font></td>
-<td class='lineTable'> </td>
-<td class='lineTable'> 0</td>
+<td class='lineTable'> <pre class='codered'> </pre>
+ <font face='arial' color=orange style='font-size: 12px'><b> Branch 42</b></font></td>
+<td class='lineTable'>0</td>
+<td class='lineTable'>0T 0F </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
@@ -2431,10 +2514,9 @@ Condition Coverage Summary for Module : sha256_pkg
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
-<td class='lineTable'> <pre class='codered'> </pre>
- <font face='arial' color=orange style='font-size: 12px'><b> Branch 44</b></font></td>
-<td class='lineTable'>0</td>
-<td class='lineTable'>0T 0F </td>
+<td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 44</b></font></td>
+<td class='lineTable'> </td>
+<td class='lineTable'> 0</td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
@@ -2445,9 +2527,10 @@ Condition Coverage Summary for Module : sha256_pkg
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
-<td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 46</b></font></td>
-<td class='lineTable'> </td>
-<td class='lineTable'> 0</td>
+<td class='lineTable'> <pre class='codered'> </pre>
+ <font face='arial' color=orange style='font-size: 12px'><b> Branch 46</b></font></td>
+<td class='lineTable'>0</td>
+<td class='lineTable'>0T 0F </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
@@ -2459,27 +2542,27 @@ Condition Coverage Summary for Module : sha256_pkg
 <td class='lineTable'> </td>
 <td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 48</b></font></td>
 <td class='lineTable'> </td>
-<td class='lineTable'> 1</td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable'>15</td>
-<td class='lineTable'> <pre class='codered'>            `uvm_field_int(addr, UVM_ALL_ON)</pre>
- <font face='arial' color=orange style='font-size: 12px'><b> Branch 49</b></font></td>
-<td class='lineTable'> </td>
-<td class='lineTable'>0T </td>
+<td class='lineTable'> 0</td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
 <td class='lineTable'> <pre class='codered'> </pre>
- <font face='arial' color=orange style='font-size: 12px'><b> Branch 50</b></font></td>
+ <font face='arial' color=orange style='font-size: 12px'><b> Branch 49</b></font></td>
 <td class='lineTable'>0</td>
 <td class='lineTable'>0T 0F </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
-<td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 51</b></font></td>
+<td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 50</b></font></td>
 <td class='lineTable'> </td>
 <td class='lineTable'> 0</td>
+</tr>
+<tr class='lineTableHoverRed'>
+<td class='lineTable'>16</td>
+<td class='lineTable'> <pre class='codered'>            `uvm_field_int(addr, UVM_ALL_ON)</pre>
+ <font face='arial' color=orange style='font-size: 12px'><b> Branch 51</b></font></td>
+<td class='lineTable'> </td>
+<td class='lineTable'>0T </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
@@ -2509,9 +2592,10 @@ Condition Coverage Summary for Module : sha256_pkg
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
-<td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 56</b></font></td>
-<td class='lineTable'> </td>
-<td class='lineTable'> 0</td>
+<td class='lineTable'> <pre class='codered'> </pre>
+ <font face='arial' color=orange style='font-size: 12px'><b> Branch 56</b></font></td>
+<td class='lineTable'>0</td>
+<td class='lineTable'>0T 0F </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
@@ -2521,10 +2605,9 @@ Condition Coverage Summary for Module : sha256_pkg
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
-<td class='lineTable'> <pre class='codered'> </pre>
- <font face='arial' color=orange style='font-size: 12px'><b> Branch 58</b></font></td>
-<td class='lineTable'>0</td>
-<td class='lineTable'>0T 0F </td>
+<td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 58</b></font></td>
+<td class='lineTable'> </td>
+<td class='lineTable'> 0</td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
@@ -2534,122 +2617,122 @@ Condition Coverage Summary for Module : sha256_pkg
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
-<td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 60</b></font></td>
-<td class='lineTable'> </td>
-<td class='lineTable'> 0</td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable'> </td>
 <td class='lineTable'> <pre class='codered'> </pre>
- <font face='arial' color=orange style='font-size: 12px'><b> Branch 61</b></font></td>
+ <font face='arial' color=orange style='font-size: 12px'><b> Branch 60</b></font></td>
 <td class='lineTable'>0</td>
 <td class='lineTable'>0T 0F </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
-<td class='lineTable'> <pre class='codered'> </pre>
- <font face='arial' color=orange style='font-size: 12px'><b> Branch 62</b></font></td>
-<td class='lineTable'>0</td>
-<td class='lineTable'>0T </td>
+<td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 61</b></font></td>
+<td class='lineTable'> </td>
+<td class='lineTable'> 0</td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
-<td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 63</b></font></td>
+<td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 62</b></font></td>
 <td class='lineTable'> </td>
 <td class='lineTable'> 0</td>
+</tr>
+<tr class='lineTableHoverRed'>
+<td class='lineTable'> </td>
+<td class='lineTable'> <pre class='codered'> </pre>
+ <font face='arial' color=orange style='font-size: 12px'><b> Branch 63</b></font></td>
+<td class='lineTable'>0</td>
+<td class='lineTable'>0T 0F </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
 <td class='lineTable'> <pre class='codered'> </pre>
  <font face='arial' color=orange style='font-size: 12px'><b> Branch 64</b></font></td>
 <td class='lineTable'>0</td>
-<td class='lineTable'>0T 0F </td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable'> </td>
-<td class='lineTable'> <pre class='codered'> </pre>
- <font face='arial' color=orange style='font-size: 12px'><b> Branch 65</b></font></td>
-<td class='lineTable'>0</td>
 <td class='lineTable'>0T </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
-<td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 66</b></font></td>
+<td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 65</b></font></td>
 <td class='lineTable'> </td>
 <td class='lineTable'> 0</td>
+</tr>
+<tr class='lineTableHoverRed'>
+<td class='lineTable'> </td>
+<td class='lineTable'> <pre class='codered'> </pre>
+ <font face='arial' color=orange style='font-size: 12px'><b> Branch 66</b></font></td>
+<td class='lineTable'>0</td>
+<td class='lineTable'>0T 0F </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
 <td class='lineTable'> <pre class='codered'> </pre>
  <font face='arial' color=orange style='font-size: 12px'><b> Branch 67</b></font></td>
 <td class='lineTable'>0</td>
-<td class='lineTable'>0T 0F </td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable'> </td>
-<td class='lineTable'> <pre class='codered'> </pre>
- <font face='arial' color=orange style='font-size: 12px'><b> Branch 68</b></font></td>
-<td class='lineTable'>0</td>
 <td class='lineTable'>0T </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
-<td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 69</b></font></td>
+<td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 68</b></font></td>
 <td class='lineTable'> </td>
 <td class='lineTable'> 0</td>
+</tr>
+<tr class='lineTableHoverRed'>
+<td class='lineTable'> </td>
+<td class='lineTable'> <pre class='codered'> </pre>
+ <font face='arial' color=orange style='font-size: 12px'><b> Branch 69</b></font></td>
+<td class='lineTable'>0</td>
+<td class='lineTable'>0T 0F </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
 <td class='lineTable'> <pre class='codered'> </pre>
  <font face='arial' color=orange style='font-size: 12px'><b> Branch 70</b></font></td>
 <td class='lineTable'>0</td>
-<td class='lineTable'>0T 0F </td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable'> </td>
-<td class='lineTable'> <pre class='codered'> </pre>
- <font face='arial' color=orange style='font-size: 12px'><b> Branch 71</b></font></td>
-<td class='lineTable'>0</td>
 <td class='lineTable'>0T </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
-<td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 72</b></font></td>
+<td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 71</b></font></td>
 <td class='lineTable'> </td>
 <td class='lineTable'> 0</td>
+</tr>
+<tr class='lineTableHoverRed'>
+<td class='lineTable'> </td>
+<td class='lineTable'> <pre class='codered'> </pre>
+ <font face='arial' color=orange style='font-size: 12px'><b> Branch 72</b></font></td>
+<td class='lineTable'>0</td>
+<td class='lineTable'>0T 0F </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
 <td class='lineTable'> <pre class='codered'> </pre>
  <font face='arial' color=orange style='font-size: 12px'><b> Branch 73</b></font></td>
 <td class='lineTable'>0</td>
-<td class='lineTable'>0T 0F </td>
+<td class='lineTable'>0T </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
-<td class='lineTable'> <pre class='codered'> </pre>
- <font face='arial' color=orange style='font-size: 12px'><b> Branch 74</b></font></td>
-<td class='lineTable'>0</td>
-<td class='lineTable'>0T 0F </td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable'> </td>
-<td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 75</b></font></td>
-<td class='lineTable'> </td>
-<td class='lineTable'> 0</td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable'> </td>
-<td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 76</b></font></td>
+<td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 74</b></font></td>
 <td class='lineTable'> </td>
 <td class='lineTable'> 0</td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
 <td class='lineTable'> <pre class='codered'> </pre>
- <font face='arial' color=orange style='font-size: 12px'><b> Branch 77</b></font></td>
+ <font face='arial' color=orange style='font-size: 12px'><b> Branch 75</b></font></td>
 <td class='lineTable'>0</td>
 <td class='lineTable'>0T 0F </td>
+</tr>
+<tr class='lineTableHoverRed'>
+<td class='lineTable'> </td>
+<td class='lineTable'> <pre class='codered'> </pre>
+ <font face='arial' color=orange style='font-size: 12px'><b> Branch 76</b></font></td>
+<td class='lineTable'>0</td>
+<td class='lineTable'>0T 0F </td>
+</tr>
+<tr class='lineTableHoverRed'>
+<td class='lineTable'> </td>
+<td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 77</b></font></td>
+<td class='lineTable'> </td>
+<td class='lineTable'> 0</td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
@@ -2658,7 +2741,7 @@ Condition Coverage Summary for Module : sha256_pkg
 <td class='lineTable'> 0</td>
 </tr>
 <tr class='lineTableHoverRed'>
-<td class='lineTable'>16</td>
+<td class='lineTable'>17</td>
 <td class='lineTable'> <pre class='codered'>            `uvm_field_int(data, UVM_ALL_ON)</pre>
  <font face='arial' color=orange style='font-size: 12px'><b> Branch 79</b></font></td>
 <td class='lineTable'> </td>
@@ -2841,7 +2924,7 @@ Condition Coverage Summary for Module : sha256_pkg
 <td class='lineTable'> 0</td>
 </tr>
 <tr class='lineTableHoverRed'>
-<td class='lineTable'>17</td>
+<td class='lineTable'>18</td>
 <td class='lineTable'> <pre class='codered'>            `uvm_field_int(rdata, UVM_ALL_ON)</pre>
  <font face='arial' color=orange style='font-size: 12px'><b> Branch 107</b></font></td>
 <td class='lineTable'> </td>
@@ -3024,32 +3107,38 @@ Condition Coverage Summary for Module : sha256_pkg
 <td class='lineTable'> 0</td>
 </tr>
 <tr class='lineTableHoverGrey'>
-<td class='lineTable'>18</td>
+<td class='lineTable'>19</td>
 <td class='lineTable'> <pre class='codegrey'>        `uvm_object_utils_end</pre> </td>
 <td class='lineTable'> </td>
 <td class='lineTable'> </td>
 </tr>
 <tr class='lineTableHoverGrey'>
-<td class='lineTable'>19</td>
+<td class='lineTable'>20</td>
 <td class='lineTable'> <pre class='codegrey'> </pre> </td>
 <td class='lineTable'> </td>
 <td class='lineTable'> </td>
 </tr>
 <tr class='lineTableHoverGrey'>
-<td class='lineTable'>20</td>
+<td class='lineTable'>21</td>
 <td class='lineTable'> <pre class='codegrey'>        function new(string name = "sha256_seq_item");</pre> </td>
 <td class='lineTable'> </td>
 <td class='lineTable'> </td>
 </tr>
 <tr class='lineTableHoverGrey'>
-<td class='lineTable'>21</td>
+<td class='lineTable'>22</td>
 <td class='lineTable'> <pre class='codegrey'>            super.new(name);</pre> </td>
 <td class='lineTable'> </td>
 <td class='lineTable'> </td>
 </tr>
 <tr class='lineTableHoverGrey'>
-<td class='lineTable'>22</td>
+<td class='lineTable'>23</td>
 <td class='lineTable'> <pre class='codegrey'>        endfunction</pre> </td>
+<td class='lineTable'> </td>
+<td class='lineTable'> </td>
+</tr>
+<tr class='lineTableHoverGrey'>
+<td class='lineTable'>24</td>
+<td class='lineTable'> <pre class='codegrey'>    endclass</pre> </td>
 <td class='lineTable'> </td>
 <td class='lineTable'> </td>
 </tr>
@@ -3057,16 +3146,10 @@ Condition Coverage Summary for Module : sha256_pkg
 <td class='lineTable'> </td>
 <td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 135</b></font></td>
 <td class='lineTable'> </td>
-<td class='lineTable'> 51</td>
+<td class='lineTable'> 211</td>
 </tr>
 <tr class='lineTableHoverGrey'>
-<td class='lineTable'>23</td>
-<td class='lineTable'> <pre class='codegrey'>    endclass</pre> </td>
-<td class='lineTable'> </td>
-<td class='lineTable'> </td>
-</tr>
-<tr class='lineTableHoverGrey'>
-<td class='lineTable'>24</td>
+<td class='lineTable'>25</td>
 <td class='lineTable'> <pre class='codegrey'> </pre> </td>
 <td class='lineTable'> </td>
 <td class='lineTable'> </td>
@@ -3075,47 +3158,72 @@ Condition Coverage Summary for Module : sha256_pkg
 <td class='lineTable'> </td>
 <td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 136</b></font></td>
 <td class='lineTable'> </td>
-<td class='lineTable'> 69</td>
-</tr>
-<tr class='lineTableHoverGreen'>
-<td class='lineTable'>25</td>
-<td class='lineTable'> <pre class='codegreen'>    `include "sha256_sequencer.sv"</pre>
- <font face='arial' color=orange style='font-size: 12px'><b> Branch 137</b></font></td>
-<td class='lineTable'>59</td>
-<td class='lineTable'>17T 42F </td>
+<td class='lineTable'> 126</td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
-<td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 138</b></font></td>
+<td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 137</b></font></td>
 <td class='lineTable'> </td>
-<td class='lineTable'> 42</td>
+<td class='lineTable'> 126</td>
 </tr>
 <tr class='lineTableHoverGreen'>
 <td class='lineTable'>26</td>
-<td class='lineTable'> <pre class='codegreen'>    `include "sha256_sequence.sv"</pre>
- <font face='arial' color=orange style='font-size: 12px'><b> Branch 139</b></font></td>
-<td class='lineTable'>59</td>
-<td class='lineTable'>17T 42F </td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable'>27</td>
-<td class='lineTable'> <pre class='codered'>    `include "sha256_driver.sv"</pre>
- <font face='arial' color=orange style='font-size: 12px'><b> Branch 140</b></font></td>
-<td class='lineTable'>0</td>
-<td class='lineTable'>0T 0F </td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable'> </td>
-<td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 141</b></font></td>
-<td class='lineTable'> </td>
-<td class='lineTable'> 0</td>
+<td class='lineTable'> <pre class='codegreen'>    `include "sha256_sequencer.sv"</pre>
+ <font face='arial' color=orange style='font-size: 12px'><b> Branch 138</b></font></td>
+<td class='lineTable'>181</td>
+<td class='lineTable'>54T 127F </td>
 </tr>
 <tr class='lineTableHoverGreen'>
+<td class='lineTable'>27</td>
+<td class='lineTable'> <pre class='codegreen'>    `include "sha256_sequence.sv"</pre>
+ <font face='arial' color=orange style='font-size: 12px'><b> Branch 139</b></font></td>
+<td class='lineTable'>55</td>
+<td class='lineTable'>54T </td>
+</tr>
+<tr class='lineTableHoverRed'>
+<td class='lineTable'> </td>
+<td class='lineTable'> <pre class='codered'> </pre>
+ <font face='arial' color=orange style='font-size: 12px'><b> Branch 140</b></font></td>
+<td class='lineTable'> </td>
+<td class='lineTable'>1F </td>
+</tr>
+<tr class='lineTableHoverGrey'>
 <td class='lineTable'>28</td>
-<td class='lineTable'> <pre class='codegreen'>    `include "sha256_monitor.sv"</pre>
+<td class='lineTable'> <pre class='codegrey'>    `include "sha256_driver.sv"</pre> </td>
+<td class='lineTable'> </td>
+<td class='lineTable'> </td>
+</tr>
+<tr class='lineTableHoverGrey'>
+<td class='lineTable'>29</td>
+<td class='lineTable'> <pre class='codegrey'>    `include "sha256_monitor.sv"</pre> </td>
+<td class='lineTable'> </td>
+<td class='lineTable'> </td>
+</tr>
+<tr class='lineTableHoverGrey'>
+<td class='lineTable'>30</td>
+<td class='lineTable'> <pre class='codegrey'>    `include "sha256_agents.sv"</pre> </td>
+<td class='lineTable'> </td>
+<td class='lineTable'> </td>
+</tr>
+<tr class='lineTableHoverGrey'>
+<td class='lineTable'>31</td>
+<td class='lineTable'> <pre class='codegrey'>    `include "sha256_scoreboard.sv"</pre> </td>
+<td class='lineTable'> </td>
+<td class='lineTable'> </td>
+</tr>
+<tr class='lineTableHoverGreen'>
+<td class='lineTable'>32</td>
+<td class='lineTable'> <pre class='codegreen'>    `include "sha256_env.sv"</pre>
+ <font face='arial' color=orange style='font-size: 12px'><b> Branch 141</b></font></td>
+<td class='lineTable'>127</td>
+<td class='lineTable'>1T 126F </td>
+</tr>
+<tr class='lineTableHoverGreen'>
+<td class='lineTable'>33</td>
+<td class='lineTable'> <pre class='codegreen'>    `include "sha256_test.sv"</pre>
  <font face='arial' color=orange style='font-size: 12px'><b> Branch 142</b></font></td>
-<td class='lineTable'>8</td>
-<td class='lineTable'>8T 0F </td>
+<td class='lineTable'>49</td>
+<td class='lineTable'>49T 0F </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
@@ -3123,97 +3231,31 @@ Condition Coverage Summary for Module : sha256_pkg
 <td class='lineTable'> </td>
 <td class='lineTable'> 0</td>
 </tr>
-<tr class='lineTableHoverGrey'>
-<td class='lineTable'>29</td>
-<td class='lineTable'> <pre class='codegrey'>    `include "sha256_agents.sv"</pre> </td>
-<td class='lineTable'> </td>
-<td class='lineTable'> </td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable'>30</td>
-<td class='lineTable'> <pre class='codered'>    `include "sha256_scoreboard.sv"</pre>
+<tr class='lineTableHoverGreen'>
+<td class='lineTable'>34</td>
+<td class='lineTable'> <pre class='codegreen'>endpackage</pre>
  <font face='arial' color=orange style='font-size: 12px'><b> Branch 144</b></font></td>
-<td class='lineTable'>0</td>
-<td class='lineTable'>0T 0F </td>
+<td class='lineTable'>181</td>
+<td class='lineTable'>126T 55F </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
 <td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 145</b></font></td>
 <td class='lineTable'> </td>
-<td class='lineTable'> 0</td>
+<td class='lineTable'> 55</td>
 </tr>
 <tr class='lineTableHoverGreen'>
-<td class='lineTable'>31</td>
-<td class='lineTable'> <pre class='codegreen'>    `include "sha256_env.sv"</pre>
+<td class='lineTable'> </td>
+<td class='lineTable'> <pre class='codegreen'> </pre>
  <font face='arial' color=orange style='font-size: 12px'><b> Branch 146</b></font></td>
-<td class='lineTable'>42</td>
-<td class='lineTable'>42T </td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable'>32</td>
-<td class='lineTable'> <pre class='codered'>    `include "sha256_test.sv"</pre>
- <font face='arial' color=orange style='font-size: 12px'><b> Branch 147</b></font></td>
-<td class='lineTable'>0</td>
-<td class='lineTable'>0T 0F </td>
+<td class='lineTable'>49</td>
+<td class='lineTable'>49T 0F </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
-<td class='lineTable'> <pre class='codered'> </pre>
- <font face='arial' color=orange style='font-size: 12px'><b> Branch 148</b></font></td>
-<td class='lineTable'>0</td>
-<td class='lineTable'>0T </td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable'> </td>
-<td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 149</b></font></td>
+<td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 147</b></font></td>
 <td class='lineTable'> </td>
 <td class='lineTable'> 0</td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable'> </td>
-<td class='lineTable'> <pre class='codered'> </pre>
- <font face='arial' color=orange style='font-size: 12px'><b> Branch 150</b></font></td>
-<td class='lineTable'>0</td>
-<td class='lineTable'>0T 0F </td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable'> </td>
-<td class='lineTable'> <pre class='codered'> </pre>
- <font face='arial' color=orange style='font-size: 12px'><b> Branch 151</b></font></td>
-<td class='lineTable'>0</td>
-<td class='lineTable'>0T </td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable'> </td>
-<td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 152</b></font></td>
-<td class='lineTable'> </td>
-<td class='lineTable'> 0</td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable'> </td>
-<td class='lineTable'> <pre class='codered'> </pre>
- <font face='arial' color=orange style='font-size: 12px'><b> Branch 153</b></font></td>
-<td class='lineTable'>0</td>
-<td class='lineTable'>0T 0F </td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable'> </td>
-<td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 154</b></font></td>
-<td class='lineTable'> </td>
-<td class='lineTable'> 0</td>
-</tr>
-<tr class='lineTableHoverGreen'>
-<td class='lineTable'>33</td>
-<td class='lineTable'> <pre class='codegreen'>endpackage</pre>
- <font face='arial' color=orange style='font-size: 12px'><b> Branch 155</b></font></td>
-<td class='lineTable'>59</td>
-<td class='lineTable'>42T 17F </td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable'> </td>
-<td class='lineTable' align ='left'> <pre class='codered'> MISSING ELSE </pre> <font face='arial' color=orange style='font-size: 12px'><b> Branch 156</b></font></td>
-<td class='lineTable'> </td>
-<td class='lineTable'> 17</td>
 </tr>
 </table>
 </div>
@@ -3238,10 +3280,10 @@ Condition Coverage Summary for Instance : sha256_pkg
 <th class='fileScoreTable' bgcolor='#DEE8EE'> Condition Coverage Score </th>
 </tr>
 <tr>
-<td class='fileScoreTable'>21</td>
-<td class='fileScoreTable'>3</td>
-<td class='fileScoreTable'>18</td>
-<td class='fileScoreTable' bgcolor='#FFD2D2'>14.2857</td>
+<td class='fileScoreTable'>31</td>
+<td class='fileScoreTable'>12</td>
+<td class='fileScoreTable'>19</td>
+<td class='fileScoreTable' bgcolor='#FFFFC2'>38.7097</td>
 </tr>
 </table>
 <br clear=all>
@@ -3253,16 +3295,6 @@ Condition Coverage Summary for Instance : sha256_pkg
 <th class='lineTable' style='background-color:#80FFBF; line-height:1;' width='120px'> Evaluation Count </th>
 </tr>
 <tr class='lineTableHoverRed'>
-<td class='lineTable'>14</td>
-<td class='lineTable'> <pre class='codered'>(uvm_object::__m_uvm_status_container.comparer.show_max <= uvm_object::__m_uvm_status_container.comparer.result)__TRUE</pre> </td>
-<td class='lineTable'>0 </td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable'> </td>
-<td class='lineTable'> <pre class='codered'>(uvm_object::__m_uvm_status_container.comparer.show_max <= uvm_object::__m_uvm_status_container.comparer.result)__FALSE</pre> </td>
-<td class='lineTable'>0 </td>
-</tr>
-<tr class='lineTableHoverRed'>
 <td class='lineTable'>15</td>
 <td class='lineTable'> <pre class='codered'>(uvm_object::__m_uvm_status_container.comparer.show_max <= uvm_object::__m_uvm_status_container.comparer.result)__TRUE</pre> </td>
 <td class='lineTable'>0 </td>
@@ -3273,7 +3305,17 @@ Condition Coverage Summary for Instance : sha256_pkg
 <td class='lineTable'>0 </td>
 </tr>
 <tr class='lineTableHoverRed'>
-<td class='lineTable'>15</td>
+<td class='lineTable'>16</td>
+<td class='lineTable'> <pre class='codered'>(uvm_object::__m_uvm_status_container.comparer.show_max <= uvm_object::__m_uvm_status_container.comparer.result)__TRUE</pre> </td>
+<td class='lineTable'>0 </td>
+</tr>
+<tr class='lineTableHoverRed'>
+<td class='lineTable'> </td>
+<td class='lineTable'> <pre class='codered'>(uvm_object::__m_uvm_status_container.comparer.show_max <= uvm_object::__m_uvm_status_container.comparer.result)__FALSE</pre> </td>
+<td class='lineTable'>0 </td>
+</tr>
+<tr class='lineTableHoverRed'>
+<td class='lineTable'>16</td>
 <td class='lineTable'> <pre class='codered'>($bits(\this .addr) <= 64)__TRUE</pre> </td>
 <td class='lineTable'>0 </td>
 </tr>
@@ -3283,7 +3325,7 @@ Condition Coverage Summary for Instance : sha256_pkg
 <td class='lineTable'>0 </td>
 </tr>
 <tr class='lineTableHoverRed'>
-<td class='lineTable'>15</td>
+<td class='lineTable'>16</td>
 <td class='lineTable'> <pre class='codered'>($bits(\this .addr) <= 64)__TRUE</pre> </td>
 <td class='lineTable'>0 </td>
 </tr>
@@ -3293,17 +3335,7 @@ Condition Coverage Summary for Instance : sha256_pkg
 <td class='lineTable'>0 </td>
 </tr>
 <tr class='lineTableHoverRed'>
-<td class='lineTable'>15</td>
-<td class='lineTable'> <pre class='codered'>($bits(\this .addr) > 64)__TRUE</pre> </td>
-<td class='lineTable'>0 </td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable'> </td>
-<td class='lineTable'> <pre class='codered'>($bits(\this .addr) > 64)__FALSE</pre> </td>
-<td class='lineTable'>0 </td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable'>15</td>
+<td class='lineTable'>16</td>
 <td class='lineTable'> <pre class='codered'>($bits(\this .addr) > 64)__TRUE</pre> </td>
 <td class='lineTable'>0 </td>
 </tr>
@@ -3314,52 +3346,12 @@ Condition Coverage Summary for Instance : sha256_pkg
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'>16</td>
-<td class='lineTable'> <pre class='codered'>(uvm_object::__m_uvm_status_container.comparer.show_max <= uvm_object::__m_uvm_status_container.comparer.result)__TRUE</pre> </td>
+<td class='lineTable'> <pre class='codered'>($bits(\this .addr) > 64)__TRUE</pre> </td>
 <td class='lineTable'>0 </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
-<td class='lineTable'> <pre class='codered'>(uvm_object::__m_uvm_status_container.comparer.show_max <= uvm_object::__m_uvm_status_container.comparer.result)__FALSE</pre> </td>
-<td class='lineTable'>0 </td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable'>16</td>
-<td class='lineTable'> <pre class='codered'>($bits(\this .data) <= 64)__TRUE</pre> </td>
-<td class='lineTable'>0 </td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable'> </td>
-<td class='lineTable'> <pre class='codered'>($bits(\this .data) <= 64)__FALSE</pre> </td>
-<td class='lineTable'>0 </td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable'>16</td>
-<td class='lineTable'> <pre class='codered'>($bits(\this .data) <= 64)__TRUE</pre> </td>
-<td class='lineTable'>0 </td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable'> </td>
-<td class='lineTable'> <pre class='codered'>($bits(\this .data) <= 64)__FALSE</pre> </td>
-<td class='lineTable'>0 </td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable'>16</td>
-<td class='lineTable'> <pre class='codered'>($bits(\this .data) > 64)__TRUE</pre> </td>
-<td class='lineTable'>0 </td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable'> </td>
-<td class='lineTable'> <pre class='codered'>($bits(\this .data) > 64)__FALSE</pre> </td>
-<td class='lineTable'>0 </td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable'>16</td>
-<td class='lineTable'> <pre class='codered'>($bits(\this .data) > 64)__TRUE</pre> </td>
-<td class='lineTable'>0 </td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable'> </td>
-<td class='lineTable'> <pre class='codered'>($bits(\this .data) > 64)__FALSE</pre> </td>
+<td class='lineTable'> <pre class='codered'>($bits(\this .addr) > 64)__FALSE</pre> </td>
 <td class='lineTable'>0 </td>
 </tr>
 <tr class='lineTableHoverRed'>
@@ -3374,6 +3366,56 @@ Condition Coverage Summary for Instance : sha256_pkg
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'>17</td>
+<td class='lineTable'> <pre class='codered'>($bits(\this .data) <= 64)__TRUE</pre> </td>
+<td class='lineTable'>0 </td>
+</tr>
+<tr class='lineTableHoverRed'>
+<td class='lineTable'> </td>
+<td class='lineTable'> <pre class='codered'>($bits(\this .data) <= 64)__FALSE</pre> </td>
+<td class='lineTable'>0 </td>
+</tr>
+<tr class='lineTableHoverRed'>
+<td class='lineTable'>17</td>
+<td class='lineTable'> <pre class='codered'>($bits(\this .data) <= 64)__TRUE</pre> </td>
+<td class='lineTable'>0 </td>
+</tr>
+<tr class='lineTableHoverRed'>
+<td class='lineTable'> </td>
+<td class='lineTable'> <pre class='codered'>($bits(\this .data) <= 64)__FALSE</pre> </td>
+<td class='lineTable'>0 </td>
+</tr>
+<tr class='lineTableHoverRed'>
+<td class='lineTable'>17</td>
+<td class='lineTable'> <pre class='codered'>($bits(\this .data) > 64)__TRUE</pre> </td>
+<td class='lineTable'>0 </td>
+</tr>
+<tr class='lineTableHoverRed'>
+<td class='lineTable'> </td>
+<td class='lineTable'> <pre class='codered'>($bits(\this .data) > 64)__FALSE</pre> </td>
+<td class='lineTable'>0 </td>
+</tr>
+<tr class='lineTableHoverRed'>
+<td class='lineTable'>17</td>
+<td class='lineTable'> <pre class='codered'>($bits(\this .data) > 64)__TRUE</pre> </td>
+<td class='lineTable'>0 </td>
+</tr>
+<tr class='lineTableHoverRed'>
+<td class='lineTable'> </td>
+<td class='lineTable'> <pre class='codered'>($bits(\this .data) > 64)__FALSE</pre> </td>
+<td class='lineTable'>0 </td>
+</tr>
+<tr class='lineTableHoverRed'>
+<td class='lineTable'>18</td>
+<td class='lineTable'> <pre class='codered'>(uvm_object::__m_uvm_status_container.comparer.show_max <= uvm_object::__m_uvm_status_container.comparer.result)__TRUE</pre> </td>
+<td class='lineTable'>0 </td>
+</tr>
+<tr class='lineTableHoverRed'>
+<td class='lineTable'> </td>
+<td class='lineTable'> <pre class='codered'>(uvm_object::__m_uvm_status_container.comparer.show_max <= uvm_object::__m_uvm_status_container.comparer.result)__FALSE</pre> </td>
+<td class='lineTable'>0 </td>
+</tr>
+<tr class='lineTableHoverRed'>
+<td class='lineTable'>18</td>
 <td class='lineTable'> <pre class='codered'>($bits(\this .rdata) <= 64)__TRUE</pre> </td>
 <td class='lineTable'>0 </td>
 </tr>
@@ -3383,7 +3425,7 @@ Condition Coverage Summary for Instance : sha256_pkg
 <td class='lineTable'>0 </td>
 </tr>
 <tr class='lineTableHoverRed'>
-<td class='lineTable'>17</td>
+<td class='lineTable'>18</td>
 <td class='lineTable'> <pre class='codered'>($bits(\this .rdata) <= 64)__TRUE</pre> </td>
 <td class='lineTable'>0 </td>
 </tr>
@@ -3393,7 +3435,7 @@ Condition Coverage Summary for Instance : sha256_pkg
 <td class='lineTable'>0 </td>
 </tr>
 <tr class='lineTableHoverRed'>
-<td class='lineTable'>17</td>
+<td class='lineTable'>18</td>
 <td class='lineTable'> <pre class='codered'>($bits(\this .rdata) > 64)__TRUE</pre> </td>
 <td class='lineTable'>0 </td>
 </tr>
@@ -3403,7 +3445,7 @@ Condition Coverage Summary for Instance : sha256_pkg
 <td class='lineTable'>0 </td>
 </tr>
 <tr class='lineTableHoverRed'>
-<td class='lineTable'>17</td>
+<td class='lineTable'>18</td>
 <td class='lineTable'> <pre class='codered'>($bits(\this .rdata) > 64)__TRUE</pre> </td>
 <td class='lineTable'>0 </td>
 </tr>
@@ -3413,29 +3455,109 @@ Condition Coverage Summary for Instance : sha256_pkg
 <td class='lineTable'>0 </td>
 </tr>
 <tr class='lineTableHoverGreen'>
-<td class='lineTable'>22</td>
+<td class='lineTable'>25</td>
+<td class='lineTable'> <pre class='codegreen'>(item.op == WRITE)__TRUE</pre> </td>
+<td class='lineTable'>54 </td>
+</tr>
+<tr class='lineTableHoverGreen'>
+<td class='lineTable'> </td>
+<td class='lineTable'> <pre class='codegreen'>(item.op == WRITE)__FALSE</pre> </td>
+<td class='lineTable'>89 </td>
+</tr>
+<tr class='lineTableHoverGreen'>
+<td class='lineTable'>25</td>
+<td class='lineTable'> <pre class='codegreen'>(item.op == WRITE_MASK)__TRUE</pre> </td>
+<td class='lineTable'>1 </td>
+</tr>
+<tr class='lineTableHoverGreen'>
+<td class='lineTable'> </td>
+<td class='lineTable'> <pre class='codegreen'>(item.op == WRITE_MASK)__FALSE</pre> </td>
+<td class='lineTable'>126 </td>
+</tr>
+<tr class='lineTableHoverGreen'>
+<td class='lineTable'>26</td>
+<td class='lineTable'> <pre class='codegreen'>(\this .req.op == WRITE)__TRUE</pre> </td>
+<td class='lineTable'>54 </td>
+</tr>
+<tr class='lineTableHoverGreen'>
+<td class='lineTable'> </td>
+<td class='lineTable'> <pre class='codegreen'>(\this .req.op == WRITE)__FALSE</pre> </td>
+<td class='lineTable'>89 </td>
+</tr>
+<tr class='lineTableHoverGreen'>
+<td class='lineTable'>27</td>
+<td class='lineTable'> <pre class='codegreen'>(\this .vif.avs_byteenable == 4'b1111)__TRUE</pre> </td>
+<td class='lineTable'>54 </td>
+</tr>
+<tr class='lineTableHoverRed'>
+<td class='lineTable'> </td>
+<td class='lineTable'> <pre class='codered'>(\this .vif.avs_byteenable == 4'b1111)__FALSE</pre> </td>
+<td class='lineTable'>0 </td>
+</tr>
+<tr class='lineTableHoverGreen'>
+<td class='lineTable'>27</td>
+<td class='lineTable'> <pre class='codegreen'>(item.addr >= 5'b0)__TRUE</pre> </td>
+<td class='lineTable'>55 </td>
+</tr>
+<tr class='lineTableHoverRed'>
+<td class='lineTable'> </td>
+<td class='lineTable'> <pre class='codered'>(item.addr >= 5'b0)__FALSE</pre> </td>
+<td class='lineTable'>0 </td>
+</tr>
+<tr class='lineTableHoverGreen'>
+<td class='lineTable'>27</td>
+<td class='lineTable'> <pre class='codegreen'>(item.addr <= 5'b01111)__TRUE</pre> </td>
+<td class='lineTable'>49 </td>
+</tr>
+<tr class='lineTableHoverGreen'>
+<td class='lineTable'> </td>
+<td class='lineTable'> <pre class='codegreen'>(item.addr <= 5'b01111)__FALSE</pre> </td>
+<td class='lineTable'>6 </td>
+</tr>
+<tr class='lineTableHoverGreen'>
+<td class='lineTable'>32</td>
+<td class='lineTable'> <pre class='codegreen'>(\this .req.op == WRITE_MASK)__TRUE</pre> </td>
+<td class='lineTable'>1 </td>
+</tr>
+<tr class='lineTableHoverGreen'>
+<td class='lineTable'> </td>
+<td class='lineTable'> <pre class='codegreen'>(\this .req.op == WRITE_MASK)__FALSE</pre> </td>
+<td class='lineTable'>126 </td>
+</tr>
+<tr class='lineTableHoverGreen'>
+<td class='lineTable'>41</td>
+<td class='lineTable'> <pre class='codegreen'>(item.addr == 5'b10000)__TRUE</pre> </td>
+<td class='lineTable'>3 </td>
+</tr>
+<tr class='lineTableHoverGreen'>
+<td class='lineTable'> </td>
+<td class='lineTable'> <pre class='codegreen'>(item.addr == 5'b10000)__FALSE</pre> </td>
+<td class='lineTable'>1 </td>
+</tr>
+<tr class='lineTableHoverGreen'>
+<td class='lineTable'>57</td>
 <td class='lineTable'> <pre class='codegreen'>(item.op == READ)__TRUE</pre> </td>
-<td class='lineTable'>42 </td>
-</tr>
-<tr class='lineTableHoverRed'>
-<td class='lineTable'> </td>
-<td class='lineTable'> <pre class='codered'>(item.op == READ)__FALSE</pre> </td>
-<td class='lineTable'>0 </td>
+<td class='lineTable'>126 </td>
 </tr>
 <tr class='lineTableHoverGreen'>
-<td class='lineTable'>22</td>
+<td class='lineTable'> </td>
+<td class='lineTable'> <pre class='codegreen'>(item.op == READ)__FALSE</pre> </td>
+<td class='lineTable'>1 </td>
+</tr>
+<tr class='lineTableHoverGreen'>
+<td class='lineTable'>57</td>
 <td class='lineTable'> <pre class='codegreen'>(item.addr >= 5'b10010)__TRUE</pre> </td>
-<td class='lineTable'>8 </td>
+<td class='lineTable'>24 </td>
 </tr>
 <tr class='lineTableHoverGreen'>
 <td class='lineTable'> </td>
 <td class='lineTable'> <pre class='codegreen'>(item.addr >= 5'b10010)__FALSE</pre> </td>
-<td class='lineTable'>34 </td>
+<td class='lineTable'>102 </td>
 </tr>
 <tr class='lineTableHoverGreen'>
-<td class='lineTable'>22</td>
+<td class='lineTable'>57</td>
 <td class='lineTable'> <pre class='codegreen'>(item.addr <= 5'b11001)__TRUE</pre> </td>
-<td class='lineTable'>8 </td>
+<td class='lineTable'>24 </td>
 </tr>
 <tr class='lineTableHoverRed'>
 <td class='lineTable'> </td>
@@ -3443,17 +3565,37 @@ Condition Coverage Summary for Instance : sha256_pkg
 <td class='lineTable'>0 </td>
 </tr>
 <tr class='lineTableHoverGreen'>
-<td class='lineTable'>26</td>
-<td class='lineTable'> <pre class='codegreen'>(\this .req.op == WRITE)__TRUE</pre> </td>
-<td class='lineTable'>17 </td>
+<td class='lineTable'>66</td>
+<td class='lineTable'> <pre class='codegreen'>(word_idx == 7)__TRUE</pre> </td>
+<td class='lineTable'>3 </td>
 </tr>
 <tr class='lineTableHoverGreen'>
 <td class='lineTable'> </td>
-<td class='lineTable'> <pre class='codegreen'>(\this .req.op == WRITE)__FALSE</pre> </td>
-<td class='lineTable'>42 </td>
+<td class='lineTable'> <pre class='codegreen'>(word_idx == 7)__FALSE</pre> </td>
+<td class='lineTable'>18 </td>
 </tr>
 <tr class='lineTableHoverGreen'>
-<td class='lineTable'>59</td>
+<td class='lineTable'>71</td>
+<td class='lineTable'> <pre class='codegreen'>((rdata & 32'b010) == 0)__TRUE</pre> </td>
+<td class='lineTable'>33 </td>
+</tr>
+<tr class='lineTableHoverGreen'>
+<td class='lineTable'> </td>
+<td class='lineTable'> <pre class='codegreen'>((rdata & 32'b010) == 0)__FALSE</pre> </td>
+<td class='lineTable'>1 </td>
+</tr>
+<tr class='lineTableHoverGreen'>
+<td class='lineTable'>111</td>
+<td class='lineTable'> <pre class='codegreen'>((rdata2 & 32'b010) == 0)__TRUE</pre> </td>
+<td class='lineTable'>33 </td>
+</tr>
+<tr class='lineTableHoverGreen'>
+<td class='lineTable'> </td>
+<td class='lineTable'> <pre class='codegreen'>((rdata2 & 32'b010) == 0)__FALSE</pre> </td>
+<td class='lineTable'>1 </td>
+</tr>
+<tr class='lineTableHoverGreen'>
+<td class='lineTable'>150</td>
 <td class='lineTable'> <pre class='codegreen'>((rdata & 32'b010) == 0)__TRUE</pre> </td>
 <td class='lineTable'>33 </td>
 </tr>

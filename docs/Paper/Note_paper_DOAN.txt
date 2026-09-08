@@ -1,0 +1,3 @@
+Báo 1 nói về fpga + asic riscv
+
+báo ngon 12 + 3

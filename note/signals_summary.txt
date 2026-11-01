@@ -1,0 +1,289 @@
+========================================================
+Directory: rtl_riscv
+========================================================
+
+Module: pc_register (File: pc_register.sv)
+--------------------------------------------------------
+  input         clk
+  input         rst
+  input  [63:0] pc_in
+  output reg [63:0] pc_out
+
+Module: riscv_top (File: riscv_top.sv)
+--------------------------------------------------------
+  input  clk
+  input  rst
+  output [63:0] out_pc
+  output [63:0] out_alu_result
+
+Module: riscv_avalon_wrapper (File: riscv_avalon_wrapper.sv)
+--------------------------------------------------------
+  input  wire        clk
+  input  wire        reset_n
+  output wire [31:0] avm_address
+  output wire        avm_read
+  input  wire [31:0] avm_readdata
+  input  wire        avm_readdatavalid
+  output wire        avm_write
+  output wire [31:0] avm_writedata
+  output wire [3:0]  avm_byteenable
+  input  wire        avm_waitrequest
+  output wire [63:0] out_pc
+  output wire [63:0] out_alu_result
+
+Module: instruction_memory (File: instruction_memory.sv)
+--------------------------------------------------------
+  input  [63:0] addr
+  output [31:0] instruction
+
+Module: alu_control (File: alu_control.sv)
+--------------------------------------------------------
+  input  [1:0] alu_op
+  input  [2:0] funct3
+  input  [6:0] funct7
+  output reg [3:0] alu_control_out
+
+Module: data_memory (File: data_memory.sv)
+--------------------------------------------------------
+  input         clk
+  input         mem_read
+  input         mem_write
+  input  [63:0] addr
+  input  [63:0] write_data
+  output [63:0] read_data
+
+Module: alu (File: alu.sv)
+--------------------------------------------------------
+  input  [63:0] a
+  input  [63:0] b
+  input  [3:0]  alu_control
+  output reg [63:0] result
+  output        zero
+
+Module: branch_control (File: branch_control.sv)
+--------------------------------------------------------
+  input        branch
+  input  [2:0] funct3
+  input  [63:0] alu_result
+  input        zero
+  output reg   branch_taken
+
+Module: register_file (File: register_file.sv)
+--------------------------------------------------------
+  input         clk
+  input         rst
+  input         reg_write
+  input  [4:0]  read_reg1
+  input  [4:0]  read_reg2
+  input  [4:0]  write_reg
+  input  [63:0] write_data
+  output [63:0] read_data1
+  output [63:0] read_data2
+
+Module: adder (File: adder.sv)
+--------------------------------------------------------
+  input  [63:0] a
+  input  [63:0] b
+  output [63:0] result
+
+Module: imm_gen (File: imm_gen.sv)
+--------------------------------------------------------
+  input  [31:0] instruction
+  output reg [63:0] imm
+
+Module: mux2to1 (File: mux.sv)
+--------------------------------------------------------
+  input  [63:0] in0
+  input  [63:0] in1
+  input         sel
+  output [63:0] out
+
+Module: mux4to1 (File: mux.sv)
+--------------------------------------------------------
+  input  [63:0] in0
+  input  [63:0] in1
+  input  [63:0] in2
+  input  [63:0] in3
+  input  [1:0]  sel
+  output reg [63:0] out
+
+Module: control_unit (File: control_unit.sv)
+--------------------------------------------------------
+  input  [6:0] opcode
+  input  [2:0] funct3
+  input  [6:0] funct7
+  output reg       branch
+  output reg       mem_read
+  output reg       mem_to_reg
+  output reg [1:0] alu_op
+  output reg       mem_write
+  output reg       alu_src
+  output reg       reg_write
+  output reg       jump
+  output reg       jalr
+  output reg       sha2rst
+  output reg       sha2push
+  output reg       sha2start
+  output reg       sha2perform
+  output reg       sha2finish
+  output reg       sha2read
+
+========================================================
+Directory: rtl_sha256
+========================================================
+
+Module: sha256_avalon_wrapper (File: sha256Wrapper.sv)
+--------------------------------------------------------
+  input  wire        clk
+  input  wire        reset_n
+  input  wire        avs_chipselect
+  input  wire [4:0]  avs_address
+  input  wire        avs_read
+  output reg  [31:0] avs_readdata
+  input  wire        avs_write
+  input  wire [3:0]  avs_byteenable
+  input  wire [31:0] avs_writedata
+  output wire        avs_waitrequest
+  output wire        irq
+
+Module: sha256_core (File: sha256Core.sv)
+--------------------------------------------------------
+  input wire clk
+  input wire rst_n
+  input wire start
+  input wire init
+  input wire [511:0] block_in
+  output reg ready
+  output reg hash_valid
+  output reg [255:0] hash_out
+
+========================================================
+Directory: rtl_dma
+========================================================
+
+Module: avalon_simple_dma (File: avalon_simple_dma.sv)
+--------------------------------------------------------
+  input  wire        clk
+  input  wire        reset_n
+  input  wire        avs_chipselect
+  input  wire [2:0]  avs_address
+  input  wire        avs_read
+  output reg  [31:0] avs_readdata
+  input  wire        avs_write
+  input  wire [3:0]  avs_byteenable
+  input  wire [31:0] avs_writedata
+  output wire        avs_waitrequest
+  output wire        irq
+  output reg  [31:0] avm_address
+  output reg         avm_read
+  input  wire [31:0] avm_readdata
+  input  wire        avm_readdatavalid
+  output reg         avm_write
+  output reg  [31:0] avm_writedata
+  output reg  [3:0]  avm_byteenable
+  input  wire        avm_waitrequest
+
+
+========================================================
+Standard AXI Protocols (Reference)
+========================================================
+
+Giao thức Handshake chung (Global Handshake):
+- Tất cả các kênh của giao thức AXI đều sử dụng cơ chế bắt tay VALID / READY:
+  + Nguồn (Master/Source) phát tín hiệu VALID khi địa chỉ, dữ liệu hoặc tín hiệu điều khiển đã hợp lệ.
+  + Đích (Slave/Destination) phát tín hiệu READY khi có thể tiếp nhận thông tin.
+  + Dữ liệu thực sự được truyền đi (transfer) khi cả VALID và READY cùng ở mức HIGH (1) tại sườn lên của xung nhịp (Clock).
+
+--------------------------------------------------------
+1. AXI4-Lite (5 Kênh)
+- Số kênh: 5 (Write Address, Write Data, Write Response, Read Address, Read Data)
+- Ứng dụng: Giao tiếp thanh ghi điều khiển cơ bản, không hỗ trợ burst.
+--------------------------------------------------------
+  -- Global Signals
+  input         aclk
+  input         aresetn
+
+  -- Write Address Channel (AW)
+  input  [31:0] awaddr    // Địa chỉ ghi
+  input  [2:0]  awprot    // Quyền truy cập/bảo vệ
+  input         awvalid   // Địa chỉ ghi hợp lệ
+  output        awready   // Slave sẵn sàng nhận địa chỉ ghi
+
+  -- Write Data Channel (W)
+  input  [31:0] wdata     // Dữ liệu ghi
+  input  [3:0]  wstrb     // Byte enable (chỉ định byte hợp lệ trong wdata)
+  input         wvalid    // Dữ liệu ghi hợp lệ
+  output        wready    // Slave sẵn sàng nhận dữ liệu ghi
+
+  -- Write Response Channel (B)
+  output [1:0]  bresp     // Phản hồi trạng thái ghi (OKAY, EXOKAY, SLVERR, DECERR)
+  output        bvalid    // Phản hồi ghi hợp lệ
+  input         bready    // Master sẵn sàng nhận phản hồi ghi
+
+  -- Read Address Channel (AR)
+  input  [31:0] araddr    // Địa chỉ đọc
+  input  [2:0]  arprot    // Quyền truy cập/bảo vệ
+  input         arvalid   // Địa chỉ đọc hợp lệ
+  output        arready   // Slave sẵn sàng nhận địa chỉ đọc
+
+  -- Read Data Channel (R)
+  output [31:0] rdata     // Dữ liệu đọc
+  output [1:0]  rresp     // Phản hồi trạng thái đọc
+  output        rvalid    // Dữ liệu đọc hợp lệ
+  input         rready    // Master sẵn sàng nhận dữ liệu đọc
+
+--------------------------------------------------------
+2. AXI4 Full (5 Kênh - Hỗ trợ Burst)
+- Số kênh: 5
+- Ứng dụng: Truyền dữ liệu lớn, bộ nhớ (RAM, DMA), hỗ trợ truyền Burst (truyền nhiều data với 1 address).
+- Bao gồm các tín hiệu của AXI4-Lite cộng thêm các tín hiệu sau:
+--------------------------------------------------------
+  -- Write Address Channel (AW) bổ sung
+  input  [7:0]  awlen     // Độ dài burst (số lượng data transfer trong 1 burst)
+  input  [2:0]  awsize    // Kích thước của mỗi transfer (1, 2, 4, 8... bytes)
+  input  [1:0]  awburst   // Loại burst (FIXED, INCR, WRAP)
+  input         awlock    // Khóa truy cập (độc quyền)
+  input  [3:0]  awcache   // Thuộc tính bộ nhớ (Cacheable, Bufferable...)
+  input  [3:0]  awqos     // Quality of Service
+  input  [3:0]  awregion  // Định danh vùng bộ nhớ
+  input  [x:0]  awid      // ID của giao dịch ghi
+
+  -- Write Data Channel (W) bổ sung
+  input         wlast     // Cờ đánh dấu Data transfer cuối cùng của burst
+
+  -- Write Response Channel (B) bổ sung
+  output [x:0]  bid       // ID phản hồi (khớp với awid)
+
+  -- Read Address Channel (AR) bổ sung
+  input  [7:0]  arlen     // Độ dài burst đọc
+  input  [2:0]  arsize    // Kích thước của mỗi transfer
+  input  [1:0]  arburst   // Loại burst (FIXED, INCR, WRAP)
+  input         arlock    // Khóa truy cập
+  input  [3:0]  arcache   // Thuộc tính bộ nhớ
+  input  [3:0]  arqos     // Quality of Service
+  input  [3:0]  arregion  // Định danh vùng bộ nhớ
+  input  [x:0]  arid      // ID của giao dịch đọc
+
+  -- Read Data Channel (R) bổ sung
+  output        rlast     // Cờ đánh dấu Data transfer cuối cùng của burst
+  output [x:0]  rid       // ID dữ liệu đọc (khớp với arid)
+
+--------------------------------------------------------
+3. AXI4-Stream (1 Kênh Dữ liệu)
+- Số kênh: 1 Kênh truyền luồng (Data Stream) theo 1 chiều từ Master sang Slave.
+- Ứng dụng: Xử lý DSP, Video, Network packet, truyền dữ liệu tốc độ cao không cần địa chỉ.
+- Handshake: VALID / READY
+--------------------------------------------------------
+  input         aclk
+  input         aresetn
+  
+  output [x:0]  tdata     // Dữ liệu chính (độ rộng x thường là bội của 8)
+  output        tvalid    // Tín hiệu hợp lệ của tdata (từ Master)
+  input         tready    // Tín hiệu sẵn sàng nhận (từ Slave)
+  
+  output        tlast     // Đánh dấu Transfer/Byte cuối cùng của 1 packet
+  output [y:0]  tkeep     // Byte qualifier: chỉ định các byte nào chứa dữ liệu thật
+  output [y:0]  tstrb     // Byte qualifier: dùng cho null bytes
+  output [z:0]  tid       // Stream ID: phân biệt các luồng dữ liệu
+  output [w:0]  tdest     // Routing ID: đích đến của dữ liệu
+  output [v:0]  tuser     // Tín hiệu tuỳ chỉnh do user định nghĩa

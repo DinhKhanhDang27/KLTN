@@ -1,0 +1,635 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Lab 01 — RISC-V Pipeline Interface &amp; Retire Reconstruction</title>
+<link rel="stylesheet" href="assets/lab.css">
+<script src="assets/lab.js" defer></script>
+</head>
+<body data-lab="1" data-total="15">
+<div id="readbar" aria-hidden="true"></div>
+<header class="topbar">
+  <button type="button" class="iconbtn" id="toc-toggle" aria-label="Mở mục lục">☰</button>
+  <a class="brand" href="index.html"><span class="brand-mark">UVM</span><span>RISC-V <small>Speedrun</small></span></a>
+  <nav class="labdots" aria-label="Chọn lab"><a href="lab01.html" data-n="1" title="Lab 01 — Interface & clocking" aria-current="page">1</a><a href="lab02.html" data-n="2" title="Lab 02 — Sequence item">2</a><a href="lab03.html" data-n="3" title="Lab 03 — Driver">3</a><a href="lab04.html" data-n="4" title="Lab 04 — Monitor & analysis port">4</a><a href="lab05.html" data-n="5" title="Lab 05 — Agent, env, test, config">5</a><a href="lab06.html" data-n="6" title="Lab 06 — Sequence library">6</a><a href="lab07.html" data-n="7" title="Lab 07 — Virtual sequencer">7</a><a href="lab08.html" data-n="8" title="Lab 08 — SVA & bind trong UVM">8</a><a href="lab09.html" data-n="9" title="Lab 09 — Reference model">9</a><a href="lab10.html" data-n="10" title="Lab 10 — Scoreboard in-order">10</a><a href="lab11.html" data-n="11" title="Lab 11 — Scoreboard đầy đủ">11</a><a href="lab12.html" data-n="12" title="Lab 12 — Functional coverage">12</a><a href="lab13.html" data-n="13" title="Lab 13 — RAL (uvm_reg / uvm_mem)">13</a><a href="lab14.html" data-n="14" title="Lab 14 — Factory, callback, catcher">14</a><a href="lab15.html" data-n="15" title="Lab 15 — Regression & closure">15</a></nav>
+  <button type="button" class="iconbtn" id="theme-toggle" aria-label="Đổi giao diện sáng/tối">☾</button>
+</header>
+<div class="layout">
+<aside class="side" aria-label="Mục lục">
+  <nav class="side-toc">
+    <p class="side-title">Trong bài này</p>
+    <ol>
+<li><a href="#muc-tongquan">1. Tổng quan lab</a></li>
+<li><a href="#m1">2. Vị trí trong testbench</a></li>
+<li><a href="#m2">3. Mục tiêu học</a></li>
+<li><a href="#m3">4. Keyword &amp; khái niệm mới</a></li>
+<li><a href="#m4">5. Chuẩn bị thư mục &amp; RTL</a></li>
+<li><a href="#m5">6. Lý thuyết UVM — ranh giới TB ↔ DUT</a></li>
+<li><a href="#m6">7. Iteration 0 — interface + top + retire chạy được</a></li>
+<li><a href="#m7">8. Iterations — đổi nhỏ, chạy lại, so sánh</a></li>
+<li><a href="#m8">9. Bảng tổng hợp iteration</a></li>
+<li><a href="#m9">10. BASELINE để sang Lab 2</a></li>
+<li><a href="#m10">11. Checklist nhớ code</a></li>
+<li><a href="#m11">12. Phỏng vấn — hỏi &amp; đáp mẫu</a></li>
+<li><a href="#m12">13. Cheat-sheet</a></li>
+<li><a href="#m13">14. Bài tập code &amp; câu hỏi nâng cao UVM</a></li>
+    </ol>
+  </nav>
+  <div class="side-tools">
+    <button type="button" class="btn" data-act="expand">Mở tất cả spoiler</button>
+    <button type="button" class="btn" data-act="collapse">Đóng tất cả spoiler</button>
+    <button type="button" class="btn" data-act="qa-close">Ẩn đáp án QA (tự test)</button>
+    <button type="button" class="btn" data-act="top">↑ Lên đầu trang</button>
+  </div>
+</aside>
+<main class="main">
+<header class="hero" data-num="01">
+  <div class="eyebrow"><span class="pill">Lab 01 / 15</span><span class="phase">Nền tảng</span></div>
+  <h1>Lab 01 — RISC-V Pipeline Interface &amp; Retire Reconstruction</h1>
+  <p class="tags"><span class="tag">interface</span><span class="tag">clocking block</span><span class="tag">modport</span><span class="tag">hierarchical reference</span><span class="tag">white-box backdoor</span><span class="tag">5-stage pipeline</span><span class="tag">retire (RVFI-lite)</span></p>
+</header>
+<nav class="toc" aria-label="Mục lục bài lab"><strong>📑 Mục lục</strong><ol>
+<li><a href="#muc-tongquan">1. Tổng quan lab</a></li>
+<li><a href="#m1">2. Vị trí trong testbench</a></li>
+<li><a href="#m2">3. Mục tiêu học</a></li>
+<li><a href="#m3">4. Keyword &amp; khái niệm mới</a></li>
+<li><a href="#m4">5. Chuẩn bị thư mục &amp; RTL</a></li>
+<li><a href="#m5">6. Lý thuyết UVM — ranh giới TB ↔ DUT</a></li>
+<li><a href="#m6">7. Iteration 0 — interface + top + retire chạy được</a></li>
+<li><a href="#m7">8. Iterations — đổi nhỏ, chạy lại, so sánh</a></li>
+<li><a href="#m8">9. Bảng tổng hợp iteration</a></li>
+<li><a href="#m9">10. BASELINE để sang Lab 2</a></li>
+<li><a href="#m10">11. Checklist nhớ code</a></li>
+<li><a href="#m11">12. Phỏng vấn — hỏi &amp; đáp mẫu</a></li>
+<li><a href="#m12">13. Cheat-sheet</a></li>
+<li><a href="#m13">14. Bài tập code &amp; câu hỏi nâng cao UVM</a></li>
+</ol></nav>
+
+<div class="note" id="muc-tongquan">
+  <strong>Tổng quan lab</strong>
+  <ul>
+    <li><strong>Lab này làm gì:</strong> xây <code>riscv_if</code> — "ranh giới phần cứng" nối UVM vào
+      core <strong><code>riscv_pipeline_top</code></strong> (RV32I 5 tầng IF→ID→EX→MEM→WB). Vì đây là
+      pipeline (không handshake bus), interface mang <code>clk</code>/<code>rst</code>, các tín hiệu quan sát
+      từng tầng, và quan trọng nhất: <strong>cổng retire (RVFI-lite)</strong> tái dựng "lệnh nào vừa
+      <em>commit</em> ở tầng WB" — vì pipeline <em>không</em> mang PC/instruction xuống tới WB.</li>
+    <li><strong>Tạo ra file nào:</strong> <code>tb/if/riscv_if.sv</code> (interface + backdoor),
+      <code>tb/top/riscv_tb_top.sv</code> (top: gen clock, instance DUT + interface, <em>shadow pipeline</em>
+      tái dựng retire).</li>
+    <li><strong>Nhận gì từ lab trước:</strong> không (lab đầu). Cần Vivado 2023.2 + RTL trong
+      <code>rtl/</code> (đã copy từ <code>code/rtl_riscv/</code>).</li>
+    <li><strong>Lab sau dùng để làm gì:</strong> Lab 3 (driver) gọi backdoor nạp chương trình + điều khiển
+      reset; Lab 4 (monitor) sample <code>ret_cb</code> dựng transaction retire; mọi component nhận interface
+      này dưới dạng <strong>virtual interface</strong> qua config_db.</li>
+  </ul>
+</div>
+
+<div class="callout uvm"><strong>Trọng tâm UVM của lab</strong>
+<ul>
+  <li><strong>Virtual interface</strong> là cầu nối duy nhất giữa thế giới <em>module</em> (tĩnh, có clock) và thế giới <em>class</em> (động, UVM) — mọi driver/monitor sau này đều nhận nó qua <code>uvm_config_db</code>.</li>
+  <li><strong>Clocking block + <code>#1step</code></strong>: cách chuẩn công nghiệp để TB không dính race với DUT.</li>
+  <li><strong>modport</strong> ≠ <strong>clocking block</strong>: vì sao <code>virtual riscv_if.mon</code> làm hỏng <code>config_db</code>.</li>
+  <li><strong>Backdoor</strong> trong interface (BFM pattern) — tiền đề cho RAL ở Lab 13.</li>
+  <li>RISC-V ở lab này chỉ là “dữ liệu”: bạn đã biết pipeline, nên phần retire/shadow được gấp vào mục recap.</li>
+</ul></div>
+
+<div class="note warn"><strong>Khác single-cycle:</strong> với <code>riscv_top</code> single-cycle, mỗi chu kỳ
+1 lệnh retire ngay và <code>dut.instruction</code>/<code>dut.rd</code>/<code>dut.reg_write_data</code> nằm
+phẳng ở top. Với pipeline, một lệnh mất <strong>5 chu kỳ</strong> mới tới WB, có bong bóng (bubble) do
+load-use stall và flush do rẽ nhánh. Ta phải <em>tái dựng</em> dòng retire theo đúng thứ tự chương trình.</div>
+
+
+
+<h2 id="m1">2. Vị trí trong testbench</h2>
+<pre><code>        ┌──────────────── riscv_tb_top ──────────────────────────┐
+        │  clk gen (10ns)                                          │
+        │  ┌─────────── riscv_if ◄── (ĐANG XÂY LAB 1) ──────────┐ │
+        │  │ clk,rst  +  probe mỗi tầng (pc_if, alu_result_ex…)  │ │
+        │  │ RETIRE port: valid,pc,instr,rd,wb,mem_write,addr…   │ │
+        │  │ ret_cb (sample)  +  modports                        │ │
+        │  │ backdoor: load_instr / load_hex / peek_reg / peek_mem│ │
+        │  └──────────▲────────────────┬──────────────▲──────────┘ │
+        │   assign probe│   hierarchical poke│  shadow pipeline│    │
+        │  ┌────────────┴────────────────▼──────────────┴────────┐ │
+        │  │  dut = riscv_pipeline_top  (IF ID EX MEM WB)         │ │
+        │  │  u_imem   u_regfile   u_dmem  (cùng tên như single)  │ │
+        │  └──────────────────────────────────────────────────────┘ │
+        └──────────────────────────────────────────────────────────┘</code></pre>
+
+<h2 id="m2">3. Mục tiêu học</h2>
+<ul>
+  <li>Hiểu vì sao verify CPU pipeline là <strong>white-box</strong>: core chỉ lộ <code>out_pc</code>/
+    <code>out_alu_result</code> (tầng IF/EX) — muốn "chấm điểm" phải nhìn writeback ở WB + bộ nhớ.</li>
+  <li><code>interface</code> gom tín hiệu quan sát; <code>clocking block</code> chống race khi sample.</li>
+  <li><code>modport</code> giới hạn hướng cho monitor (chỉ đọc) và driver (lái reset + backdoor).</li>
+  <li><strong>Hierarchical reference</strong> (đi <em>lên</em> từ interface: <code>dut....</code>) để nạp ROM, đọc
+    trộm regfile/data-mem, và đọc tín hiệu nội bộ từng tầng pipeline.</li>
+  <li><strong>Shadow pipeline (RVFI-lite):</strong> tái dựng "dòng commit" — mỗi lệnh thật đúng 1 sự kiện
+    retire theo thứ tự chương trình, kể cả khi có bubble/flush. KHÔNG sửa DUT.</li>
+  <li>Chạy mô phỏng đầu tiên bằng <code>xvlog/xelab/xsim</code> (chưa có UVM).</li>
+</ul>
+
+<h2 id="m3">4. Keyword &amp; khái niệm mới</h2>
+<div class="table-wrap"><table>
+  <tr><th>Keyword</th><th>Giải thích 1 dòng</th><th>Ví dụ</th></tr>
+  <tr><td><code>interface</code></td><td>Gom tín hiệu + hành vi, cắm vào module như 1 port</td><td><code>interface riscv_if(input logic clk);</code></td></tr>
+  <tr><td><code>clocking block</code></td><td>Nhóm sample đồng bộ 1 clock, skew tránh race</td><td><code>clocking ret_cb @(posedge clk);</code></td></tr>
+  <tr><td><code>#1step</code></td><td>Sample vùng preponed — giá trị ổn định ngay trước sườn</td><td><code>default input #1step;</code></td></tr>
+  <tr><td><code>modport</code></td><td>"Cổng con" chỉ định hướng tín hiệu theo vai trò</td><td><code>modport mon(clocking ret_cb);</code></td></tr>
+  <tr><td>hierarchical ref</td><td>Đường dẫn tới net/reg/mem module khác (tuyệt đối từ top, hoặc “đi lên” từ scope hiện tại)</td><td><code>dut.u_regfile.registers[5]</code> (viết trong interface) ≡ <code>riscv_tb_top.dut.u_regfile.registers[5]</code></td></tr>
+  <tr><td>retire / commit</td><td>Lệnh hoàn tất, ghi state kiến trúc (ở tầng WB)</td><td><code>vif.ret_valid</code></td></tr>
+  <tr><td>shadow pipeline</td><td>Mảng reg song song tái dựng pc/instr/valid tới WB</td><td><code>s_memwb_pc</code></td></tr>
+  <tr><td><code>$readmemh</code></td><td>Nạp file hex vào mảng bộ nhớ</td><td><code>$readmemh("prog.hex", mem);</code></td></tr>
+</table></div>
+
+<h2 id="m4">5. Chuẩn bị thư mục &amp; RTL</h2>
+<pre><code>mkdir -p ~/Study/KLtN/code/tb_uvm/uvm_riscv/{tb/if,tb/top,rtl,sim}</code></pre>
+<p>RTL đã được copy sẵn vào <code>rtl/</code>. DUT = <code>riscv_pipeline_top</code>, dùng lại các submodule:</p>
+<pre><code>cd ~/Study/KLtN/code/tb_uvm/uvm_riscv
+cp ../../rtl_riscv/{instruction_memory,register_file,data_memory,control_unit,imm_gen,\
+alu_control,alu,branch_control,mux,adder,riscv_pipeline_top}.sv rtl/</code></pre>
+<div class="note ok"><strong>Khác single-cycle:</strong> pipeline <strong>không</strong> instantiate
+<code>sha256</code> (comment trong RTL nói rõ: SoC thật dùng <code>sha256_avalon_wrapper</code> qua bus).
+Nên Lab 1 pipeline <em>không cần</em> stub SHA. Các load/store đi thẳng vào <code>u_dmem</code>.</div>
+<div class="note warn"><code>instruction_memory</code> có <code>$readmemh("firmware/firmware.hex", mem)</code>.
+Nếu chưa có file, chỉ là WARNING; ta nạp lệnh qua backdoor. Đã tạo sẵn <code>sim/firmware/firmware.hex</code>.</div>
+
+<h2 id="m5">6. Lý thuyết UVM — ranh giới TB ↔ DUT</h2>
+<h3>6.1. Hai thế giới: module vs class</h3>
+<p>UVM component là <strong>class</strong>: được tạo lúc runtime (<code>type_id::create</code>), không có port, không nằm trong cây
+instance của elaboration. DUT và interface là <strong>module/interface</strong>: tồn tại tĩnh từ lúc elaborate. Một class
+<em>không thể</em> khai báo <code>riscv_if vif();</code> — nó chỉ có thể giữ một <strong>con trỏ</strong> tới interface đã tồn tại:
+<code>virtual riscv_if vif;</code>. Đó là toàn bộ lý do virtual interface tồn tại.</p>
+<pre><code>// top (module-world)                          // driver (class-world)
+riscv_if vif(.clk(clk));                       virtual riscv_if vif;     // handle, mặc định null
+initial uvm_config_db#(virtual riscv_if)       function void build_phase(uvm_phase phase);
+          ::set(null, "*", "vif", vif);          if (!uvm_config_db#(virtual riscv_if)::get(this,"","vif",vif))
+                                                   `uvm_fatal("NOVIF", "vif chua duoc set")</code></pre>
+
+<h3>6.2. Race condition &amp; regions — vì sao cần clocking block</h3>
+<p>Trong một time-step, simulator chạy các region theo thứ tự: <code>Preponed → Active → Inactive → NBA → Observed → Reactive → Postponed</code>.
+DUT (RTL) cập nhật bằng <code>&lt;=</code> ở <strong>NBA</strong>; nếu TB đọc/ghi bằng blocking ở <strong>Active</strong> ngay sườn clock, kết quả phụ thuộc thứ tự thực thi → race.</p>
+<div class="table-wrap"><div class="table-wrap"><table>
+<tr><th>Cách</th><th>Khi nào TB thấy giá trị</th><th>Hệ quả</th></tr>
+<tr><td><code>@(posedge clk); x = sig;</code></td><td>Active, có thể trước hoặc sau NBA của DUT</td><td>Race — kết quả đổi theo simulator/thứ tự file</td></tr>
+<tr><td><code>@(vif.ret_cb); x = vif.ret_cb.sig;</code> với <code>default input #1step</code></td><td>Preponed: giá trị ổn định <em>ngay trước</em> sườn</td><td>Tất định: thấy đúng giá trị DUT “chốt” ở sườn trước</td></tr>
+<tr><td><code>vif.drv_cb.sig &lt;= v;</code> (output skew)</td><td>Lái sau sườn (output skew / Reactive)</td><td>DUT lấy mẫu giá trị cũ ở sườn hiện tại — đúng như phần cứng thật</td></tr>
+</table></div></div>
+
+<h3>6.3. modport, clocking block và <code>config_db</code> — cái bẫy kinh điển</h3>
+<p><code>modport</code> chỉ là <em>view</em> kiểm tra hướng tín hiệu lúc compile; nó <strong>không phải</strong> member của interface instance.
+Vì vậy <code>vif.mon.ret_cb</code> hay <code>vif.drv.rst</code> là cú pháp <strong>sai</strong> — clocking block là member trực tiếp: <code>vif.ret_cb</code>.
+Bộ lab dùng <code>virtual riscv_if</code> trơn (không chọn modport ở handle):</p>
+<pre><code>// SAI: kiểu khác nhau → config_db tìm không ra (lookup theo type của T)
+virtual riscv_if.mon vif_m;
+uvm_config_db#(virtual riscv_if.mon)::get(this,"","vif",vif_m);   // top set bằng virtual riscv_if → get trả 0
+
+// ĐÚNG (pattern AXI VIP & phần lớn VIP thương mại): handle trơn, phân quyền bằng clocking block
+virtual riscv_if vif;
+@(vif.ret_cb);  if (vif.ret_cb.ret_valid) ...</code></pre>
+<div class="callout pitfall"><strong>Bẫy:</strong> <code>uvm_config_db#(T)</code> khớp theo <em>kiểu T chính xác</em>. <code>virtual riscv_if</code> và <code>virtual riscv_if.mon</code> là hai kiểu khác nhau → <code>get()</code> trả 0, không có lỗi compile, chỉ <code>NOVIF</code> lúc chạy.</div>
+
+<h3>6.4. Backdoor trong interface (BFM pattern)</h3>
+<p>Các task <code>load_instr/peek_reg/peek_mem</code> đặt <em>trong interface</em> để class chỉ gọi <code>vif.peek_reg(5)</code> mà không biết đường dẫn RTL —
+đường dẫn hierarchical bị “nhốt” vào một file. Nhược điểm: interface phải biết module cha có instance tên <code>dut</code>. Ta viết <code>dut.u_imem.mem[...]</code> (upward name resolution — SV tìm <code>dut</code> ở module chứa interface instance) thay vì path tuyệt đối <code>riscv_tb_top.dut...</code>, vì path tuyệt đối chỉ chạy với đúng một harness (Lab 3/4/9 dùng harness tên khác <code>riscv_drv_tb</code>/<code>riscv_mon_tb</code>/… → <code>'riscv_tb_top' is not declared</code>).
+Giải pháp công nghiệp: truyền đường dẫn bằng string rồi dùng <code>uvm_hdl_read/uvm_hdl_deposit</code> (DPI, hỗ trợ trong UVM) — Lab 13 sẽ quay lại.</p>
+<div class="callout debug"><strong>Debug:</strong> Chạy với <code>+UVM_CONFIG_DB_TRACE</code> để thấy từng lệnh set/get vif (ở Lab 5 trở đi). Nếu <code>get</code> fail, kiểm tra: (1) đúng kiểu, (2) scope string, (3) <code>set</code> chạy <em>trước</em> <code>build_phase</code> của component get.</div>
+
+<details class="recap"><summary>RISC-V recap: pipeline 5 tầng, hazard, vì sao phải dựng retire (bạn đã biết — mở nếu cần)</summary>
+<ol>
+  <li><strong>5 tầng:</strong> IF (fetch) → ID (decode, đọc reg) → EX (ALU, quyết định rẽ nhánh) →
+    MEM (truy cập data mem) → WB (ghi regfile). Regfile ghi ở <code>negedge</code> (write-first cho ID).</li>
+  <li><strong>Hazard:</strong> forwarding EX/MEM, MEM/WB → EX; <em>load-use stall</em> 1 chu kỳ; rẽ nhánh/nhảy
+    quyết ở EX → <em>flush</em> IF/ID + ID/EX (lệnh đã fetch sai bị hủy, <code>ifid_valid=0</code>).</li>
+  <li><strong>Vì sao phải tái dựng retire?</strong> RTL mang <em>field giải mã</em> xuống pipeline nhưng
+    <strong>không mang PC và instruction gốc</strong> tới MEM/WB. Muốn có bản ghi retire đầy đủ
+    (pc, instr, rd, wb_data, mem) ta dựng <strong>shadow pipeline</strong> trong top: mảng reg song song
+    đi theo đúng điều kiện bubble/flush của DUT. Đây chính là ý tưởng của <em>RVFI</em>
+    (RISC-V Formal Interface) — cổng trace lúc commit.</li>
+  <li><strong>Vì sao backdoor?</strong> Core fetch lệnh từ ROM. Để UVM điều khiển chương trình, ghi thẳng
+    <code>dut.u_imem.mem[idx]</code> bằng hierarchical reference — tức thì, không tốn chu kỳ.</li>
+  <li><strong>Reset:</strong> active-high, PC về 0 ở <code>posedge rst</code>. TB giữ <code>rst=1</code> vài chu
+    kỳ rồi nhả; cần ~5 chu kỳ để lệnh đầu tiên "chảy" tới WB.</li>
+</ol>
+</details>
+
+<h2 id="m6">7. Iteration 0 — interface + top + retire chạy được</h2>
+<p>Tạo interface (có cổng retire + backdoor) và top (shadow pipeline). Nạp chương trình nhỏ rồi in mỗi
+lần có lệnh retire.</p>
+
+<details><summary>Xem full code: tb/if/riscv_if.sv</summary>
+<pre><code>// tb/if/riscv_if.sv — ranh giới UVM ↔ core RISC-V 5-stage pipeline
+`ifndef RISCV_IF_SV
+`define RISCV_IF_SV
+
+interface riscv_if (input logic clk);
+
+  // ---- Tín hiệu điều khiển TB lái ----
+  logic        rst = 1'b1;       // active-high; giữ reset cho tới khi driver nhả
+
+  // ---- Probe thô theo tầng (top assign từ net nội bộ DUT) ----
+  logic [31:0] pc_if;            // dut.pc_if         (PC tầng IF)
+  logic [31:0] alu_result_ex;    // dut.alu_result_ex (ALU tầng EX)
+  logic        stall;            // dut.stall         (load-use stall)
+  logic        redirect;         // dut.redirect      (branch/jump taken ở EX)
+
+  // ---- CỔNG RETIRE (RVFI-lite): mô tả lệnh vừa commit ở WB ----
+  logic        ret_valid;        // 1 = có 1 lệnh thật commit chu kỳ này
+  logic [31:0] ret_pc;           // PC của lệnh commit
+  logic [31:0] ret_instr;        // instruction word gốc
+  logic        ret_reg_write;    // ghi regfile?
+  logic [4:0]  ret_rd;           // thanh ghi đích
+  logic [31:0] ret_wb_data;      // dữ liệu writeback
+  logic        ret_mem_write;    // store?
+  logic [31:0] ret_mem_addr;     // địa chỉ store
+  logic [31:0] ret_mem_wdata;    // dữ liệu store
+
+  // ---- Clocking block cho MONITOR: chỉ sample, chống race ----
+  clocking ret_cb @(posedge clk);
+    default input #1step;
+    input ret_valid, ret_pc, ret_instr, ret_reg_write, ret_rd, ret_wb_data;
+    input ret_mem_write, ret_mem_addr, ret_mem_wdata;
+    input pc_if, alu_result_ex, stall, redirect;
+  endclocking
+
+  // ---- Modport ----
+  modport mon (clocking ret_cb, input clk, input rst);
+  modport drv (input clk, output rst);   // driver cầm reset + gọi backdoor
+
+  // ======================================================================
+  //  BACKDOOR HOOKS — hierarchical reference tới DUT.
+  //  `dut` được tìm ĐI LÊN từ interface instance, nên chạy với mọi harness (riscv_tb_top, riscv_drv_tb, ...)
+  //  miễn là module chứa interface cũng có instance tên `dut`.
+  // ======================================================================
+
+  // Ghi 1 lệnh vào ROM tại word-index idx (= địa chỉ byte >> 2).
+  task automatic load_instr(input int idx, input logic [31:0] data);
+    dut.u_imem.mem[idx] = data;
+  endtask
+
+  // Nạp cả file hex (mỗi dòng 1 word theo chuẩn $readmemh).
+  task automatic load_hex(input string path);
+    $readmemh(path, dut.u_imem.mem);
+  endtask
+
+  // Xóa ROM về NOP (addi x0,x0,0 = 0x00000013) để chương trình sạch.
+  task automatic clear_imem(input int n = 1024);
+    for (int i = 0; i &lt; n; i++) dut.u_imem.mem[i] = 32'h00000013;
+  endtask
+
+  // Đọc trộm 1 thanh ghi (x0..x31). x0 luôn 0.
+  function automatic logic [31:0] peek_reg(input int r);
+    if (r == 0) return 32'd0;
+    return dut.u_regfile.registers[r];
+  endfunction
+
+  // Đọc trộm 1 word data memory tại địa chỉ byte (căn chỉnh 4).
+  function automatic logic [31:0] peek_mem(input int byte_addr);
+    int b; b = byte_addr & 11'h7fc;
+    return {dut.u_dmem.mem[b+3], dut.u_dmem.mem[b+2],
+            dut.u_dmem.mem[b+1], dut.u_dmem.mem[b]};
+  endfunction
+
+endinterface
+`endif</code></pre>
+</details>
+
+<details><summary>Xem full code: tb/top/riscv_tb_top.sv</summary>
+<pre><code>// tb/top/riscv_tb_top.sv — top mô phỏng Lab 1 (chưa có UVM)
+`timescale 1ns/1ps
+
+module riscv_tb_top;
+
+  logic clk = 0;
+  always #5 clk = ~clk;          // chu kỳ 10ns
+
+  // Interface
+  riscv_if vif (.clk(clk));
+
+  // DUT: pipeline, cùng ports như single-cycle riscv_top
+  riscv_pipeline_top dut (
+    .clk            (clk),
+    .rst            (vif.rst),
+    .out_pc         (),
+    .out_alu_result ()
+  );
+
+  // ---- Probe thô ----
+  assign vif.pc_if         = dut.pc_if;
+  assign vif.alu_result_ex = dut.alu_result_ex;
+  assign vif.stall         = dut.stall;
+  assign vif.redirect      = dut.redirect;
+
+  // ======================================================================
+  //  SHADOW PIPELINE — tái dựng retire mà KHÔNG sửa DUT.
+  //  Mỗi tầng ta giữ song song: valid + pc + instr, đi theo đúng điều kiện
+  //  bubble/flush của riscv_pipeline_top.
+  //    insert_bubble(ID/EX) = redirect | stall   (rst xử lý ở nhánh reset)
+  //    EX/MEM luôn tiến (top dùng bộ nhớ single-cycle, không có mem_stall)
+  //  Thông tin store của lệnh đang ở MEM (dut.exmem_*) được chốt sang MEM/WB.
+  // ======================================================================
+  logic        s_idex_valid,  s_exmem_valid,  s_memwb_valid;
+  logic [31:0] s_idex_pc,      s_exmem_pc,     s_memwb_pc;
+  logic [31:0] s_idex_instr,   s_exmem_instr,  s_memwb_instr;
+  logic        s_memwb_mwrite;
+  logic [31:0] s_memwb_maddr,  s_memwb_mwdata;
+
+  always @(posedge clk or posedge vif.rst) begin
+    if (vif.rst) begin
+      s_idex_valid  &lt;= 1'b0;
+      s_exmem_valid &lt;= 1'b0;
+      s_memwb_valid &lt;= 1'b0;
+    end else begin
+      // --- ID/EX: mirror idex_valid_r ---
+      s_idex_valid &lt;= (dut.redirect | dut.stall) ? 1'b0 : dut.ifid_valid;
+      s_idex_pc    &lt;= dut.ifid_pc;
+      s_idex_instr &lt;= dut.ifid_instr;
+      // --- EX/MEM: luôn tiến ---
+      s_exmem_valid &lt;= s_idex_valid;
+      s_exmem_pc    &lt;= s_idex_pc;
+      s_exmem_instr &lt;= s_idex_instr;
+      // --- MEM/WB: chốt cả thông tin store của lệnh vừa qua MEM ---
+      s_memwb_valid  &lt;= s_exmem_valid;
+      s_memwb_pc     &lt;= s_exmem_pc;
+      s_memwb_instr  &lt;= s_exmem_instr;
+      s_memwb_mwrite &lt;= dut.exmem_mem_write;
+      s_memwb_maddr  &lt;= dut.exmem_alu_result;
+      s_memwb_mwdata &lt;= dut.exmem_store_data;
+    end
+  end
+
+  // ---- Lái cổng retire của interface (tổ hợp, ở tầng WB) ----
+  assign vif.ret_valid     = s_memwb_valid;
+  assign vif.ret_pc        = s_memwb_pc;
+  assign vif.ret_instr     = s_memwb_instr;
+  assign vif.ret_reg_write = dut.memwb_reg_write_r;
+  assign vif.ret_rd        = dut.memwb_rd_r;
+  assign vif.ret_wb_data   = dut.memwb_wb_value_r;
+  assign vif.ret_mem_write = s_memwb_mwrite;
+  assign vif.ret_mem_addr  = s_memwb_maddr;
+  assign vif.ret_mem_wdata = s_memwb_mwdata;
+
+  // ---- Smoke test: nạp chương trình, nhả reset, in mỗi lần retire ----
+  initial begin
+    vif.rst = 1'b1;
+    vif.clear_imem();
+    // addi x1,x0,5 ; addi x2,x1,3 ; add x3,x1,x2 ; jal x0,0 (loop)
+    vif.load_instr(0, 32'h00500093);
+    vif.load_instr(1, 32'h00308113);
+    vif.load_instr(2, 32'h002081b3);
+    vif.load_instr(3, 32'h0000006f);
+    repeat (2) @(posedge clk);
+    vif.rst = 1'b0;
+
+    repeat (12) @(posedge clk) begin
+      if (vif.ret_valid)
+        $display("[%0t] RETIRE pc=0x%08h instr=0x%08h rw=%b rd=x%0d wb=0x%08h",
+                 $time, vif.ret_pc, vif.ret_instr, vif.ret_reg_write, vif.ret_rd, vif.ret_wb_data);
+    end
+    $display("x1=%0d x2=%0d x3=%0d (mong 5, 8, 13)",
+             vif.peek_reg(1), vif.peek_reg(2), vif.peek_reg(3));
+    $finish;
+  end
+
+endmodule</code></pre>
+</details>
+
+<p><strong>Lệnh chạy (từng lệnh một):</strong></p>
+<pre><code>cd ~/Study/KLtN/code/tb_uvm/uvm_riscv/sim</code></pre>
+<pre><code>xvlog -sv ../tb/if/riscv_if.sv</code></pre>
+<pre><code>xvlog -sv ../rtl/instruction_memory.sv ../rtl/register_file.sv ../rtl/data_memory.sv ../rtl/control_unit.sv ../rtl/imm_gen.sv ../rtl/alu_control.sv ../rtl/alu.sv ../rtl/branch_control.sv ../rtl/mux.sv ../rtl/adder.sv ../rtl/riscv_pipeline_top.sv</code></pre>
+<pre><code>xvlog -sv ../tb/top/riscv_tb_top.sv</code></pre>
+<pre><code>xelab -timescale 1ns/1ps riscv_tb_top -s top_sim</code></pre>
+<pre><code>xsim top_sim -R</code></pre>
+
+<details><summary>Expected log (đã chạy thật trên xsim 2023.2)</summary>
+<pre><code>Built simulation snapshot top_sim
+WARNING: File firmware/firmware.hex referenced on .../rtl/riscv_pipeline_top.sv at line 355 cannot be opened for reading. ...   &lt;-- bỏ qua (có backdoor)
+[65000] RETIRE pc=0x00000000 instr=0x00500093 rw=1 rd=x1 wb=0x00000005
+[75000] RETIRE pc=0x00000004 instr=0x00308113 rw=1 rd=x2 wb=0x00000008
+[85000] RETIRE pc=0x00000008 instr=0x002081b3 rw=1 rd=x3 wb=0x0000000d
+[95000] RETIRE pc=0x0000000c instr=0x0000006f rw=1 rd=x0 wb=0x00000010
+[125000] RETIRE pc=0x0000000c instr=0x0000006f rw=1 rd=x0 wb=0x00000010
+x1=5 x2=8 x3=13 (mong 5, 8, 13)
+$finish called at time : 135 ns : File ".../tb/top/riscv_tb_top.sv" Line 94</code></pre>
+<p><em>Retire đầu tiên xuất hiện muộn (~5 chu kỳ sau nhả reset) vì pipeline cần lấp đầy. <code>jal x0,0</code> vẫn có <code>rw=1 rd=x0</code> (core ghi PC+4 vào rd, regfile bỏ qua x0) và retire lại sau mỗi lần nhảy về chính nó (cách nhau 3 chu kỳ vì phải flush). Thứ tự retire =
+thứ tự chương trình. Lab 1 chưa có UVM nên không có UVM Report Summary.</em></p>
+</details>
+
+<div class="note ok"><strong>Vì sao x3=13?</strong> <code>add x3,x1,x2</code> = 5+8. Lệnh này phụ thuộc x2 vừa
+ghi — nhưng <em>forwarding</em> của pipeline chuyển kết quả nên không sai, và không cần stall (chỉ load-use
+mới stall). Shadow pipeline cho ta thấy 3 retire đúng thứ tự dù chúng nằm xen kẽ trong pipeline.</div>
+
+<h2 id="m7">8. Iterations — đổi nhỏ, chạy lại, so sánh</h2>
+
+<h3>Iteration 1 — đổi chu kỳ clock 10ns → 4ns</h3>
+<p>Sửa <code>always #5 clk</code> → <code>always #2 clk</code>.</p>
+<details><summary>Khác biệt</summary><p>Các mốc <code>$time</code> nhỏ lại nhưng <em>số chu kỳ</em> tới retire đầu tiên không đổi (vẫn ~5).
+Dạy: period đổi thời gian thực, không đổi độ trễ pipeline tính theo chu kỳ.</p></details>
+
+<h3>Iteration 2 — thêm chuỗi phụ thuộc load-use để thấy stall</h3>
+<p>Nạp: <code>sw x1,0(x0)</code>; <code>lw x5,0(x0)</code>; <code>add x6,x5,x5</code> (x6 dùng ngay x5 vừa load → load-use).</p>
+<details><summary>Full phần initial (mới)</summary>
+<pre><code>    vif.load_instr(0, 32'h00500093);  // addi x1,x0,5
+    vif.load_instr(1, 32'h00102023);  // sw   x1,0(x0)
+    vif.load_instr(2, 32'h00002283);  // lw   x5,0(x0)
+    vif.load_instr(3, 32'h00528333);  // add  x6,x5,x5  -> load-use (stall 1 chu kỳ)
+    vif.load_instr(4, 32'h0000006f);  // jal  x0,0
+    ...
+    $display("x5=%0d x6=%0d (mong 5, 10)", vif.peek_reg(5), vif.peek_reg(6));</code></pre></details>
+<details><summary>Khác biệt</summary><p>Quan sát <code>vif.stall</code> lên 1 đúng 1 chu kỳ trước khi <code>add x6</code> retire; x6=10. Dù có bubble,
+shadow pipeline vẫn chỉ phát <strong>đúng 1</strong> retire cho <code>add x6</code>. Dạy: stall không tạo retire giả.</p></details>
+
+<h3>Iteration 3 — thêm rẽ nhánh taken để thấy flush</h3>
+<p>Nạp <code>beq x0,x0,+8</code> (luôn taken, nhảy qua 1 lệnh). Lệnh ngay sau beq bị flush.</p>
+<details><summary>Full phần initial (mới)</summary>
+<pre><code>    vif.load_instr(0, 32'h00000463);  // beq x0,x0,+8  (nhảy tới idx 2)
+    vif.load_instr(1, 32'h00100093);  // addi x1,x0,1  &lt;- bị FLUSH, không commit
+    vif.load_instr(2, 32'h00200113);  // addi x2,x0,2  (đích nhảy)
+    vif.load_instr(3, 32'h0000006f);  // jal x0,0
+    ...
+    $display("x1=%0d x2=%0d (mong 0 và 2 -> x1 KHÔNG được ghi)", vif.peek_reg(1), vif.peek_reg(2));</code></pre></details>
+<details><summary>Khác biệt</summary><p><code>vif.redirect</code> lên 1; lệnh idx 1 <em>không</em> xuất hiện trong dòng retire (bị flush, <code>ifid_valid=0</code>).
+x1 giữ 0. Dạy: flush loại lệnh sai khỏi dòng commit — nền tảng để scoreboard Lab 10 so đúng.</p></details>
+
+<h3>Iteration 4 — thêm probe <code>ret_pc4</code> (PC+4 kỳ vọng) để debug thứ tự</h3>
+<p>Thêm <code>logic [31:0] ret_pc_plus4;</code> vào interface + <code>input</code> trong <code>ret_cb</code>, và ở top chốt
+<code>s_memwb_pc + 4</code>.</p>
+<details><summary>Khác biệt</summary><p>Mở rộng cổng retire an toàn; Lab 8 SVA sẽ dùng để kiểm "PC tuần tự = PC+4 trừ khi rẽ nhánh".</p></details>
+
+<h3>Iteration 5 — dùng <code>load_hex</code> thay nạp từng lệnh</h3>
+<p>Tạo <code>sim/firmware/prog.hex</code> rồi gọi <code>vif.load_hex("firmware/prog.hex")</code>.</p>
+<details><summary>sim/firmware/prog.hex</summary>
+<pre><code>00500093
+00308113
+002081b3
+0000006f</code></pre></details>
+<details><summary>Khác biệt</summary><p><code>$readmemh</code> nạp theo index dòng. Kết quả giống Iteration 0. Dạy: backdoor file hex tiện cho firmware thật (Lab 15).</p></details>
+
+<h3>Iteration 6 — cố ý gây lỗi: sai tên tín hiệu nội bộ</h3>
+<p>Đổi <code>dut.memwb_reg_write_r</code> → <code>dut.memwb_regwrite</code> rồi compile.</p>
+<details><summary>Expected log (lỗi)</summary>
+<pre><code># ERROR: [VRFC 10-...] cannot find member 'memwb_regwrite' in 'dut'
+#   ... riscv_tb_top.sv line NN</code></pre>
+<p>Sửa lại đúng tên <code>memwb_reg_write_r</code>. Dạy: probe white-box phải khớp <em>chính xác</em> tên reg/wire
+trong <code>riscv_pipeline_top</code> — mở RTL ra tra, đừng đoán.</p></details>
+
+<h2 id="m8">9. Bảng tổng hợp iteration</h2>
+<div class="table-wrap"><table>
+<tr><th>Iter</th><th>Đổi gì</th><th>Học được</th></tr>
+<tr><td>0</td><td>interface + top + retire + nạp 3 lệnh</td><td>white-box probe, shadow pipeline, retire đúng thứ tự</td></tr>
+<tr><td>1</td><td>period 10→4ns</td><td>period đổi thời gian, không đổi độ trễ pipeline (chu kỳ)</td></tr>
+<tr><td>2</td><td>chuỗi load-use</td><td>stall không tạo retire giả</td></tr>
+<tr><td>3</td><td>branch taken</td><td>flush loại lệnh sai khỏi dòng commit</td></tr>
+<tr><td>4</td><td>thêm probe pc+4</td><td>mở rộng cổng retire an toàn</td></tr>
+<tr><td>5</td><td>load_hex</td><td>backdoor bằng file hex</td></tr>
+<tr><td>6</td><td>sai tên tín hiệu</td><td>đọc lỗi hierarchical reference</td></tr>
+</table></div>
+
+<h2 id="m9">10. BASELINE để sang Lab 2</h2>
+<p>Lưu 2 file ở trạng thái chuẩn: <code>riscv_if.sv</code> (có cổng retire đầy đủ + backdoor <code>load_instr/load_hex/clear_imem/peek_reg/peek_mem</code>)
+và <code>riscv_tb_top.sv</code> (shadow pipeline). Lab 2 không cần top này nhưng cần <code>riscv_if.sv</code> baseline cho các lab sau.</p>
+<div class="note">Chốt lại 9 trường cổng retire: <code>ret_valid, ret_pc, ret_instr, ret_reg_write, ret_rd,
+ret_wb_data, ret_mem_write, ret_mem_addr, ret_mem_wdata</code> — monitor Lab 4 sample đúng 9 trường này.</div>
+
+<h2 id="m10">11. Checklist nhớ code</h2>
+<ul>
+  <li>[ ] Gõ lại khung <code>interface ... endinterface</code> + nhóm cổng retire không nhìn.</li>
+  <li>[ ] Nhớ <code>clocking ret_cb @(posedge clk); default input #1step; ... endclocking</code>.</li>
+  <li>[ ] Nhớ 3 tầng shadow (ID/EX, EX/MEM, MEM/WB) + điều kiện bubble = <code>redirect|stall</code>.</li>
+  <li>[ ] Nhớ 3 backdoor: <code>load_instr</code>, <code>peek_reg</code>, <code>peek_mem</code> và path hierarchical.</li>
+</ul>
+
+<h2 id="m11">12. Phỏng vấn — hỏi &amp; đáp mẫu</h2>
+<p>Bấm câu hỏi để xem đáp án — nên tự trả lời miệng trước khi mở. Mỗi câu có ví dụ cụ thể như khi bị hỏi trong phỏng vấn.</p>
+<div class="qa-list">
+<details class="qa"><summary>Virtual interface là gì? Vì sao class không khai báo thẳng interface được?</summary>
+<div class="ans">
+<p><strong>Ý chính:</strong> virtual interface là <em>handle</em> (con trỏ) tới một interface instance tĩnh đã tồn tại. Class sinh ra lúc runtime nên không thể “chứa” một instance tĩnh (có port, có clock) — chỉ trỏ được.</p>
+<pre><code>module top;  riscv_if vif(.clk(clk));                    // instance thật, elaboration-time
+  initial uvm_config_db#(virtual riscv_if)::set(null,"*","vif",vif);  // đưa con trỏ vào DB
+endmodule
+class riscv_driver extends uvm_driver#(riscv_seq_item);
+  virtual riscv_if vif;                                   // chỉ là handle; null cho tới khi get()
+endclass</code></pre>
+<p>Nếu quên <code>get</code>, <code>vif</code> = null → <em>null-pointer dereference</em> ở lần dùng đầu tiên (xsim: lỗi runtime, không phải compile).</p>
+</div></details>
+<details class="qa"><summary>Giải thích race giữa TB và DUT và cách clocking block loại bỏ nó. Cho ví dụ.</summary>
+<div class="ans">
+<p>Ví dụ race: monitor viết <code>@(posedge clk) if (vif.ret_valid) ...</code>. <code>ret_valid</code> do RTL cập nhật bằng NBA ở cùng sườn. Monitor ở Active có thể đọc giá trị <em>cũ</em> (trước NBA) hoặc <em>mới</em> — tùy thứ tự lập lịch của simulator → kết quả khác nhau giữa xsim/VCS hoặc khi đổi thứ tự file.</p>
+<p>Clocking block với <code>default input #1step</code> lấy mẫu ở <strong>Preponed</strong> — giá trị ổn định ngay trước sườn → tất định. Với output, <code>drv_cb.sig &lt;= v</code> lái sau sườn (output skew), giống hệt hành vi flop thật. Quy tắc nhớ: <em>TB lái và lấy mẫu qua clocking block, không bao giờ truyền thẳng tín hiệu ở sườn clock</em>.</p>
+</div></details>
+<details class="qa"><summary><code>virtual riscv_if.mon vif;</code> có vấn đề gì khi dùng với <code>uvm_config_db</code>? Công ty bạn xử lý ra sao?</summary>
+<div class="ans">
+<p><code>config_db</code> là kho key/value có kiểu tham số hóa: <code>set(... virtual riscv_if ...)</code> và <code>get(... virtual riscv_if.mon ...)</code> là hai kiểu khác nhau → <code>get</code> trả 0, test chết bằng <code>UVM_FATAL NOVIF</code> chứ không phải lỗi compile.</p>
+<p>Cách làm phổ biến: handle trơn <code>virtual riscv_if</code>, rồi phân quyền bằng <em>clocking block</em> (<code>vif.mon_cb</code> chỉ có <code>input</code>, <code>vif.drv_cb</code> có <code>output</code>). Nếu bắt buộc dùng modport, chọn modport <em>tại điểm set</em> với một kiểu riêng được khai báo ở package (<code>typedef virtual riscv_if.mon mon_vif_t;</code>) và dùng đúng typedef đó cả ở set lẫn get.</p>
+</div></details>
+<details class="qa"><summary><code>#1step</code> khác <code>#1</code> thế nào? Khi nào dùng <code>input #1step</code>?</summary>
+<div class="ans">
+<p><code>#1step</code> là “bước thời gian nhỏ nhất của simulator” — tương đương lấy mẫu ở <strong>Preponed</strong> region của time-step hiện tại, bất kể timescale. <code>#1</code> là 1 đơn vị <code>timescale</code> (1ns nếu <code>`timescale 1ns/1ps</code>): nếu DUT có delay combinational &gt;1ns hoặc đổi timescale, giá trị lấy mẫu có thể sai.</p>
+<p>Dùng <code>default input #1step</code> cho <em>monitor</em> (chỉ nhìn); với <em>driver</em> thường đặt <code>default output #1</code> hoặc skew nhỏ để mô phỏng setup/hold thực tế.</p>
+</div></details>
+<details class="qa"><summary>Backdoor khác frontdoor ở điểm nào về mặt UVM? Nêu một rủi ro khi lạm dụng backdoor.</summary>
+<div class="ans">
+<p><strong>Frontdoor</strong>: đi qua giao thức thật (ở đây: chương trình LW/SW chạy trên pipeline) → kiểm cả datapath, tốn chu kỳ. <strong>Backdoor</strong>: đọc/ghi thẳng biến RTL qua hierarchical reference/DPI → 0 thời gian mô phỏng.</p>
+<p>Rủi ro: backdoor bỏ qua logic thật nên có thể <em>che lỗi</em> (ví dụ nạp ROM bằng backdoor thì không bao giờ phát hiện lỗi fetch ở reset). Quy tắc: backdoor để <em>setup nhanh</em> và <em>kiểm chéo</em>, frontdoor để verify chức năng.</p>
+</div></details>
+<details class="qa"><summary>Vì sao đặt backdoor task trong interface thay vì trong driver/monitor?</summary>
+<div class="ans">
+<p>(1) <strong>Tách trách nhiệm</strong>: đường dẫn RTL nằm ở một nơi — đổi DUT (Lab 15 sang <code>riscv_avalon_wrapper</code>) chỉ sửa interface, không sửa driver/scoreboard. (2) <strong>Tái dùng</strong>: nhiều component (driver nạp ROM, scoreboard sweep regfile, RAL backdoor) cùng gọi. (3) Interface là chỗ hợp lệ duy nhất để dùng hierarchical reference mà không làm class “biết” cấu trúc DUT.</p>
+<p>Đánh đổi: interface gắn với DUT cụ thể → không tái dùng cho DUT khác. Giải pháp: lớp trừu tượng <code>riscv_backdoor_if</code> (virtual class) với 2 hiện thực.</p>
+</div></details>
+<details class="qa"><summary>Shadow pipeline/retire reconstruction nên viết ở top module hay trong monitor UVM? Tại sao?</summary>
+<div class="ans">
+<p>Trong <strong>module (top/interface)</strong>: logic đó là <em>mạch tuần tự bám theo clock và net nội bộ</em> của DUT — viết bằng <code>always</code> với reset rõ ràng, không cần phase/objection, và chạy từ time 0 (monitor class chỉ chạy sau <code>run_phase</code> start).</p>
+<p>Monitor UVM chỉ nên đọc <em>kết quả</em> (cổng retire) và dựng transaction. Nhờ vậy khi có RTL đã có cổng RVFI thật, ta chỉ thay phần module, monitor giữ nguyên — đây là ý nghĩa của “ranh giới ổn định”.</p>
+</div></details>
+<details class="qa"><summary>Có nên đặt assertion trong interface không? So với <code>bind</code>?</summary>
+<div class="ans">
+<p>Assertion trong interface hợp lý cho kiểm tra <em>giao thức tại ranh giới</em> (ví dụ <code>ret_valid |-&gt; !$isunknown(ret_pc)</code>) và đi theo interface khi tái dùng VIP. Assertion về <em>nội bộ</em> DUT (forwarding, flush) dùng <code>bind</code> (Lab 8) để không phải sửa RTL. Điểm chung: cả hai đều là module-world; báo lỗi vào UVM cần cầu nối (Lab 8 §6).</p>
+</div></details>
+</div>
+
+<h2 id="m12">13. Cheat-sheet</h2>
+<pre><code>interface riscv_if(input logic clk);
+  logic rst; logic ret_valid,ret_reg_write,ret_mem_write; logic[4:0] ret_rd;
+  logic[31:0] ret_pc,ret_instr,ret_wb_data,ret_mem_addr,ret_mem_wdata;
+  clocking ret_cb @(posedge clk); default input #1step; input ret_valid,...; endclocking
+  modport mon(clocking ret_cb,...); modport drv(input clk, output rst);
+  task automatic load_instr(int idx, logic[31:0] d); dut.u_imem.mem[idx]=d; endtask
+  function automatic logic[31:0] peek_reg(int r); return r? dut.u_regfile.registers[r]:0; endfunction
+endinterface
+// top shadow:  s_*_valid/pc/instr qua ID/EX->EX/MEM->MEM/WB; bubble = dut.redirect|dut.stall
+//   assign vif.ret_valid=s_memwb_valid; vif.ret_reg_write=dut.memwb_reg_write_r; ...</code></pre>
+
+<h2 id="m13">14. Bài tập code &amp; câu hỏi nâng cao UVM</h2>
+<p>8 bài rèn tay, tăng dần độ khó. Làm trên baseline của lab này; đáp án chỉ là hướng tham khảo — giá trị nằm ở việc bạn tự gõ, chạy và đọc log.</p>
+<div class="ex-progress"><span class="cnt">0 / 8 bài đã làm</span><span class="bar"><i></i></span></div>
+<div class="ex-list">
+<article class="ex"><div class="ex-head"><span class="lv l1">★ Dễ</span><h4>EX1 — Tham số hóa interface</h4></div>
+Thêm <code>parameter int XLEN = 32</code> vào <code>riscv_if</code>, đổi mọi <code>logic [31:0]</code> thành <code>logic [XLEN-1:0]</code>. Truyền tham số từ top. Class nhận <code>virtual riscv_if#(32) vif</code> — chuyện gì xảy ra với <code>config_db</code> nếu top đặt <code>#(64)</code>?
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p>Mỗi bộ tham số tạo một <em>kiểu</em> khác: <code>virtual riscv_if#(32)</code> ≠ <code>virtual riscv_if#(64)</code> → <code>get</code> fail. Cách xử lý: để class cũng tham số hóa, hoặc dùng interface “lõi” không tham số + wrapper. Đây chính là lý do VIP thương mại ít tham số hóa interface.</p>
+</details>
+</article>
+<article class="ex"><div class="ex-head"><span class="lv l1">★ Dễ</span><h4>EX2 — Race bằng chứng</h4></div>
+Viết monitor tạm không dùng clocking: <code>@(posedge vif.clk) $display(vif.ret_valid)</code>. Chạy rồi đổi thứ tự file biên dịch (đưa top lên trước). So sánh log với bản dùng <code>@(vif.ret_cb)</code>.
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p>Bản không clocking có thể lệch 1 chu kỳ hoặc đổi theo thứ tự file; bản clocking giống nhau mọi lần. Ghi lại thời điểm retire đầu tiên của mỗi bản để so.</p>
+</details>
+</article>
+<article class="ex"><div class="ex-head"><span class="lv l2">★★ Vừa</span><h4>EX3 — Clocking block cho driver</h4></div>
+Thêm <code>clocking drv_cb @(posedge clk); default output #1; output rst; endclocking</code> và <code>modport</code> hợp lệ. Cho driver Lab 3 lái <code>vif.drv_cb.rst &lt;= ...</code> thay vì <code>vif.rst</code>. Quan sát waveform: <code>rst</code> nhả sau sườn bao nhiêu ps?
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p>Với <code>output #1</code> (timescale 1ns/1ps) rst đổi 1ns sau sườn. Lưu ý <code>rst</code> không thể vừa nằm trong clocking block vừa bị gán procedural trực tiếp ở chỗ khác — chọn một cách.</p>
+</details>
+</article>
+<article class="ex"><div class="ex-head"><span class="lv l2">★★ Vừa</span><h4>EX4 — Task <code>wait_cycles(n)</code> trong interface</h4></div>
+Viết <code>task automatic wait_cycles(int n); repeat (n) @(ret_cb); endtask</code> trong interface. Dùng ở driver để drain. Thảo luận: có nên dùng chung cho driver và monitor không? Điều gì xảy ra nếu hai process cùng gọi?
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p><code>automatic</code> để mỗi lời gọi có biến riêng (task static dùng chung biến <code>n</code> → hai process đè nhau). Gọi từ nhiều process là an toàn nếu <code>automatic</code>; tránh để task đổi state chung của interface.</p>
+</details>
+</article>
+<article class="ex"><div class="ex-head"><span class="lv l2">★★ Vừa</span><h4>EX5 — Assertion trong interface</h4></div>
+Thêm vào interface: <code>a_pc_known: assert property (@(posedge clk) disable iff (rst) ret_valid |-&gt; !$isunknown({ret_pc, ret_instr}));</code> Cố ý làm DUT xuất X (ví dụ xóa ROM thành <code>'x</code>) và xem log.
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p>Assertion fail in ra bằng <code>$error</code> chứ <em>không</em> tăng bộ đếm <code>UVM_ERROR</code> — nối tiếp Lab 8 §6.</p>
+</details>
+</article>
+<article class="ex"><div class="ex-head"><span class="lv l3">★★★ Khó</span><h4>EX6 — Độc lập tên top</h4></div>
+Hiện path backdoor dùng <code>dut...</code> (buộc module cha của interface phải có instance tên <code>dut</code>). Viết lại <code>peek_reg</code> bằng <code>uvm_hdl_read(path, value)</code> với <code>path</code> là string do top truyền (<code>string dut_path</code> trong interface). Đổi tên instance DUT thành <code>core0</code> mà không sửa interface.
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<pre><code>function automatic logic [31:0] peek_reg(int r);
+  uvm_hdl_data_t v;
+  if (!uvm_hdl_read($sformatf("%s.u_regfile.registers[%0d]", dut_path, r), v))
+    `uvm_error("BD", "hdl_read fail");
+  return v[31:0];
+endfunction</code></pre>
+<p>Cần <code>import uvm_pkg::*</code> trong interface; xsim yêu cầu bật DPI hdl (<code>-dpiheader</code>/design snapshot có <code>--debug typical</code> để đọc được tín hiệu).</p>
+</details>
+</article>
+<article class="ex"><div class="ex-head"><span class="lv l3">★★★ Khó</span><h4>EX7 — Hai DUT lockstep</h4></div>
+Instance hai core (<code>dut_a</code>, <code>dut_b</code>) và hai interface <code>vif_a/vif_b</code>. Thiết kế cách set config_db để <code>agent_a</code> lấy <code>vif_a</code>, <code>agent_b</code> lấy <code>vif_b</code> mà không sửa code driver/monitor.
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<pre><code>uvm_config_db#(virtual riscv_if)::set(null, "uvm_test_top.env.agent_a*", "vif", vif_a);
+uvm_config_db#(virtual riscv_if)::set(null, "uvm_test_top.env.agent_b*", "vif", vif_b);</code></pre>
+<p>Scope string (đường dẫn component) quyết định ai nhìn thấy gì — một vif “global” <code>"*"</code> sẽ bị ghi đè không đoán trước được.</p>
+</details>
+</article>
+<article class="ex"><div class="ex-head"><span class="lv l3">★★★ Khó</span><h4>EX8 — Giải thích bằng sóng</h4></div>
+Dựng waveform (<code>log_wave -recursive *</code>) cho 2 bản monitor (có/không clocking). Chụp một chu kỳ có <code>ret_valid</code> đổi và giải thích bằng region (Preponed/Active/NBA) vì sao hai bản lấy giá trị khác nhau.
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p>Gợi ý trình bày: vẽ time-step, đánh dấu thứ tự: Preponed (clocking lấy mẫu) → Active (monitor thường đọc) → NBA (RTL cập nhật <code>ret_valid</code>).</p>
+</details>
+</article>
+</div>
+
+
+<nav class="pager" aria-label="Điều hướng lab"><span></span><div class="mid"><button type="button" class="btn primary" id="mark-done" aria-pressed="false">Đánh dấu hoàn thành</button></div><a class="nav-card next" href="lab02.html" rel="next"><small>Lab tiếp →</small><span>Lab 02 — Sequence item</span></a></nav>
+<p class="foot">UVM · RISC-V Pipeline Speedrun — Lab 01 / 15. Phím tắt: <kbd>[</kbd> lab trước · <kbd>]</kbd> lab sau.</p>
+</main>
+</div>
+</body>
+</html>

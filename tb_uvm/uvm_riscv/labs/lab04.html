@@ -1,0 +1,525 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Lab 04 — RISC-V Monitor (sample cổng retire → analysis port)</title>
+<link rel="stylesheet" href="assets/lab.css">
+<script src="assets/lab.js" defer></script>
+</head>
+<body data-lab="4" data-total="15">
+<div id="readbar" aria-hidden="true"></div>
+<header class="topbar">
+  <button type="button" class="iconbtn" id="toc-toggle" aria-label="Mở mục lục">☰</button>
+  <a class="brand" href="index.html"><span class="brand-mark">UVM</span><span>RISC-V <small>Speedrun</small></span></a>
+  <nav class="labdots" aria-label="Chọn lab"><a href="lab01.html" data-n="1" title="Lab 01 — Interface & clocking">1</a><a href="lab02.html" data-n="2" title="Lab 02 — Sequence item">2</a><a href="lab03.html" data-n="3" title="Lab 03 — Driver">3</a><a href="lab04.html" data-n="4" title="Lab 04 — Monitor & analysis port" aria-current="page">4</a><a href="lab05.html" data-n="5" title="Lab 05 — Agent, env, test, config">5</a><a href="lab06.html" data-n="6" title="Lab 06 — Sequence library">6</a><a href="lab07.html" data-n="7" title="Lab 07 — Virtual sequencer">7</a><a href="lab08.html" data-n="8" title="Lab 08 — SVA & bind trong UVM">8</a><a href="lab09.html" data-n="9" title="Lab 09 — Reference model">9</a><a href="lab10.html" data-n="10" title="Lab 10 — Scoreboard in-order">10</a><a href="lab11.html" data-n="11" title="Lab 11 — Scoreboard đầy đủ">11</a><a href="lab12.html" data-n="12" title="Lab 12 — Functional coverage">12</a><a href="lab13.html" data-n="13" title="Lab 13 — RAL (uvm_reg / uvm_mem)">13</a><a href="lab14.html" data-n="14" title="Lab 14 — Factory, callback, catcher">14</a><a href="lab15.html" data-n="15" title="Lab 15 — Regression & closure">15</a></nav>
+  <button type="button" class="iconbtn" id="theme-toggle" aria-label="Đổi giao diện sáng/tối">☾</button>
+</header>
+<div class="layout">
+<aside class="side" aria-label="Mục lục">
+  <nav class="side-toc">
+    <p class="side-title">Trong bài này</p>
+    <ol>
+<li><a href="#muc-tongquan">1. Tổng quan lab</a></li>
+<li><a href="#m1">2. Vị trí trong testbench</a></li>
+<li><a href="#m2">3. Mục tiêu học</a></li>
+<li><a href="#m3">4. Keyword &amp; khái niệm mới</a></li>
+<li><a href="#m4">5. Chuẩn bị</a></li>
+<li><a href="#m5">6. Lý thuyết ngắn — sample + analysis (+ TLM bên trong)</a></li>
+<li><a href="#m6">7. Iteration 0 — monitor + retire item + subscriber in ra</a></li>
+<li><a href="#m7">8. Iterations</a></li>
+<li><a href="#m8">9. Bảng tổng hợp</a></li>
+<li><a href="#m9">10. BASELINE sang Lab 5</a></li>
+<li><a href="#m10">11. Checklist nhớ code</a></li>
+<li><a href="#m11">12. Phỏng vấn — hỏi &amp; đáp</a></li>
+<li><a href="#m12">13. Cheat-sheet</a></li>
+<li><a href="#m13">14. Bài tập code &amp; câu hỏi nâng cao UVM</a></li>
+    </ol>
+  </nav>
+  <div class="side-tools">
+    <button type="button" class="btn" data-act="expand">Mở tất cả spoiler</button>
+    <button type="button" class="btn" data-act="collapse">Đóng tất cả spoiler</button>
+    <button type="button" class="btn" data-act="qa-close">Ẩn đáp án QA (tự test)</button>
+    <button type="button" class="btn" data-act="top">↑ Lên đầu trang</button>
+  </div>
+</aside>
+<main class="main">
+<header class="hero" data-num="04">
+  <div class="eyebrow"><span class="pill">Lab 04 / 15</span><span class="phase">Nền tảng</span></div>
+  <h1>Lab 04 — RISC-V Monitor (sample cổng retire → analysis port)</h1>
+  <p class="tags"><span class="tag uvm">uvm_monitor</span><span class="tag uvm">uvm_analysis_port</span><span class="tag">write()</span><span class="tag">clocking sample</span><span class="tag">retire transaction</span><span class="tag">in-order stream</span></p>
+</header>
+<nav class="toc" aria-label="Mục lục bài lab"><strong>📑 Mục lục</strong><ol>
+<li><a href="#muc-tongquan">1. Tổng quan lab</a></li>
+<li><a href="#m1">2. Vị trí trong testbench</a></li>
+<li><a href="#m2">3. Mục tiêu học</a></li>
+<li><a href="#m3">4. Keyword &amp; khái niệm mới</a></li>
+<li><a href="#m4">5. Chuẩn bị</a></li>
+<li><a href="#m5">6. Lý thuyết ngắn — sample + analysis (+ TLM bên trong)</a></li>
+<li><a href="#m6">7. Iteration 0 — monitor + retire item + subscriber in ra</a></li>
+<li><a href="#m7">8. Iterations</a></li>
+<li><a href="#m8">9. Bảng tổng hợp</a></li>
+<li><a href="#m9">10. BASELINE sang Lab 5</a></li>
+<li><a href="#m10">11. Checklist nhớ code</a></li>
+<li><a href="#m11">12. Phỏng vấn — hỏi &amp; đáp</a></li>
+<li><a href="#m12">13. Cheat-sheet</a></li>
+<li><a href="#m13">14. Bài tập code &amp; câu hỏi nâng cao UVM</a></li>
+</ol></nav>
+
+<div class="note" id="muc-tongquan">
+  <strong>Tổng quan lab</strong>
+  <ul>
+    <li><strong>Lab này làm gì:</strong> xây <code>riscv_monitor</code> — mỗi chu kỳ sample
+      <code>ret_cb</code>; khi <code>ret_valid=1</code> dựng một <strong>transaction retire</strong>
+      (<code>riscv_retire_item</code>: pc, instr, rd, wb_data, mem…) và phát qua
+      <code>uvm_analysis_port</code>. Đây là "dòng commit" in-order mà scoreboard/coverage sẽ tiêu thụ.</li>
+    <li><strong>Tạo ra file nào:</strong> <code>tb/agent/riscv_retire_item.sv</code> (transaction quan sát),
+      <code>tb/agent/riscv_monitor.sv</code>, và top thử <code>riscv_mon_tb.sv</code> (driver + monitor +
+      1 subscriber in ra).</li>
+    <li><strong>Nhận gì từ lab trước:</strong> interface có cổng retire (Lab 1), driver (Lab 3), seq_item (Lab 2).</li>
+    <li><strong>Lab sau dùng để làm gì:</strong> Lab 5 gói vào agent; Lab 10 nối analysis port vào scoreboard;
+      Lab 12 nối vào coverage subscriber.</li>
+  </ul>
+</div>
+
+<div class="callout uvm"><strong>Trọng tâm UVM của lab</strong>
+<ul>
+  <li><strong>TLM-1 analysis</strong>: <code>uvm_analysis_port</code> → <code>export</code> → <code>imp</code>; <code>write()</code> là <em>function</em> không block, 1→N.</li>
+  <li><strong>Monitor thụ động</strong>: tách khỏi driver, chạy được ở agent PASSIVE; dựng <em>observed item</em> từ tín hiệu.</li>
+  <li><strong>Handle sharing</strong>: analysis port không clone — subscriber nhận cùng một object. Quy tắc “tạo item mới mỗi giao dịch”.</li>
+  <li><strong>Reporting</strong>: <code>uvm_info</code> và verbosity là công cụ debug thật; chi phí khi để ở UVM_HIGH.</li>
+  <li>Retire stream đã in-order nhờ shadow pipeline (Lab 1) — monitor chỉ cần lọc <code>ret_valid</code>.</li>
+</ul></div>
+
+<div class="note warn"><strong>Khác single-cycle:</strong> monitor single-cycle sample mỗi posedge và luôn có
+1 lệnh. Monitor pipeline chỉ phát transaction khi <code>ret_valid=1</code> — bỏ qua các chu kỳ bubble/flush.
+Nhờ shadow pipeline (Lab 1), dòng transaction đã đúng thứ tự chương trình.</div>
+
+
+
+<h2 id="m1">2. Vị trí trong testbench</h2>
+<pre><code> DUT retire port --(ret_cb sample)--> [ riscv_monitor (LAB 4) ] --analysis_port.write()-->
+                                         dựng riscv_retire_item          [ subscriber / scoreboard ]</code></pre>
+
+<h2 id="m2">3. Mục tiêu học</h2>
+<ul>
+  <li><code>uvm_monitor</code> + <code>uvm_analysis_port #(riscv_retire_item)</code> + <code>write()</code>.</li>
+  <li>Sample đồng bộ qua clocking block, lọc <code>ret_valid</code>.</li>
+  <li>Thiết kế transaction quan sát riêng (tách khỏi stimulus item) — chỉ chứa thứ "nhìn thấy".</li>
+  <li>Broadcast 1→nhiều: analysis port gửi tới mọi subscriber đã <code>connect</code>.</li>
+</ul>
+
+<h2 id="m3">4. Keyword &amp; khái niệm mới</h2>
+<div class="table-wrap"><table>
+<tr><th>Keyword</th><th>Giải thích</th><th>Ví dụ</th></tr>
+<tr><td><code>uvm_monitor</code></td><td>Component thụ động, chỉ quan sát</td><td><code>class riscv_monitor extends uvm_monitor;</code></td></tr>
+<tr><td><code>uvm_analysis_port#(T)</code></td><td>Cổng phát broadcast transaction</td><td><code>uvm_analysis_port#(riscv_retire_item) ap;</code></td></tr>
+<tr><td><code>write(t)</code></td><td>Phát 1 transaction tới subscriber</td><td><code>ap.write(tr);</code></td></tr>
+<tr><td><code>@(vif.ret_cb)</code></td><td>Chờ sườn clocking, sample ổn định</td><td><code>@(vif.ret_cb);</code></td></tr>
+<tr><td><code>uvm_subscriber#(T)</code></td><td>Nhận transaction qua hàm <code>write</code></td><td>dùng để in/đếm/coverage</td></tr>
+<tr><td>observe transaction</td><td>Bản ghi "nhìn thấy" ≠ stimulus item</td><td><code>riscv_retire_item</code></td></tr>
+</table></div>
+
+<h2 id="m4">5. Chuẩn bị</h2>
+<pre><code>cd ~/Study/KLtN/code/tb_uvm/uvm_riscv  # dùng lại if/driver/seq_item</code></pre>
+
+<h2 id="m5">6. Lý thuyết ngắn — sample + analysis (+ TLM bên trong)</h2>
+<ol>
+  <li><strong>Transaction quan sát riêng:</strong> stimulus item (Lab 2) mô tả "muốn gửi gì"; retire item mô
+    tả "DUT đã làm gì". Tách biệt giúp scoreboard so <em>kỳ vọng</em> (từ ISS) với <em>thực tế</em> (từ monitor).</li>
+  <li><strong>Lọc valid:</strong> chỉ khi <code>ret_valid</code> mới tạo transaction. Các chu kỳ bubble/flush
+    bị bỏ qua tự nhiên.</li>
+  <li><strong>Analysis port broadcast:</strong> một <code>write()</code> tới tất cả subscriber — 0, 1 hay N;
+    không block. Monitor không cần biết ai nghe.</li>
+  <li><strong>Thụ động:</strong> monitor không bao giờ lái tín hiệu — chỉ đọc. Dùng modport <code>mon</code>.</li>
+</ol>
+
+<h3>6.5. Ba loại cổng analysis và quy tắc kết nối</h3>
+<div class="table-wrap"><div class="table-wrap"><table>
+<tr><th>Cổng</th><th>Vai trò</th><th>Ví dụ</th></tr>
+<tr><td><code>uvm_analysis_port#(T)</code></td><td>Nguồn phát (monitor)</td><td><code>ap.write(tr);</code></td></tr>
+<tr><td><code>uvm_analysis_export#(T)</code></td><td>Cổng “chuyển tiếp” qua ranh giới hierarchy (không có logic)</td><td><code>agent.ap</code> nối tới <code>mon.ap</code></td></tr>
+<tr><td><code>uvm_analysis_imp#(T,IMP)</code></td><td>Điểm cuối: gọi <code>IMP::write(T)</code></td><td>scoreboard, subscriber</td></tr>
+<tr><td><code>uvm_tlm_analysis_fifo#(T)</code></td><td>Đệm: imp phía vào + <code>get()</code> blocking phía ra</td><td>scoreboard xử lý trong <code>run_phase</code></td></tr>
+</table></div></div>
+<p>Quy tắc: <strong>port → export → imp</strong> (từ nguồn tới đích); <code>connect_phase</code> gọi <code>source.connect(sink)</code>. Một port nối được tới <em>nhiều</em> sink — mỗi <code>write()</code> gọi lần lượt tất cả (broadcast, không có thứ tự đảm bảo giữa các sink).</p>
+<pre><code>// agent chuyển tiếp ap của monitor ra ngoài (pattern chuẩn)
+uvm_analysis_port#(riscv_retire_item) ap;                // trong agent
+function void connect_phase(uvm_phase phase);
+  mon.ap.connect(this.ap);                              // port → port: được phép (cấp trên là "cổng chuyển tiếp")
+endfunction
+// env: agent.ap.connect(sb.ap_imp);  agent.ap.connect(cov.analysis_export);</code></pre>
+
+<h3>6.6. <code>write()</code> là function — hệ quả</h3>
+<ul>
+  <li><strong>Không được tiêu thời gian</strong> trong <code>write()</code> (không <code>#delay</code>, không <code>@event</code>). Cần xử lý chậm → đẩy vào <code>uvm_tlm_analysis_fifo</code> rồi xử lý ở <code>run_phase</code> (Lab 10).</li>
+  <li><strong>Không có back-pressure</strong>: monitor không biết subscriber nhận xong chưa; nó phát rồi đi tiếp.</li>
+  <li><strong>Cùng một handle</strong>: tất cả subscriber thấy cùng object. Subscriber sửa item → làm hỏng người khác. Quy ước: item từ analysis port là <em>read-only</em>; cần giữ lâu thì <code>clone()</code>.</li>
+</ul>
+<div class="callout pitfall"><strong>Bẫy:</strong> monitor khai báo <code>riscv_retire_item tr;</code> ở cấp class, tạo một lần rồi sửa field mỗi chu kỳ → scoreboard lưu handle vào queue sẽ thấy <em>mọi phần tử giống nhau</em> (đều là trạng thái mới nhất). Luôn <code>create</code> trong vòng lặp (như code lab).</div>
+
+<h3>6.7. Monitor trong kiến trúc UVM</h3>
+<ul>
+  <li><strong>Thụ động tuyệt đối</strong>: chỉ đọc qua clocking block; chạy ở cả agent ACTIVE lẫn PASSIVE.</li>
+  <li><strong>Một monitor = một góc nhìn</strong>: nếu cần cả “ý định nạp” lẫn “kết quả retire”, dùng hai monitor/ hai analysis port, đừng nhồi vào một.</li>
+  <li><strong>Đặt ap ở đâu?</strong> <code>ap = new("ap", this)</code> trong <code>new()</code> (như lab) hoặc <code>build_phase</code> — cả hai đúng; UVM style hiện đại ưu tiên <code>build_phase</code> để tương thích config.</li>
+  <li><strong>Checker trong monitor?</strong> Kiểm giao thức nhẹ thì được; so sánh giá trị thì thuộc scoreboard (Lab 10).</li>
+</ul>
+<div class="callout debug"><strong>Debug:</strong> <code>+UVM_VERBOSITY=UVM_MEDIUM</code> để thấy từng retire; <code>uvm_top.print_topology()</code> kiểm tra analysis port đã gắn đúng; <code>+uvm_set_verbosity=*mon*,_ALL_,UVM_HIGH,run</code> chỉ bật chi tiết cho monitor.</div>
+
+<h2 id="m6">7. Iteration 0 — monitor + retire item + subscriber in ra</h2>
+
+<details><summary>Xem full code: tb/agent/riscv_retire_item.sv</summary>
+<pre><code>// tb/agent/riscv_retire_item.sv — bản ghi 1 lệnh đã commit (quan sát)
+`ifndef RISCV_RETIRE_ITEM_SV
+`define RISCV_RETIRE_ITEM_SV
+
+class riscv_retire_item extends uvm_sequence_item;
+  bit [31:0] pc;
+  bit [31:0] instr;
+  bit        reg_write;
+  bit [4:0]  rd;
+  bit [31:0] wb_data;
+  bit        mem_write;
+  bit [31:0] mem_addr;
+  bit [31:0] mem_wdata;
+
+  `uvm_object_utils_begin(riscv_retire_item)
+    `uvm_field_int(pc,        UVM_ALL_ON | UVM_HEX)
+    `uvm_field_int(instr,     UVM_ALL_ON | UVM_HEX)
+    `uvm_field_int(reg_write, UVM_ALL_ON)
+    `uvm_field_int(rd,        UVM_ALL_ON)
+    `uvm_field_int(wb_data,   UVM_ALL_ON | UVM_HEX)
+    `uvm_field_int(mem_write, UVM_ALL_ON)
+    `uvm_field_int(mem_addr,  UVM_ALL_ON | UVM_HEX)
+    `uvm_field_int(mem_wdata, UVM_ALL_ON | UVM_HEX)
+  `uvm_object_utils_end
+
+  function new(string name="riscv_retire_item"); super.new(name); endfunction
+
+  function string convert2str();
+    return $sformatf("pc=0x%08h instr=0x%08h %s %s", pc, instr,
+      reg_write ? $sformatf("x%0d&lt;=0x%08h", rd, wb_data) : "(no-regwr)",
+      mem_write ? $sformatf("MEM[0x%08h]&lt;=0x%08h", mem_addr, mem_wdata) : "");
+  endfunction
+endclass
+`endif</code></pre>
+</details>
+
+<details><summary>Xem full code: tb/agent/riscv_monitor.sv</summary>
+<pre><code>// tb/agent/riscv_monitor.sv
+`ifndef RISCV_MONITOR_SV
+`define RISCV_MONITOR_SV
+
+class riscv_monitor extends uvm_monitor;
+  `uvm_component_utils(riscv_monitor)
+
+  virtual riscv_if vif;
+  uvm_analysis_port #(riscv_retire_item) ap;
+  int unsigned retire_count;
+
+  function new(string name, uvm_component parent);
+    super.new(name, parent);
+    ap = new("ap", this);
+  endfunction
+
+  function void build_phase(uvm_phase phase);
+    super.build_phase(phase);
+    if (!uvm_config_db#(virtual riscv_if)::get(this, "", "vif", vif))
+      `uvm_fatal("MON", "Khong lay duoc vif")
+  endfunction
+
+  task run_phase(uvm_phase phase);
+    forever begin
+      @(vif.ret_cb);
+      if (vif.ret_cb.ret_valid) begin
+        riscv_retire_item tr = riscv_retire_item::type_id::create("tr");
+        tr.pc        = vif.ret_cb.ret_pc;
+        tr.instr     = vif.ret_cb.ret_instr;
+        tr.reg_write = vif.ret_cb.ret_reg_write;
+        tr.rd        = vif.ret_cb.ret_rd;
+        tr.wb_data   = vif.ret_cb.ret_wb_data;
+        tr.mem_write = vif.ret_cb.ret_mem_write;
+        tr.mem_addr  = vif.ret_cb.ret_mem_addr;
+        tr.mem_wdata = vif.ret_cb.ret_mem_wdata;
+        retire_count++;
+        `uvm_info("MON", $sformatf("[%0d] %s", retire_count, tr.convert2str()), UVM_MEDIUM)
+        ap.write(tr);
+      end
+    end
+  endtask
+
+  function void report_phase(uvm_phase phase);
+    `uvm_info("MON", $sformatf("Tong so lenh retire = %0d", retire_count), UVM_LOW)
+  endfunction
+endclass
+`endif</code></pre>
+</details>
+
+<details><summary>Xem full code: tb/top/riscv_mon_tb.sv (driver + monitor + subscriber)</summary>
+<pre><code>// tb/top/riscv_mon_tb.sv
+`timescale 1ns/1ps
+module riscv_mon_tb;
+  import uvm_pkg::*; `include "uvm_macros.svh"
+  `include "riscv_seq_item.sv"
+  `include "riscv_retire_item.sv"
+  `include "riscv_driver.sv"
+  `include "riscv_monitor.sv"
+
+  logic clk = 0; always #5 clk = ~clk;
+  riscv_if vif (.clk(clk));
+  riscv_pipeline_top dut (.clk(clk), .rst(vif.rst), .out_pc(), .out_alu_result());
+
+  // ---- probe + shadow pipeline từ Lab 1 (bắt buộc để có ret_* đúng) ----
+  assign vif.pc_if=dut.pc_if; assign vif.alu_result_ex=dut.alu_result_ex;
+  assign vif.stall=dut.stall; assign vif.redirect=dut.redirect;
+  logic s_idex_valid,s_exmem_valid,s_memwb_valid;
+  logic [31:0] s_idex_pc,s_exmem_pc,s_memwb_pc,s_idex_instr,s_exmem_instr,s_memwb_instr;
+  logic s_memwb_mwrite; logic [31:0] s_memwb_maddr,s_memwb_mwdata;
+  always @(posedge clk or posedge vif.rst) if(vif.rst) begin
+    s_idex_valid&lt;=0; s_exmem_valid&lt;=0; s_memwb_valid&lt;=0;
+  end else begin
+    s_idex_valid&lt;=(dut.redirect|dut.stall)?1'b0:dut.ifid_valid;
+    s_idex_pc&lt;=dut.ifid_pc; s_idex_instr&lt;=dut.ifid_instr;
+    s_exmem_valid&lt;=s_idex_valid; s_exmem_pc&lt;=s_idex_pc; s_exmem_instr&lt;=s_idex_instr;
+    s_memwb_valid&lt;=s_exmem_valid; s_memwb_pc&lt;=s_exmem_pc; s_memwb_instr&lt;=s_exmem_instr;
+    s_memwb_mwrite&lt;=dut.exmem_mem_write; s_memwb_maddr&lt;=dut.exmem_alu_result; s_memwb_mwdata&lt;=dut.exmem_store_data;
+  end
+  assign vif.ret_valid=s_memwb_valid; assign vif.ret_pc=s_memwb_pc; assign vif.ret_instr=s_memwb_instr;
+  assign vif.ret_reg_write=dut.memwb_reg_write_r; assign vif.ret_rd=dut.memwb_rd_r; assign vif.ret_wb_data=dut.memwb_wb_value_r;
+  assign vif.ret_mem_write=s_memwb_mwrite; assign vif.ret_mem_addr=s_memwb_maddr; assign vif.ret_mem_wdata=s_memwb_mwdata;
+
+  typedef uvm_sequencer #(riscv_seq_item) riscv_sequencer;
+
+  // subscriber in ra mỗi transaction
+  class print_sub extends uvm_subscriber #(riscv_retire_item);
+    `uvm_component_utils(print_sub)
+    function new(string n, uvm_component p); super.new(n,p); endfunction
+    function void write(riscv_retire_item t);
+      `uvm_info("SUB", $sformatf("nhan: %s", t.convert2str()), UVM_LOW)
+    endfunction
+  endclass
+
+  class prog_seq extends uvm_sequence #(riscv_seq_item);
+    `uvm_object_utils(prog_seq)
+    function new(string name="prog_seq"); super.new(name); endfunction
+    task body();
+      bit [31:0] words[] = '{32'h00500093,32'h00308113,32'h002081b3,32'h00302023,32'h0000006f};
+      foreach(words[i]) begin
+        riscv_seq_item it = riscv_seq_item::type_id::create($sformatf("it%0d",i));
+        start_item(it); void'(it.randomize());
+        it.raw_word=words[i]; it.use_raw=1; it.last_instr=(i==words.size()-1);
+        finish_item(it);
+      end
+    endtask
+  endclass
+
+  class mon_test extends uvm_test;
+    `uvm_component_utils(mon_test)
+    riscv_driver drv; riscv_monitor mon; riscv_sequencer sqr; print_sub sub;
+    function new(string n, uvm_component p); super.new(n,p); endfunction
+    function void build_phase(uvm_phase phase);
+      drv=riscv_driver::type_id::create("drv",this);
+      mon=riscv_monitor::type_id::create("mon",this);
+      sqr=riscv_sequencer::type_id::create("sqr",this);
+      sub=print_sub::type_id::create("sub",this);
+      uvm_config_db#(virtual riscv_if)::set(this,"drv","vif",vif);
+      uvm_config_db#(virtual riscv_if)::set(this,"mon","vif",vif);
+    endfunction
+    function void connect_phase(uvm_phase phase);
+      drv.seq_item_port.connect(sqr.seq_item_export);
+      mon.ap.connect(sub.analysis_export);
+    endfunction
+    task run_phase(uvm_phase phase);
+      prog_seq seq = prog_seq::type_id::create("seq");
+      phase.raise_objection(this);
+      seq.start(sqr);
+      repeat (25) @(posedge clk);
+      phase.drop_objection(this);
+    endtask
+  endclass
+
+  initial run_test("mon_test");
+endmodule</code></pre>
+</details>
+
+<p><strong>Lệnh chạy:</strong></p>
+<pre><code>cd ~/Study/KLtN/code/tb_uvm/uvm_riscv/sim</code></pre>
+<pre><code>xvlog -sv ../tb/if/riscv_if.sv ../rtl/instruction_memory.sv ../rtl/register_file.sv ../rtl/data_memory.sv ../rtl/control_unit.sv ../rtl/imm_gen.sv ../rtl/alu_control.sv ../rtl/alu.sv ../rtl/branch_control.sv ../rtl/mux.sv ../rtl/adder.sv ../rtl/riscv_pipeline_top.sv</code></pre>
+<pre><code>xvlog -sv -L uvm -i ../tb/agent ../tb/top/riscv_mon_tb.sv</code></pre>
+<pre><code>xelab -L uvm -timescale 1ns/1ps riscv_mon_tb -s mon_sim</code></pre>
+<pre><code>xsim mon_sim -R -testplusarg UVM_TESTNAME=mon_test</code></pre>
+
+<details><summary>Expected log</summary>
+<pre><code>UVM_INFO ../tb/agent/riscv_monitor.sv(37) @ 85000: uvm_test_top.mon [MON] [1] pc=0x00000000 instr=0x00500093 x1&lt;=0x00000005
+UVM_INFO tb/top/riscv_mon_tb.sv(40) @ 85000: uvm_test_top.sub [SUB] nhan: pc=0x00000000 instr=0x00500093 x1&lt;=0x00000005
+UVM_INFO ... @ 95000: uvm_test_top.mon [MON] [2] pc=0x00000004 instr=0x00308113 x2&lt;=0x00000008
+UVM_INFO ... @ 105000: uvm_test_top.mon [MON] [3] pc=0x00000008 instr=0x002081b3 x3&lt;=0x0000000d
+UVM_INFO ... @ 115000: uvm_test_top.mon [MON] [4] pc=0x0000000c instr=0x00302023 (no-regwr) MEM[0x00000000]&lt;=0x0000000d
+UVM_INFO ... @ 125000: uvm_test_top.mon [MON] [5] pc=0x00000010 instr=0x0000006f x0&lt;=0x00000014
+UVM_INFO ../tb/agent/riscv_driver.sv(52) @ 165000: uvm_test_top.drv [DRV] Chay xong 5 lenh (+8 drain)
+UVM_INFO ... [MON] [6]..[10] pc=0x00000010 instr=0x0000006f x0&lt;=0x00000014     (jal x0,0 lặp, 3 chu kỳ/lần)
+UVM_INFO ... @ 275000: uvm_test_top.mon [MON] Tong so lenh retire = 10
+UVM_ERROR :    0   UVM_FATAL :    0</code></pre>
+<p><em>5 lệnh chương trình retire đúng thứ tự (store hiện <code>MEM[..]&lt;=..</code>); sau đó <code>jal x0,0</code> tự nhảy về chính nó nên còn retire lặp lại
+cho tới khi test hạ objection (tổng 10 retire trong 25 chu kỳ). <code>jal</code> có <code>reg_write=1</code> với rd=x0 nên hiện <code>x0&lt;=PC+4</code>, không phải <code>(no-regwr)</code>.
+Subscriber nhận y hệt monitor phát.</em></p>
+</details>
+
+<h2 id="m7">8. Iterations</h2>
+
+<h3>Iteration 1 — nối 2 subscriber (broadcast)</h3>
+<p>Tạo thêm <code>count_sub</code> chỉ đếm; connect cả hai vào <code>mon.ap</code>.</p>
+<details><summary>Khác biệt</summary><p>Một <code>write()</code> tới cả 2. Dạy: analysis port là 1→N, thêm người nghe không sửa monitor.</p></details>
+
+<h3>Iteration 2 — sample sai: bỏ clocking, đọc thẳng <code>vif.ret_valid</code> ở posedge</h3>
+<p>Đổi <code>@(vif.ret_cb); vif.ret_cb.ret_valid</code> → <code>@(posedge vif.clk); vif.ret_valid</code>.</p>
+<details><summary>Khác biệt</summary><p>Có thể bắt giá trị đang chuyển (race), đôi khi lệch 1 chu kỳ hoặc dính giá trị trung gian. Dạy: luôn sample qua clocking.</p></details>
+
+<h3>Iteration 3 — chương trình có branch taken (kiểm flush không lọt)</h3>
+<p>Dùng chương trình Iteration 3 của Lab 1 (beq taken + lệnh bị flush).</p>
+<details><summary>Khác biệt</summary><p>Lệnh bị flush KHÔNG xuất hiện trong dòng monitor (không có transaction). Dạy: monitor phản ánh đúng commit, không phải fetch.</p></details>
+
+<h3>Iteration 4 — in bằng <code>tr.print()</code> (field macro)</h3>
+<p>Trong subscriber gọi <code>t.print()</code>.</p>
+<details><summary>Khác biệt</summary><p>Bảng field tự sinh (pc/instr/rd...). Dạy: field macros phục vụ cả monitor transaction.</p></details>
+
+<h3>Iteration 5 — thêm trường <code>cycle</code> (số chu kỳ từ nhả reset)</h3>
+<p>Monitor đếm chu kỳ, gán <code>tr.cycle</code>.</p>
+<details><summary>Khác biệt</summary><p>Thấy độ trễ pipeline (lệnh 1 retire ở cycle ~5). Dạy: timestamp giúp debug thứ tự/độ trễ.</p></details>
+
+<h2 id="m8">9. Bảng tổng hợp</h2>
+<div class="table-wrap"><table><tr><th>Iter</th><th>Đổi</th><th>Học</th></tr>
+<tr><td>0</td><td>monitor + retire item + subscriber</td><td>sample→write→broadcast</td></tr>
+<tr><td>1</td><td>2 subscriber</td><td>analysis 1→N</td></tr>
+<tr><td>2</td><td>bỏ clocking</td><td>race khi sample</td></tr>
+<tr><td>3</td><td>branch flush</td><td>monitor = commit, không fetch</td></tr>
+<tr><td>4</td><td>print()</td><td>field macro</td></tr>
+<tr><td>5</td><td>thêm cycle</td><td>timestamp debug</td></tr>
+</table></div>
+
+<h2 id="m9">10. BASELINE sang Lab 5</h2>
+<p><code>riscv_retire_item.sv</code> (8 trường + convert2str) và <code>riscv_monitor.sv</code> (sample ret_cb,
+lọc valid, <code>ap.write</code>, đếm retire). Lab 5 đóng gói driver+monitor+sequencer vào <code>riscv_agent</code>.</p>
+
+<h2 id="m10">11. Checklist nhớ code</h2>
+<ul>
+  <li>[ ] Nhớ tạo <code>ap = new("ap", this)</code> trong <code>new()</code>.</li>
+  <li>[ ] Nhớ <code>@(vif.ret_cb)</code> rồi đọc <code>ret_cb.ret_valid</code>.</li>
+  <li>[ ] Nhớ chỉ <code>write()</code> khi <code>ret_valid=1</code>.</li>
+</ul>
+
+<h2 id="m11">12. Phỏng vấn — hỏi &amp; đáp</h2>
+<p>Bấm câu hỏi để xem đáp án — nên tự trả lời miệng trước khi mở. Mỗi câu có ví dụ cụ thể như khi bị hỏi trong phỏng vấn.</p>
+<div class="qa-list">
+<details class="qa"><summary>Analysis port khác <code>put/get</code> port của TLM ở điểm nào? Vì sao monitor dùng analysis?</summary>
+<div class="ans">
+<p><code>put/get</code>: 1→1, có thể <em>block</em> (task), có back-pressure; producer biết consumer nhận. Analysis: 1→N, <em>function</em> không block, fire-and-forget. Monitor không được phép làm chậm DUT/TB và không nên biết ai nghe (scoreboard, coverage, logger…) → broadcast không block là hợp lý.</p>
+<pre><code>ap.write(tr);                       // monitor — không biết có bao nhiêu subscriber
+// env: agent.ap.connect(sb.ap_imp);  agent.ap.connect(cov.analysis_export);  agent.ap.connect(logger.analysis_export);</code></pre>
+</div></details>
+<details class="qa"><summary><code>write()</code> có thể chứa <code>#10</code> hoặc <code>@(posedge clk)</code> không? Nếu scoreboard cần xử lý chậm thì làm gì?</summary>
+<div class="ans">
+<p>Không: <code>write()</code> là <code>function</code> (zero-time) — compile lỗi nếu có delay. Với xử lý chậm, dùng <code>uvm_tlm_analysis_fifo</code>: <code>write()</code> chỉ nhét vào fifo (zero-time), còn <code>run_phase</code> của scoreboard <code>fifo.get(item)</code> (task, block được) rồi xử lý theo ý.</p>
+<pre><code>uvm_tlm_analysis_fifo#(riscv_retire_item) act_fifo;
+task run_phase(uvm_phase phase);
+  riscv_retire_item act;
+  forever begin act_fifo.get(act);  compare(act);  end
+endtask</code></pre>
+</div></details>
+<details class="qa"><summary>Hai subscriber cùng nhận một item từ <code>write()</code>. Một cái sửa <code>item.pc</code>. Chuyện gì xảy ra?</summary>
+<div class="ans">
+<p>Cả hai nhận <strong>cùng handle</strong> nên subscriber còn lại thấy <code>pc</code> bị sửa — và thứ tự gọi <code>write</code> giữa các subscriber không đảm bảo → lỗi không tái hiện ổn định. Cách phòng: coi item là read-only; nếu cần biến đổi thì <code>clone()</code> trước (<code>$cast(my, t.clone())</code>).</p>
+</div></details>
+<details class="qa"><summary>Vì sao monitor tạo <code>riscv_retire_item</code> mới cho mỗi retire thay vì dùng lại một biến?</summary>
+<div class="ans">
+<p>Vì handle được chia sẻ. Scoreboard thường <code>queue.push_back(t)</code> (lưu handle); nếu monitor sửa lại cùng object ở chu kỳ sau, toàn bộ queue trỏ vào một object duy nhất mang dữ liệu mới nhất. <code>type_id::create</code> mỗi giao dịch tốn bộ nhớ nhưng an toàn; garbage collector thu hồi khi không còn tham chiếu.</p>
+</div></details>
+<details class="qa"><summary>Monitor sample qua clocking block hay trực tiếp? Cho ví dụ lỗi nếu làm sai.</summary>
+<div class="ans">
+<p>Qua clocking block với <code>default input #1step</code> (Preponed → giá trị ổn định). Lấy trực tiếp ở <code>@(posedge clk)</code> có thể thấy giá trị trước hoặc sau NBA của RTL → 1 retire đôi khi bị bỏ sót hoặc đếm đúp (Iteration 2). Dấu hiệu: số lệnh retire khác nhau giữa các simulator/seed dù chương trình giống nhau.</p>
+</div></details>
+<details class="qa"><summary>Agent PASSIVE khác ACTIVE ở monitor không? Vì sao monitor phải chạy ở cả hai?</summary>
+<div class="ans">
+<p>Không khác. Monitor luôn được tạo; PASSIVE chỉ bỏ driver + sequencer. Dùng PASSIVE khi stimulus đến từ nguồn khác (firmware thật nạp bằng <code>load_hex</code> ở Lab 15, hoặc agent khác lái bus) mà ta vẫn muốn quan sát và chấm điểm. Monitor độc lập với driver nên scoreboard/coverage hoạt động như nhau.</p>
+</div></details>
+<details class="qa"><summary>Nên đặt coverage/checker vào monitor hay tách thành subscriber? Lý do?</summary>
+<div class="ans">
+<p>Tách. Monitor chỉ “dịch tín hiệu → transaction”. Coverage và scoreboard là subscriber: (1) bật/tắt bằng config mà không đụng monitor, (2) tái dùng monitor cho dự án khác, (3) mỗi thành phần một trách nhiệm → dễ debug. Ngoại lệ: kiểm tra giao thức tức thời cực nhẹ (ví dụ <code>$isunknown</code>) đôi khi đặt trong monitor, nhưng assertion trong interface vẫn gọn hơn.</p>
+</div></details>
+<details class="qa"><summary>Làm sao chỉ bật log chi tiết cho riêng monitor mà không làm ngập log toàn bộ?</summary>
+<div class="ans">
+<p>Dùng verbosity theo <em>hierarchy</em>: command line <code>+uvm_set_verbosity=uvm_test_top.env.agent.mon,_ALL_,UVM_HIGH,run</code> hoặc trong code <code>mon.set_report_verbosity_level(UVM_HIGH)</code> / <code>set_report_verbosity_level_hier</code>. Với ID: <code>set_report_id_verbosity("MON", UVM_HIGH)</code>. Quan trọng: <code>`uvm_info</code> không đánh giá đối số khi verbosity thấp hơn mức yêu cầu nên để dòng log chi tiết trong hot path không tốn thêm khi tắt.</p>
+</div></details>
+</div>
+
+<h2 id="m12">13. Cheat-sheet</h2>
+<pre><code>class riscv_monitor extends uvm_monitor;
+  uvm_analysis_port#(riscv_retire_item) ap;  // new("ap",this)
+  run: forever begin @(vif.ret_cb);
+         if(vif.ret_cb.ret_valid) begin
+           tr=riscv_retire_item::type_id::create("tr");
+           tr.pc=ret_cb.ret_pc; tr.rd=ret_cb.ret_rd; ...; ap.write(tr); end end</code></pre>
+
+<h2 id="m13">14. Bài tập code &amp; câu hỏi nâng cao UVM</h2>
+<p>8 bài rèn tay, tăng dần độ khó. Làm trên baseline của lab này; đáp án chỉ là hướng tham khảo — giá trị nằm ở việc bạn tự gõ, chạy và đọc log.</p>
+<div class="ex-progress"><span class="cnt">0 / 8 bài đã làm</span><span class="bar"><i></i></span></div>
+<div class="ex-list">
+<article class="ex"><div class="ex-head"><span class="lv l1">★ Dễ</span><h4>EX1 — Hai subscriber, một monitor</h4></div>
+Thêm <code>count_sub</code> (đếm theo <code>mem_write</code>) cạnh <code>print_sub</code>. Kết nối cả hai vào <code>mon.ap</code>. In <code>mon.ap.size()</code>.
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p><code>size()</code> trả số sink đã kết nối. Kiểm chứng broadcast: thứ tự gọi <code>write</code> giữa hai subscriber là không đảm bảo, đừng dựa vào nó.</p>
+</details>
+</article>
+<article class="ex"><div class="ex-head"><span class="lv l1">★ Dễ</span><h4>EX2 — Bắt lỗi “tái dùng item”</h4></div>
+Sửa monitor để dùng một biến <code>tr</code> khai báo ngoài vòng lặp. Thêm subscriber lưu handle vào queue, cuối sim in toàn bộ <code>pc</code> trong queue. So với bản đúng.
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p>Bản sai in cùng một <code>pc</code> lặp N lần (giá trị cuối). Đây là bug thực tế nhiều người mắc khi viết scoreboard.</p>
+</details>
+</article>
+<article class="ex"><div class="ex-head"><span class="lv l2">★★ Vừa</span><h4>EX3 — Analysis fifo thay imp</h4></div>
+Viết <code>fifo_sub</code> dùng <code>uvm_tlm_analysis_fifo</code>; in <code>fifo.used()</code> mỗi lần <code>get</code>. Cố ý thêm <code>#50ns</code> mỗi lần xử lý và quan sát <code>used()</code> tăng.
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p>Đây là cách scoreboard “bất đồng bộ” hoạt động; <code>used()</code> lớn cho biết subscriber chậm hơn tốc độ retire. Fifo mặc định không giới hạn (size 0).</p>
+</details>
+</article>
+<article class="ex"><div class="ex-head"><span class="lv l2">★★ Vừa</span><h4>EX4 — Agent chuyển tiếp analysis port</h4></div>
+Trong <code>riscv_agent</code> khai báo <code>uvm_analysis_port#(riscv_retire_item) ap;</code>, tạo trong <code>build_phase</code>, và nối <code>mon.ap.connect(ap)</code> trong <code>connect_phase</code>. Env kết nối <code>agent.ap</code> tới subscriber. Vì sao pattern này tốt hơn việc env truy cập <code>agent.mon.ap</code>?
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p>Đóng gói: env không phụ thuộc cấu trúc nội bộ agent (agent PASSIVE/ACTIVE đều có <code>ap</code>), đổi monitor không ảnh hưởng env.</p>
+</details>
+</article>
+<article class="ex"><div class="ex-head"><span class="lv l2">★★ Vừa</span><h4>EX5 — Timestamp & độ trễ pipeline</h4></div>
+Thêm <code>time t_retire</code> và <code>int unsigned cycle</code> vào <code>riscv_retire_item</code> (monitor đếm chu kỳ từ lúc nhả reset). Viết subscriber in histogram khoảng cách <code>cycle</code> giữa hai retire liên tiếp (1 = không bubble, 2+ = stall/flush).
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p>Với chương trình có load-use, thấy khoảng cách 2; với branch taken thấy 3 (flush 2 lệnh). Bạn vừa viết xong một “performance monitor” tối giản.</p>
+</details>
+</article>
+<article class="ex"><div class="ex-head"><span class="lv l3">★★★ Khó</span><h4>EX6 — Monitor kiểm tra giao thức</h4></div>
+Trong monitor thêm kiểm tra: <code>ret_valid &amp;&amp; $isunknown(ret_pc)</code> → <code>`uvm_error</code>. Cố ý tạo X ở ROM và xem. Thảo luận: nên đặt kiểm này ở monitor hay assertion trong interface?
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p>Cả hai đều đúng; assertion trong interface đi theo interface khi tái dùng và không phụ thuộc agent có tạo monitor hay không. Monitor-check có lợi thế: lỗi ra thẳng vào UVM report, có context (số retire).</p>
+</details>
+</article>
+<article class="ex"><div class="ex-head"><span class="lv l3">★★★ Khó</span><h4>EX7 — Hai monitor, hai góc nhìn</h4></div>
+Thêm <code>riscv_fetch_monitor</code> quan sát <code>pc_if</code> (fetch stream, gồm cả lệnh bị flush). Dùng hai analysis port riêng. Viết subscriber so “số fetch − số retire = số lệnh bị flush/stall”.
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p>Fetch stream chứa lệnh wrong-path; retire stream thì không. Đây là cách thật để đo hiệu suất dự đoán/flush. Mỗi monitor có một <code>ap</code> riêng, tránh dồn hai loại item vào một port.</p>
+</details>
+</article>
+<article class="ex"><div class="ex-head"><span class="lv l3">★★★ Khó</span><h4>EX8 — Verbosity có chọn lọc</h4></div>
+Thêm hai ID khác nhau: <code>`uvm_info("MON_RET", …)</code> và <code>`uvm_info("MON_STAT", …)</code>. Dùng <code>set_report_id_verbosity</code> để chỉ bật <code>MON_STAT</code> ở UVM_HIGH. Viết 3 cách bật log khác nhau (plusarg, code trong test, <code>uvm_cmdline_processor</code>).
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p>Plusarg: <code>+uvm_set_verbosity=*mon*,MON_STAT,UVM_HIGH,run</code>. Trong code: <code>env.agent.mon.set_report_id_verbosity("MON_STAT", UVM_HIGH)</code>. Phân biệt <em>component-level</em> (<code>set_report_verbosity_level</code>) với <em>ID-level</em>.</p>
+</details>
+</article>
+</div>
+
+
+<nav class="pager" aria-label="Điều hướng lab"><a class="nav-card prev" href="lab03.html" rel="prev"><small>← Lab trước</small><span>Lab 03 — Driver</span></a><div class="mid"><button type="button" class="btn primary" id="mark-done" aria-pressed="false">Đánh dấu hoàn thành</button></div><a class="nav-card next" href="lab05.html" rel="next"><small>Lab tiếp →</small><span>Lab 05 — Agent, env, test, config</span></a></nav>
+<p class="foot">UVM · RISC-V Pipeline Speedrun — Lab 04 / 15. Phím tắt: <kbd>[</kbd> lab trước · <kbd>]</kbd> lab sau.</p>
+</main>
+</div>
+</body>
+</html>

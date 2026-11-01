@@ -1,0 +1,500 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Lab 13 — RISC-V RAL-like: data-memory, frontdoor vs backdoor</title>
+<link rel="stylesheet" href="assets/lab.css">
+<script src="assets/lab.js" defer></script>
+</head>
+<body data-lab="13" data-total="15">
+<div id="readbar" aria-hidden="true"></div>
+<header class="topbar">
+  <button type="button" class="iconbtn" id="toc-toggle" aria-label="Mở mục lục">☰</button>
+  <a class="brand" href="index.html"><span class="brand-mark">UVM</span><span>RISC-V <small>Speedrun</small></span></a>
+  <nav class="labdots" aria-label="Chọn lab"><a href="lab01.html" data-n="1" title="Lab 01 — Interface & clocking">1</a><a href="lab02.html" data-n="2" title="Lab 02 — Sequence item">2</a><a href="lab03.html" data-n="3" title="Lab 03 — Driver">3</a><a href="lab04.html" data-n="4" title="Lab 04 — Monitor & analysis port">4</a><a href="lab05.html" data-n="5" title="Lab 05 — Agent, env, test, config">5</a><a href="lab06.html" data-n="6" title="Lab 06 — Sequence library">6</a><a href="lab07.html" data-n="7" title="Lab 07 — Virtual sequencer">7</a><a href="lab08.html" data-n="8" title="Lab 08 — SVA & bind trong UVM">8</a><a href="lab09.html" data-n="9" title="Lab 09 — Reference model">9</a><a href="lab10.html" data-n="10" title="Lab 10 — Scoreboard in-order">10</a><a href="lab11.html" data-n="11" title="Lab 11 — Scoreboard đầy đủ">11</a><a href="lab12.html" data-n="12" title="Lab 12 — Functional coverage">12</a><a href="lab13.html" data-n="13" title="Lab 13 — RAL (uvm_reg / uvm_mem)" aria-current="page">13</a><a href="lab14.html" data-n="14" title="Lab 14 — Factory, callback, catcher">14</a><a href="lab15.html" data-n="15" title="Lab 15 — Regression & closure">15</a></nav>
+  <button type="button" class="iconbtn" id="theme-toggle" aria-label="Đổi giao diện sáng/tối">☾</button>
+</header>
+<div class="layout">
+<aside class="side" aria-label="Mục lục">
+  <nav class="side-toc">
+    <p class="side-title">Trong bài này</p>
+    <ol>
+<li><a href="#muc-tongquan">1. Tổng quan lab</a></li>
+<li><a href="#m1">2. Vị trí trong testbench</a></li>
+<li><a href="#m2">3. Mục tiêu học</a></li>
+<li><a href="#m3">4. Keyword &amp; khái niệm mới</a></li>
+<li><a href="#m4">5. Chuẩn bị</a></li>
+<li><a href="#m5">6. Lý thuyết ngắn — mirror / frontdoor / backdoor (+ RAL thật)</a></li>
+<li><a href="#m6">7. Iteration 0 — regmodel + frontdoor/backdoor</a></li>
+<li><a href="#m7">8. Iterations</a></li>
+<li><a href="#m8">9. Bảng tổng hợp</a></li>
+<li><a href="#m9">10. BASELINE sang Lab 14</a></li>
+<li><a href="#m10">11. Checklist nhớ code</a></li>
+<li><a href="#m11">12. Phỏng vấn — hỏi &amp; đáp</a></li>
+<li><a href="#m12">13. Cheat-sheet</a></li>
+<li><a href="#m13">14. Bài tập code &amp; câu hỏi nâng cao UVM</a></li>
+    </ol>
+  </nav>
+  <div class="side-tools">
+    <button type="button" class="btn" data-act="expand">Mở tất cả spoiler</button>
+    <button type="button" class="btn" data-act="collapse">Đóng tất cả spoiler</button>
+    <button type="button" class="btn" data-act="qa-close">Ẩn đáp án QA (tự test)</button>
+    <button type="button" class="btn" data-act="top">↑ Lên đầu trang</button>
+  </div>
+</aside>
+<main class="main">
+<header class="hero" data-num="13">
+  <div class="eyebrow"><span class="pill">Lab 13 / 15</span><span class="phase">Nâng cao</span></div>
+  <h1>Lab 13 — RAL-like: data-memory, frontdoor (LW/SW) vs backdoor</h1>
+  <p class="tags"><span class="tag uvm">register model (RAL-like)</span><span class="tag">mirror/desired</span><span class="tag">frontdoor</span><span class="tag">backdoor</span><span class="tag">predict</span><span class="tag">mem map</span></p>
+</header>
+<nav class="toc" aria-label="Mục lục bài lab"><strong>📑 Mục lục</strong><ol>
+<li><a href="#muc-tongquan">1. Tổng quan lab</a></li>
+<li><a href="#m1">2. Vị trí trong testbench</a></li>
+<li><a href="#m2">3. Mục tiêu học</a></li>
+<li><a href="#m3">4. Keyword &amp; khái niệm mới</a></li>
+<li><a href="#m4">5. Chuẩn bị</a></li>
+<li><a href="#m5">6. Lý thuyết ngắn — mirror / frontdoor / backdoor (+ RAL thật)</a></li>
+<li><a href="#m6">7. Iteration 0 — regmodel + frontdoor/backdoor</a></li>
+<li><a href="#m7">8. Iterations</a></li>
+<li><a href="#m8">9. Bảng tổng hợp</a></li>
+<li><a href="#m9">10. BASELINE sang Lab 14</a></li>
+<li><a href="#m10">11. Checklist nhớ code</a></li>
+<li><a href="#m11">12. Phỏng vấn — hỏi &amp; đáp</a></li>
+<li><a href="#m12">13. Cheat-sheet</a></li>
+<li><a href="#m13">14. Bài tập code &amp; câu hỏi nâng cao UVM</a></li>
+</ol></nav>
+
+<div class="note" id="muc-tongquan">
+  <strong>Tổng quan lab</strong>
+  <ul>
+    <li><strong>Lab này làm gì:</strong> mô hình hóa các word data-memory như "thanh ghi" (register model
+      kiểu RAL): mỗi word có giá trị <em>mirror</em>. Truy cập <strong>frontdoor</strong> = qua lệnh thật
+      (LW/SW chạy trên pipeline); <strong>backdoor</strong> = peek/poke mảng <code>u_dmem.mem</code>. So
+      mirror ↔ frontdoor ↔ backdoor để kiểm đường dữ liệu bộ nhớ nhất quán.</li>
+    <li><strong>Tạo ra file nào:</strong> <code>tb/ral/riscv_mem_regmodel.sv</code> (mirror + API),
+      <code>tb/seq/riscv_mem_access_seq.sv</code> (sinh LUI/ADDI/SW/LW), test
+      <code>ral_test</code>.</li>
+    <li><strong>Nhận gì từ lab trước:</strong> driver/monitor/scoreboard, backdoor <code>peek_reg</code>/<code>peek_mem</code> (Lab 1); <code>poke_mem</code> chưa có — sẽ thêm ở Iteration 2.</li>
+    <li><strong>Lab sau dùng để làm gì:</strong> Lab 15 (bản Avalon) dùng <strong>uvm_reg thật</strong> với
+      adapter/predictor trên bus — đây là bước đệm khái niệm.</li>
+  </ul>
+</div>
+
+<div class="callout uvm"><strong>Trọng tâm UVM của lab</strong>
+<ul>
+  <li><strong>RAL thật</strong>: <code>uvm_reg_field → uvm_reg → uvm_reg_block → uvm_reg_map</code>, <code>uvm_mem</code>; <em>desired / mirrored / actual</em>.</li>
+  <li><strong>API cốt lõi</strong>: <code>write/read</code> (frontdoor) · <code>peek/poke</code> (backdoor) · <code>mirror</code> · <code>update</code> · <code>set/get</code> · <code>predict</code>.</li>
+  <li><strong>Adapter &amp; predictor</strong>: vai trò, vì sao cần explicit prediction; auto-predict nguy hiểm khi nào.</li>
+  <li><strong>Frontdoor/backdoor tùy biến</strong> khi DUT <em>không có bus</em> (đúng tình huống core này): <code>uvm_reg_frontdoor</code>, <code>uvm_reg_backdoor</code>.</li>
+  <li>Bản chạy ở lab là <em>RAL-like</em> (nhẹ); phần UVM RAL đầy đủ là <strong>tham khảo kiến thức</strong> để bạn hiểu mapping khái niệm.</li>
+</ul></div>
+
+<div class="note warn"><strong>Vì sao "RAL-like" chứ không uvm_reg đầy đủ?</strong> <code>riscv_pipeline_top</code>
+<em>không</em> có bus — LW/SW đi thẳng vào <code>u_dmem</code> nội bộ. uvm_reg cần adapter bus (address/read/
+write). Nên ở đây ta làm mô hình register <em>nhẹ</em>: frontdoor = chương trình lệnh, backdoor = hierarchical.
+Bản <code>riscv_avalon_wrapper</code> (Lab 15) mới có Avalon-MM để gắn uvm_reg chuẩn.</div>
+
+
+
+<h2 id="m1">2. Vị trí trong testbench</h2>
+<pre><code> riscv_mem_regmodel.mirror[addr]
+   frontdoor write: seq LUI/ADDI(build data) + SW addr   -> pipeline -> u_dmem
+   frontdoor read : seq LW xd, addr                       -> retire wb_data
+   backdoor       : vif.peek_mem(addr) / poke             -> u_dmem truc tiep
+   predict/compare: mirror == frontdoor == backdoor</code></pre>
+
+<h2 id="m2">3. Mục tiêu học</h2>
+<ul>
+  <li>Khái niệm register model: mirror (giá trị kỳ vọng) vs giá trị thật.</li>
+  <li>Frontdoor (qua giao thức/lệnh) vs backdoor (hierarchical) — khi nào dùng cái nào.</li>
+  <li>Predict: cập nhật mirror khi ghi; compare khi đọc.</li>
+  <li>Ánh xạ địa chỉ → "thanh ghi" (word).</li>
+</ul>
+
+<h2 id="m3">4. Keyword &amp; khái niệm mới</h2>
+<div class="table-wrap"><table>
+<tr><th>Keyword</th><th>Giải thích</th><th>Ví dụ</th></tr>
+<tr><td>register model</td><td>Mô hình các ô truy cập được</td><td><code>riscv_mem_regmodel</code></td></tr>
+<tr><td>mirror / desired</td><td>Giá trị kỳ vọng phần mềm giữ</td><td><code>mirror[addr]</code></td></tr>
+<tr><td>frontdoor</td><td>Truy cập qua giao thức thật</td><td>SW/LW chạy trên core</td></tr>
+<tr><td>backdoor</td><td>Truy cập hierarchical tức thì</td><td><code>vif.peek_mem</code></td></tr>
+<tr><td>predict</td><td>Cập nhật mirror theo thao tác</td><td><code>predict(addr,data)</code></td></tr>
+<tr><td>mem map</td><td>Địa chỉ → thanh ghi</td><td>word @ addr</td></tr>
+</table></div>
+
+<h2 id="m4">5. Chuẩn bị</h2>
+<pre><code>cd ~/Study/KLtN/code/tb_uvm/uvm_riscv/tb/ral</code></pre>
+
+<h2 id="m5">6. Lý thuyết ngắn — mirror / frontdoor / backdoor (+ RAL thật)</h2>
+<ol>
+  <li><strong>Mirror:</strong> phần mềm giữ bản sao giá trị kỳ vọng; mỗi ghi cập nhật mirror (predict).</li>
+  <li><strong>Frontdoor:</strong> ghi/đọc qua <em>đường thật</em> (LW/SW thực thi). Kiểm toàn bộ đường dữ
+    liệu (ALU địa chỉ, mem, load-use). Chậm (tốn chu kỳ).</li>
+  <li><strong>Backdoor:</strong> peek/poke mảng bộ nhớ trực tiếp. Tức thì, dùng để nạp nhanh/so sánh — nhưng
+    bỏ qua đường thật.</li>
+  <li><strong>Nhất quán 3 chiều:</strong> sau 1 SW frontdoor: mirror == backdoor peek; LW frontdoor trả
+    đúng mirror. Lệch → lỗi memory path.</li>
+</ol>
+
+<h3>6.5. Ba giá trị của một register trong RAL</h3>
+<div class="table-wrap"><div class="table-wrap"><table>
+<tr><th>Giá trị</th><th>Ý nghĩa</th><th>Ai cập nhật</th></tr>
+<tr><td><strong>Desired</strong></td><td>Giá trị bạn <em>muốn</em> DUT có</td><td><code>set(v)</code>, <code>randomize()</code></td></tr>
+<tr><td><strong>Mirrored</strong></td><td>Giá trị RAL <em>tin</em> DUT đang có</td><td><code>read/write</code> thành công, <code>predict</code>, <code>mirror</code></td></tr>
+<tr><td><strong>Actual</strong></td><td>Giá trị thật trong DUT</td><td>DUT</td></tr>
+</table></div></div>
+<p><code>update()</code> ghi xuống DUT <em>chỉ khi</em> desired ≠ mirrored. <code>mirror(status, UVM_CHECK)</code> đọc DUT rồi so với mirrored (đây là “scoreboard cho thanh ghi”). Trong lab: <code>mirror[addr]</code> ≈ mirrored; <code>predict()</code> ≈ <code>uvm_reg::predict</code>.</p>
+
+<h3>6.6. Bản đồ API: RAL-like ↔ RAL chuẩn</h3>
+<div class="table-wrap"><div class="table-wrap"><table>
+<tr><th>Lab này</th><th>UVM RAL chuẩn</th><th>Ghi chú</th></tr>
+<tr><td><code>riscv_mem_regmodel</code></td><td><code>uvm_reg_block</code> chứa <code>uvm_mem</code> (hoặc <code>uvm_reg</code> × N)</td><td>dmem 2KB = <code>uvm_mem(512 × 32)</code></td></tr>
+<tr><td><code>predict(addr,data)</code></td><td><code>reg.predict(value, …)</code> / <code>uvm_reg_predictor</code></td><td>auto-predict hoặc explicit</td></tr>
+<tr><td>frontdoor: LUI/ADDI/SW</td><td><code>write(status, v, .path(UVM_FRONTDOOR))</code> → <code>uvm_reg_frontdoor</code></td><td>core không bus ⇒ frontdoor tùy biến</td></tr>
+<tr><td><code>vif.peek_mem</code></td><td><code>peek()</code> + <code>uvm_reg_backdoor</code></td><td>mem là mảng byte ⇒ backdoor tùy biến</td></tr>
+<tr><td><code>check_backdoor()</code></td><td><code>mirror(status, UVM_CHECK, UVM_BACKDOOR)</code></td><td>so mirrored ↔ DUT</td></tr>
+</table></div></div>
+
+<h3>6.7. Khung RAL đầy đủ cho dmem (tham khảo)</h3>
+<pre><code>class riscv_dmem_block extends uvm_reg_block;
+  `uvm_object_utils(riscv_dmem_block)
+  rand uvm_mem dmem;
+  uvm_reg_map  map;
+  function new(string name = "riscv_dmem_block");
+    super.new(name, UVM_NO_COVERAGE);
+  endfunction
+  virtual function void build();
+    dmem = new("dmem", 512, 32, "RW");      // 512 word × 32 bit = 2 KB
+    dmem.configure(this);
+    map = create_map("map", 'h0, 4, UVM_LITTLE_ENDIAN);   // base=0, 4 byte/word
+    map.add_mem(dmem, 'h0, "RW");           // tham số thứ 5 có thể truyền frontdoor tùy biến
+    lock_model();
+  endfunction
+endclass
+
+// Backdoor tùy biến vì DUT lưu byte (mem[addr]) chứ không phải mảng 32-bit mà hdl_path trỏ được
+class riscv_dmem_backdoor extends uvm_reg_backdoor;
+  `uvm_object_utils(riscv_dmem_backdoor)
+  virtual riscv_if vif;
+  function new(string name = "riscv_dmem_backdoor"); super.new(name); endfunction
+  virtual function void read_func(uvm_reg_item rw);
+    rw.value[0] = vif.peek_mem(rw.offset * 4);
+    rw.status   = UVM_IS_OK;
+  endfunction
+  virtual task write(uvm_reg_item rw);
+    vif.poke_mem(rw.offset * 4, rw.value[0]);       // poke_mem: thêm vào interface (Iteration 2)
+    rw.status = UVM_IS_OK;
+  endtask
+endclass</code></pre>
+<p>Gắn: <code>blk.dmem.set_backdoor(bd);</code>. Dùng: <code>blk.dmem.write(status, 8, 32'hDEADBEEF, .path(UVM_FRONTDOOR))</code>, <code>blk.dmem.peek(status, 8, v)</code>, <code>blk.dmem.read(status, 8, v, .path(UVM_BACKDOOR))</code>.</p>
+
+<h3>6.8. Frontdoor khi không có bus</h3>
+<p>RAL chuẩn giả định có <em>adapter</em> dịch <code>uvm_reg_bus_op</code> ↔ transaction bus. Core này không có bus nên “frontdoor” là chạy chương trình LW/SW. Hai cách:</p>
+<ul>
+  <li><strong><code>uvm_reg_frontdoor</code> tùy biến</strong>: <code>body()</code> dùng <code>rw_info.kind/offset/value[0]</code> để chạy <code>riscv_mem_access_seq</code> trên sequencer, rồi điền kết quả (đọc <code>x2</code> sau drain) vào <code>rw_info.value[0]</code> và <code>rw_info.status</code>.</li>
+  <li><strong>Đổi DUT sang Avalon (Lab 15)</strong>: có bus thật → viết <code>uvm_reg_adapter</code> (<code>reg2bus/bus2reg</code>) và dùng frontdoor mặc định + <code>uvm_reg_predictor</code> nối từ monitor bus.</li>
+</ul>
+<div class="callout pitfall"><strong>Auto-predict vs explicit:</strong> <code>map.set_auto_predict(1)</code> cập nhật mirror ngay khi thao tác RAL hoàn tất — đủ nếu <em>chỉ RAL</em> truy cập DUT. Nếu còn master khác (CPU chạy firmware ghi dmem, DMA) thì mirror lỗi thời. Dùng <code>uvm_reg_predictor</code> + monitor để bắt <em>mọi</em> giao dịch bus (explicit/passive prediction).</div>
+
+<h3>6.9. Built-in sequences</h3>
+<ul>
+  <li><code>uvm_reg_hw_reset_seq</code> — đọc mọi reg sau reset, so với giá trị reset khai báo.</li>
+  <li><code>uvm_reg_bit_bash_seq</code> — ghi/đọc từng bit.</li>
+  <li><code>uvm_reg_access_seq</code> — kiểm đường frontdoor ≡ backdoor.</li>
+  <li><code>uvm_mem_walk_seq</code>, <code>uvm_mem_access_seq</code> — “đi bộ” và truy cập bộ nhớ.</li>
+</ul>
+<pre><code>uvm_mem_walk_seq walk = uvm_mem_walk_seq::type_id::create("walk");
+walk.model = blk;        // gán model rồi start; sequence này không cần sequencer thật
+walk.start(null);</code></pre>
+
+<h2 id="m6">7. Iteration 0 — regmodel + frontdoor/backdoor</h2>
+
+<details><summary>tb/ral/riscv_mem_regmodel.sv</summary>
+<pre><code>// tb/ral/riscv_mem_regmodel.sv — mô hình register NHẸ cho data memory (RAL-like)
+`ifndef RISCV_MEM_REGMODEL_SV
+`define RISCV_MEM_REGMODEL_SV
+class riscv_mem_regmodel extends uvm_object;
+  `uvm_object_utils(riscv_mem_regmodel)
+  bit [31:0] mirror [int];      // addr(word-aligned) -> giá trị kỳ vọng
+
+  function new(string name="riscv_mem_regmodel"); super.new(name); endfunction
+
+  // predict: cập nhật mirror khi (dự định) ghi
+  function void predict(int addr, bit [31:0] data);
+    mirror[addr & ~3] = data;
+  endfunction
+
+  function bit [31:0] get_mirror(int addr);
+    int a = addr & ~3;
+    return mirror.exists(a) ? mirror[a] : 32'd0;
+  endfunction
+
+  // backdoor read/write qua vif
+  function bit [31:0] read_backdoor(virtual riscv_if vif, int addr);
+    return vif.peek_mem(addr);
+  endfunction
+  // (poke backdoor: thêm task vào interface nếu muốn ghi thẳng - ở đây chỉ đọc)
+
+  // so mirror vs backdoor
+  function bit check_backdoor(virtual riscv_if vif, int addr);
+    bit [31:0] bd = read_backdoor(vif, addr);
+    if (bd !== get_mirror(addr)) begin
+      `uvm_error("RAL", $sformatf("MEM[0x%08h]: backdoor=0x%08h mirror=0x%08h",
+                 addr, bd, get_mirror(addr)))
+      return 0;
+    end
+    return 1;
+  endfunction
+endclass
+`endif</code></pre></details>
+
+<details><summary>tb/seq/riscv_mem_access_seq.sv (frontdoor: build const + SW + LW)</summary>
+<pre><code>// Sinh chuỗi: nạp hằng 'data' vào xtmp, SW xtmp->addr, rồi LW xrd&lt;-addr.
+// Dùng x0 làm base (addr = imm). data xây bằng LUI (bit 31:12) + ADDI (bit 11:0).
+`ifndef RISCV_MEM_ACCESS_SEQ_SV
+`define RISCV_MEM_ACCESS_SEQ_SV
+class riscv_mem_access_seq extends riscv_prog_base_seq;
+  `uvm_object_utils(riscv_mem_access_seq)
+  rand bit [31:0] data;
+  rand bit [11:0] addr;              // trong 0..2047, căn chỉnh 4
+  constraint c_addr { addr inside {[0:2044]}; addr % 4 == 0; }
+  function new(string name="riscv_mem_access_seq"); super.new(name); endfunction
+
+  // phát 1 item raw
+  task raw(bit [31:0] w);
+    riscv_seq_item it = riscv_seq_item::type_id::create("it");
+    start_item(it); void'(it.randomize());
+    it.use_raw=1; it.raw_word=w; it.last_instr=0;
+    finish_item(it);
+  endtask
+
+  // body override: xây data vào x1, SW x1->addr, LW x2&lt;-addr, halt
+  task body();
+    bit [19:0] hi = data[31:12] + data[11];     // bù khi ADDI sign-extend
+    bit [11:0] lo = data[11:0];
+    // lui x1, hi
+    raw({hi, 5'd1, 7'b0110111});
+    // addi x1, x1, lo
+    raw({lo, 5'd1, 3'b000, 5'd1, 7'b0010011});
+    // sw x1, addr(x0)   (S-type: imm[11:5]|rs2|rs1|f3|imm[4:0]|op)
+    raw({addr[11:5], 5'd1, 5'd0, 3'b010, addr[4:0], 7'b0100011});
+    // lw x2, addr(x0)
+    raw({addr, 5'd0, 3'b010, 5'd2, 7'b0000011});
+    // halt
+    if (append_halt) begin
+      riscv_seq_item h = riscv_seq_item::type_id::create("halt");
+      start_item(h); void'(h.randomize());
+      h.use_raw=1; h.raw_word=32'h0000006f; h.last_instr=1;
+      finish_item(h);
+    end
+  endtask
+endclass
+`endif</code></pre></details>
+
+<div class="note">Mẹo hằng số: <code>addi</code> sign-extend imm[11]. Nếu <code>lo</code> có bit11=1, phần
+<code>lo</code> bị trừ → bù bằng <code>hi = data[31:12] + data[11]</code>. Đây là thủ thuật dựng hằng 32-bit
+kinh điển của RV32I (li giả lệnh).</div>
+
+<details><summary>tb/test/ral_test.sv</summary>
+<pre><code>`ifndef RAL_TEST_SV
+`define RAL_TEST_SV
+class ral_test extends riscv_base_test;
+  `uvm_component_utils(ral_test)
+  riscv_mem_regmodel rm;
+  function new(string n,uvm_component p); super.new(n,p); endfunction
+  function void build_phase(uvm_phase phase);
+    super.build_phase(phase);
+    rm = riscv_mem_regmodel::type_id::create("rm");
+  endfunction
+  task run_phase(uvm_phase phase);
+    riscv_mem_access_seq s = riscv_mem_access_seq::type_id::create("s");
+    phase.raise_objection(this);
+    assert(s.randomize() with { data==32'hDEAD_BEEF; addr==32; });
+    rm.predict(32, 32'hDEADBEEF);            // predict TRƯỚC khi chạy
+    s.start(env.agent.sqr);
+    repeat (25) @(posedge cfg.vif.clk);
+    // 1) backdoor nhất quán mirror
+    void'(rm.check_backdoor(cfg.vif, 32));
+    // 2) frontdoor LW x2 phải = data (scoreboard đã so; ở đây kiểm thêm)
+    `uvm_info("RAL", $sformatf("x2 (LW)=0x%08h backdoor[32]=0x%08h mirror=0x%08h",
+              cfg.vif.peek_reg(2), cfg.vif.peek_mem(32), rm.get_mirror(32)), UVM_LOW)
+    phase.drop_objection(this);
+  endtask
+endclass
+`endif</code></pre></details>
+
+<p><strong>Lệnh chạy:</strong></p>
+<p>Thêm vào <code>riscv_pkg.sv</code>: <code>`include "riscv_mem_access_seq.sv"</code> (sau <code>riscv_vseq.sv</code>), <code>`include "riscv_mem_regmodel.sv"</code> (trước các test) và
+<code>`include "ral_test.sv"</code> (sau <code>self_check_test.sv</code>); lệnh biên dịch thêm <code>-i ../tb/ral</code>:</p>
+<pre><code>xvlog -sv -L uvm -i ../tb/agent -i ../tb/ref -i ../tb/sb -i ../tb/cov -i ../tb/ral -i ../tb/seq -i ../tb/env -i ../tb/test ../tb/pkg/riscv_pkg.sv ../tb/top/riscv_tb_top.sv  # + rtl như Lab 5</code></pre>
+<pre><code>xelab -L uvm -timescale 1ns/1ps riscv_tb_top -s top_sim</code></pre>
+<pre><code>xsim top_sim -R -testplusarg UVM_TESTNAME=ral_test</code></pre>
+
+<details><summary>Expected log</summary>
+<pre><code># UVM_INFO [MON] ... sw ... MEM[0x00000020]&lt;=0xdeadbeef
+# UVM_INFO [MON] ... lw ... x2&lt;=0xdeadbeef
+# UVM_INFO [RAL] x2 (LW)=0xdeadbeef backdoor[32]=0xdeadbeef mirror=0xdeadbeef
+# UVM_ERROR : 0</code></pre>
+<p><em>Ba chiều khớp: frontdoor LW = backdoor peek = mirror. Đường dữ liệu bộ nhớ nhất quán.</em></p>
+</details>
+
+<h2 id="m7">8. Iterations</h2>
+
+<h3>Iteration 1 — random nhiều (addr,data) rồi check_backdoor từng cái</h3>
+<p>Lặp 10 lần randomize addr/data, predict + chạy + check.</p>
+<details><summary>Khác biệt</summary><p>Mirror theo kịp nhiều ô; backdoor khớp. Dạy: register model mở rộng theo bản đồ địa chỉ.</p></details>
+
+<h3>Iteration 2 — backdoor poke rồi frontdoor LW đọc lại</h3>
+<p>Thêm task <code>poke_mem</code> vào interface (<code>tb/if/riscv_if.sv</code>, cạnh <code>peek_mem</code>); poke addr=64 giá trị X; chạy LW đọc.</p>
+<pre><code>  // Ghi trộm 1 word data memory tại địa chỉ byte (căn chỉnh 4) — đối ngẫu của peek_mem.
+  task automatic poke_mem(input int byte_addr, input logic [31:0] data);
+    int b; b = byte_addr &amp; 11'h7fc;
+    {dut.u_dmem.mem[b+3], dut.u_dmem.mem[b+2], dut.u_dmem.mem[b+1], dut.u_dmem.mem[b]} = data;
+  endtask</code></pre>
+<details><summary>Khác biệt</summary><p>LW (frontdoor) đọc đúng giá trị poke (backdoor). Dạy: backdoor ghi nhanh để set tiền đề, frontdoor kiểm đường đọc.</p></details>
+
+<h3>Iteration 3 — mismatch cố ý: predict sai giá trị</h3>
+<p><code>rm.predict(32, 32'h0)</code> nhưng SW ghi DEADBEEF.</p>
+<details><summary>Khác biệt</summary><p><code>UVM_ERROR [RAL] MEM mirror lệch</code>. Dạy: predict phải khớp thao tác thực.</p></details>
+
+<h3>Iteration 4 — địa chỉ không căn chỉnh (test âm)</h3>
+<p>Ép <code>addr=34</code> (lệch 2). DUT căn chỉnh xuống 32 (<code>addr[1:0]</code> bỏ).</p>
+<details><summary>Khác biệt</summary><p>Ghi/đọc rơi vào word 32; mirror theo địa chỉ căn chỉnh. Dạy: hành vi căn chỉnh của data_memory (liên kết Lab 14 misalign).</p></details>
+
+<h3>Iteration 5 — ghi chú map SHA (0x02008000) ngoài vùng dmem</h3>
+<p>Thử SW vào 0x02008000 — ngoài 2KB dmem của pipeline (không có SHA).</p>
+<details><summary>Khác biệt</summary><p>pipeline_top không có SHA/khối ngoài → địa chỉ lớn chỉ dùng <code>addr[10:0]</code> của dmem (wrap).
+Dạy: map thiết bị ngoài cần bus (Avalon, Lab 15) — đây là giới hạn của bản busless.</p></details>
+
+<h2 id="m8">9. Bảng tổng hợp</h2>
+<div class="table-wrap"><table><tr><th>Iter</th><th>Đổi</th><th>Học</th></tr>
+<tr><td>0</td><td>regmodel + front/back 1 ô</td><td>mirror/frontdoor/backdoor</td></tr>
+<tr><td>1</td><td>random nhiều ô</td><td>mở rộng map</td></tr>
+<tr><td>2</td><td>poke rồi LW</td><td>backdoor set + frontdoor đọc</td></tr>
+<tr><td>3</td><td>predict sai</td><td>predict khớp thao tác</td></tr>
+<tr><td>4</td><td>addr lệch</td><td>căn chỉnh data_memory</td></tr>
+<tr><td>5</td><td>map SHA ngoài vùng</td><td>giới hạn busless → cần Avalon</td></tr>
+</table></div>
+
+<h2 id="m9">10. BASELINE sang Lab 14</h2>
+<p><code>riscv_mem_regmodel</code> (mirror + predict + check_backdoor) + <code>riscv_mem_access_seq</code>
+(dựng hằng + SW + LW). Nhất quán frontdoor/backdoor/mirror. Lab 14 làm factory override + test âm
+(opcode không hỗ trợ, ghi x0, misalign).</p>
+
+<h2 id="m10">11. Checklist nhớ code</h2>
+<ul>
+  <li>[ ] Nhớ dựng hằng 32-bit: LUI(hi+bit11) + ADDI(lo).</li>
+  <li>[ ] Nhớ S-type ghép bit SW; LW là I-type.</li>
+  <li>[ ] Nhớ predict TRƯỚC khi chạy; check mirror↔backdoor SAU.</li>
+</ul>
+
+<h2 id="m11">12. Phỏng vấn — hỏi &amp; đáp</h2>
+<p>Bấm câu hỏi để xem đáp án — nên tự trả lời miệng trước khi mở. Mỗi câu có ví dụ cụ thể như khi bị hỏi trong phỏng vấn.</p>
+<div class="qa-list">
+<details class="qa"><summary>Giải thích desired, mirrored và actual của một register; <code>update()</code> và <code>mirror()</code> làm gì?</summary>
+<div class="ans">
+<p><em>Desired</em>: giá trị ta muốn; <em>mirrored</em>: giá trị RAL tin DUT đang có; <em>actual</em>: giá trị thật. <code>set(5)</code> đổi desired. <code>update()</code> ghi xuống DUT <em>chỉ nếu</em> desired ≠ mirrored (và cập nhật mirrored). <code>mirror(UVM_CHECK)</code> đọc DUT rồi <em>so</em> với mirrored (báo lỗi nếu khác) — chính là kiểm thanh ghi tự động.</p>
+<pre><code>blk.ctrl.set(32'h1);          // desired = 1
+blk.ctrl.update(status);      // desired(1) != mirrored(0) → ghi DUT
+blk.ctrl.mirror(status, UVM_CHECK);   // đọc DUT, so với mirrored</code></pre>
+</div></details>
+<details class="qa"><summary><code>write()</code> / <code>read()</code> khác <code>poke()</code> / <code>peek()</code>? Backdoor có cập nhật mirror không?</summary>
+<div class="ans">
+<p><code>write/read</code>: dùng <em>path</em> mặc định của map (thường frontdoor, tốn thời gian mô phỏng); có thể ép <code>.path(UVM_BACKDOOR)</code>. <code>poke/peek</code>: <em>luôn</em> backdoor (0 thời gian). Cả hai đường đều cập nhật mirror (qua predict). Nhớ rằng backdoor <em>bỏ qua</em> hành vi thật (side-effect, access policy) nên chỉ dùng setup/ kiểm chéo.</p>
+</div></details>
+<details class="qa"><summary>Adapter và predictor khác nhau thế nào? Khi nào cần predictor?</summary>
+<div class="ans">
+<p><strong>Adapter</strong> (<code>uvm_reg_adapter</code>): dịch <em>thao tác RAL</em> ↔ <em>transaction bus</em> (<code>reg2bus</code>, <code>bus2reg</code>). <strong>Predictor</strong> (<code>uvm_reg_predictor</code>): nghe monitor bus, dùng adapter <code>bus2reg</code> để cập nhật mirror cho <em>mọi</em> giao dịch bus — kể cả do master khác. Cần predictor khi DUT có nhiều master hoặc register có side-effect (read-to-clear) cần mô hình hóa đúng thời điểm; với một master duy nhất auto-predict là đủ.</p>
+</div></details>
+<details class="qa"><summary>Vì sao core này “không có bus” thì khó dùng RAL chuẩn? Cách giải quyết?</summary>
+<div class="ans">
+<p>RAL chuẩn cần frontdoor qua sequence/driver bus. Ở đây truy cập dmem là kết quả của <em>chương trình lệnh</em> (LW/SW) chứ không phải giao dịch bus. Giải quyết: (1) <code>uvm_reg_frontdoor</code> tùy biến chạy chương trình LW/SW và thu kết quả; (2) <code>uvm_reg_backdoor</code> tùy biến cho mảng byte; (3) hoặc nâng DUT lên wrapper Avalon rồi dùng adapter/predictor chuẩn (Lab 15). Lab này dùng bản “RAL-like” để bạn nắm khái niệm trước.</p>
+</div></details>
+<details class="qa"><summary>Backdoor hdl_path và custom backdoor: khi nào cần cái nào?</summary>
+<div class="ans">
+<p><code>add_hdl_path("tb.dut", "RTL")</code> + <code>add_hdl_path_slice</code> khi RTL có biến khớp register (cùng độ rộng/tên) — UVM tự sinh đường dẫn và dùng <code>uvm_hdl_*</code> (DPI) đọc/ghi. <strong>Custom backdoor</strong> khi cấu trúc RTL khác mô hình (mảng byte thay vì word, register chia tách bit, giá trị mã hóa). dmem này là mảng byte ⇒ custom backdoor (hoặc 4 lần <code>uvm_hdl_read</code> ghép).</p>
+</div></details>
+<details class="qa"><summary>Nêu các built-in sequence của RAL và mục đích. Bạn dùng cái nào cho dmem?</summary>
+<div class="ans">
+<p><code>uvm_reg_hw_reset_seq</code> (giá trị reset), <code>uvm_reg_bit_bash_seq</code> (từng bit), <code>uvm_reg_access_seq</code> (frontdoor vs backdoor), <code>uvm_mem_walk_seq</code> (walking pattern kiểm địa chỉ/dữ liệu), <code>uvm_mem_access_seq</code>. Với dmem: <code>uvm_mem_walk_seq</code> + <code>uvm_mem_access_seq</code> — kiểm memory path độc lập với chương trình. Điều kiện: model phải <code>lock_model()</code> và đã gán frontdoor/backdoor phù hợp.</p>
+</div></details>
+<details class="qa"><summary>RAL có thay scoreboard không? Chúng phối hợp thế nào?</summary>
+<div class="ans">
+<p>Không. RAL chuyên cho <em>register/memory-mapped state</em> (mirror + kiểm). Scoreboard kiểm luồng dữ liệu/chức năng. Phối hợp: scoreboard có thể hỏi <code>blk.reg.get_mirrored_value()</code> làm giá trị kỳ vọng cấu hình (ví dụ chế độ hoạt động), RAL kiểm <code>mirror(UVM_CHECK)</code> cuối test như “sweep thanh ghi”. Ở lab: mirror dmem ↔ sweep Lab 11 là hai mặt cùng một ý tưởng.</p>
+</div></details>
+<details class="qa"><summary>Frontdoor đọc dmem qua <code>LW</code> bị ảnh hưởng bởi lỗi forwarding/stall. Điều đó tốt hay xấu cho kiểm tra?</summary>
+<div class="ans">
+<p>Tốt: frontdoor kiểm <em>cả datapath</em> (ALU địa chỉ, load-use, writeback) — lỗi forwarding làm giá trị đọc sai sẽ hiện ở mismatch giữa frontdoor ↔ backdoor ↔ mirror. Xấu: khó tách lỗi nằm ở memory hay ở forwarding; cần backdoor so sánh để định vị: <em>backdoor OK + frontdoor sai</em> ⇒ lỗi datapath, không phải bộ nhớ.</p>
+</div></details>
+</div>
+
+<h2 id="m12">13. Cheat-sheet</h2>
+<pre><code>class riscv_mem_regmodel; bit[31:0] mirror[int];
+  predict(addr,data){ mirror[addr&amp;~3]=data; }
+  check_backdoor(vif,addr){ assert vif.peek_mem(addr)==get_mirror(addr); }
+// frontdoor const: LUI x1,(hi+bit11); ADDI x1,x1,lo; SW x1,addr(x0); LW x2,addr(x0)</code></pre>
+
+<h2 id="m13">14. Bài tập code &amp; câu hỏi nâng cao UVM</h2>
+<p>8 bài rèn tay, tăng dần độ khó. Làm trên baseline của lab này; đáp án chỉ là hướng tham khảo — giá trị nằm ở việc bạn tự gõ, chạy và đọc log.</p>
+<div class="ex-progress"><span class="cnt">0 / 8 bài đã làm</span><span class="bar"><i></i></span></div>
+<div class="ex-list">
+<article class="ex"><div class="ex-head"><span class="lv l1">★ Dễ</span><h4>EX1 — Ánh xạ khái niệm</h4></div>
+Viết bảng 2 cột: mỗi thành phần của <code>riscv_mem_regmodel</code>/<code>ral_test</code> ↔ lớp/hàm UVM RAL tương ứng (ít nhất 6 dòng). Đánh dấu chỗ nào “RAL-like thiếu”.
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p>Thiếu: adapter/predictor, <code>uvm_reg_map</code> (địa chỉ ↔ offset), access policy (RO/WO), <code>lock_model</code>, built-in sequences, coverage của register.</p>
+</details>
+</article>
+<article class="ex"><div class="ex-head"><span class="lv l1">★ Dễ</span><h4>EX2 — Thêm <code>poke_mem</code></h4></div>
+Thêm task <code>poke_mem(int addr, bit [31:0] data)</code> vào <code>riscv_if</code> (ghi 4 byte). Viết test: poke addr 64, rồi chạy <code>LW</code> frontdoor và kiểm giá trị. Vì sao poke xong cần đồng bộ mirror?
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p>Nếu không gọi <code>rm.predict(64, data)</code> sau poke thì mirror lỗi thời → <code>check_backdoor</code> báo lệch. Trong RAL thật, <code>poke()</code> tự predict.</p>
+</details>
+</article>
+<article class="ex"><div class="ex-head"><span class="lv l2">★★ Vừa</span><h4>EX3 — Mirror check bằng frontdoor</h4></div>
+Viết <code>check_frontdoor(addr)</code>: chạy <code>riscv_mem_access_seq</code> với LW, chờ retire, lấy <code>x2</code> (backdoor peek_reg) và so với mirror. Thảo luận khác biệt với <code>check_backdoor</code>.
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p>Frontdoor kiểm cả datapath. Backdoor kiểm nội dung bộ nhớ. Hai kiểm chéo giúp định vị lỗi (xem câu hỏi cuối mục 12).</p>
+</details>
+</article>
+<article class="ex"><div class="ex-head"><span class="lv l2">★★ Vừa</span><h4>EX4 — Regfile như <code>uvm_reg_block</code></h4></div>
+Dựng <code>riscv_regfile_block</code> với 31 <code>uvm_reg</code> (<code>x1</code>…<code>x31</code>, mỗi cái 1 field 32-bit) và hdl_path <code>u_regfile.registers[N]</code>. Dùng <code>peek()</code> để đọc và <code>mirror(UVM_CHECK, UVM_BACKDOOR)</code>. Viết ngắn gọn: vì sao x0 không nên mô hình hóa là reg ghi được?
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p>x0 bất biến (RO = 0) — mô hình hóa bằng access policy <code>"RO"</code> với reset value 0. Bài này còn là ví dụ tốt về <em>mỗi thanh ghi một <code>add_hdl_path_slice</code></em>.</p>
+</details>
+</article>
+<article class="ex"><div class="ex-head"><span class="lv l2">★★ Vừa</span><h4>EX5 — Built-in sequence</h4></div>
+Dùng <code>uvm_mem_walk_seq</code> trên <code>riscv_dmem_block</code> (chỉ backdoor). Tại sao walk dùng backdoor phù hợp ở đây? Điều gì cần để chạy với frontdoor?
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p>Frontdoor cần <code>uvm_reg_frontdoor</code> đã hoàn thiện (chạy chương trình cho mỗi truy cập — rất chậm: mỗi word cần ≥ 4 lệnh + drain). Thực tế: mem walk chủ yếu backdoor cho nhanh, frontdoor sample cho vài địa chỉ.</p>
+</details>
+</article>
+<article class="ex"><div class="ex-head"><span class="lv l3">★★★ Khó</span><h4>EX6 — <code>uvm_reg_frontdoor</code> tùy biến</h4></div>
+Hiện thực <code>riscv_dmem_frontdoor</code>: <code>body()</code> sinh <code>riscv_mem_access_seq</code> theo <code>rw_info.kind</code> (WRITE/READ), chờ drain, trả kết quả. Gắn qua <code>map.add_mem(…, frontdoor)</code>. Chạy <code>dmem.write()</code> và <code>dmem.read()</code>.
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p>Khó nhất: mỗi lần RAL truy cập ta cần <em>một chương trình mới</em> chạy sau reset → driver Lab 3 reset mỗi chương trình, nên mỗi <code>write/read</code> = một “chương trình độc lập”: tùy RTL, reset có thể xóa dmem (mất dữ liệu đã ghi) và ISS/mirror phải đồng bộ theo. Giải pháp: cho driver một chế độ “không reset” khi chạy frontdoor liên tiếp — hoặc dùng bản Avalon (Lab 15). Đây là bài tập về trade-off kiến trúc.</p>
+</details>
+</article>
+<article class="ex"><div class="ex-head"><span class="lv l3">★★★ Khó</span><h4>EX7 — Explicit predictor mô phỏng</h4></div>
+Viết <code>riscv_dmem_predictor</code> (subscriber của <code>riscv_retire_item</code>): khi <code>mem_write</code> thì <code>rm.predict(addr, wdata)</code> — mirror cập nhật từ <em>quan sát</em> thay vì từ test. So với predict thủ công ở <code>ral_test</code>.
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p>Đây chính là <code>uvm_reg_predictor</code> thu nhỏ: mirror bám theo mọi giao dịch quan sát, không chỉ giao dịch do RAL khởi tạo — nên bắt được cả firmware ghi dmem.</p>
+</details>
+</article>
+<article class="ex"><div class="ex-head"><span class="lv l3">★★★ Khó</span><h4>EX8 — Tìm lỗi bằng ba nguồn</h4></div>
+Chèn lỗi RTL: <code>lw</code> trả sai khi load-use xảy ra ngay sau <code>sw</code> cùng địa chỉ. Chạy <code>ral_test</code> và dùng ba nguồn (mirror, backdoor, frontdoor) để <em>định vị</em> lỗi: bộ nhớ hay datapath?
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p>Backdoor == mirror (bộ nhớ đúng), frontdoor ≠ mirror (đường đọc sai) ⇒ lỗi forwarding/load-use, không phải bộ nhớ. Mẫu suy luận này là kỹ năng debug cốt lõi.</p>
+</details>
+</article>
+</div>
+
+
+<nav class="pager" aria-label="Điều hướng lab"><a class="nav-card prev" href="lab12.html" rel="prev"><small>← Lab trước</small><span>Lab 12 — Functional coverage</span></a><div class="mid"><button type="button" class="btn primary" id="mark-done" aria-pressed="false">Đánh dấu hoàn thành</button></div><a class="nav-card next" href="lab14.html" rel="next"><small>Lab tiếp →</small><span>Lab 14 — Factory, callback, catcher</span></a></nav>
+<p class="foot">UVM · RISC-V Pipeline Speedrun — Lab 13 / 15. Phím tắt: <kbd>[</kbd> lab trước · <kbd>]</kbd> lab sau.</p>
+</main>
+</div>
+</body>
+</html>

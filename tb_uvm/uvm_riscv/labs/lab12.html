@@ -1,0 +1,446 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Lab 12 — RISC-V Functional Coverage (19 lệnh + cross + hazard)</title>
+<link rel="stylesheet" href="assets/lab.css">
+<script src="assets/lab.js" defer></script>
+</head>
+<body data-lab="12" data-total="15">
+<div id="readbar" aria-hidden="true"></div>
+<header class="topbar">
+  <button type="button" class="iconbtn" id="toc-toggle" aria-label="Mở mục lục">☰</button>
+  <a class="brand" href="index.html"><span class="brand-mark">UVM</span><span>RISC-V <small>Speedrun</small></span></a>
+  <nav class="labdots" aria-label="Chọn lab"><a href="lab01.html" data-n="1" title="Lab 01 — Interface & clocking">1</a><a href="lab02.html" data-n="2" title="Lab 02 — Sequence item">2</a><a href="lab03.html" data-n="3" title="Lab 03 — Driver">3</a><a href="lab04.html" data-n="4" title="Lab 04 — Monitor & analysis port">4</a><a href="lab05.html" data-n="5" title="Lab 05 — Agent, env, test, config">5</a><a href="lab06.html" data-n="6" title="Lab 06 — Sequence library">6</a><a href="lab07.html" data-n="7" title="Lab 07 — Virtual sequencer">7</a><a href="lab08.html" data-n="8" title="Lab 08 — SVA & bind trong UVM">8</a><a href="lab09.html" data-n="9" title="Lab 09 — Reference model">9</a><a href="lab10.html" data-n="10" title="Lab 10 — Scoreboard in-order">10</a><a href="lab11.html" data-n="11" title="Lab 11 — Scoreboard đầy đủ">11</a><a href="lab12.html" data-n="12" title="Lab 12 — Functional coverage" aria-current="page">12</a><a href="lab13.html" data-n="13" title="Lab 13 — RAL (uvm_reg / uvm_mem)">13</a><a href="lab14.html" data-n="14" title="Lab 14 — Factory, callback, catcher">14</a><a href="lab15.html" data-n="15" title="Lab 15 — Regression & closure">15</a></nav>
+  <button type="button" class="iconbtn" id="theme-toggle" aria-label="Đổi giao diện sáng/tối">☾</button>
+</header>
+<div class="layout">
+<aside class="side" aria-label="Mục lục">
+  <nav class="side-toc">
+    <p class="side-title">Trong bài này</p>
+    <ol>
+<li><a href="#muc-tongquan">1. Tổng quan lab</a></li>
+<li><a href="#m1">2. Vị trí trong testbench</a></li>
+<li><a href="#m2">3. Mục tiêu học</a></li>
+<li><a href="#m3">4. Keyword &amp; khái niệm mới</a></li>
+<li><a href="#m4">5. Chuẩn bị</a></li>
+<li><a href="#m5">6. Lý thuyết ngắn — coverage model (+ UVM bên trong)</a></li>
+<li><a href="#m6">7. Iteration 0 — coverage ISA + hazard</a></li>
+<li><a href="#m7">8. Iterations</a></li>
+<li><a href="#m8">9. Bảng tổng hợp</a></li>
+<li><a href="#m9">10. BASELINE sang Lab 13</a></li>
+<li><a href="#m10">11. Checklist nhớ code</a></li>
+<li><a href="#m11">12. Phỏng vấn — hỏi &amp; đáp</a></li>
+<li><a href="#m12">13. Cheat-sheet</a></li>
+<li><a href="#m13">14. Bài tập code &amp; câu hỏi nâng cao UVM</a></li>
+    </ol>
+  </nav>
+  <div class="side-tools">
+    <button type="button" class="btn" data-act="expand">Mở tất cả spoiler</button>
+    <button type="button" class="btn" data-act="collapse">Đóng tất cả spoiler</button>
+    <button type="button" class="btn" data-act="qa-close">Ẩn đáp án QA (tự test)</button>
+    <button type="button" class="btn" data-act="top">↑ Lên đầu trang</button>
+  </div>
+</aside>
+<main class="main">
+<header class="hero" data-num="12">
+  <div class="eyebrow"><span class="pill">Lab 12 / 15</span><span class="phase">Checking</span></div>
+  <h1>Lab 12 — Functional Coverage (19 lệnh + cross + hazard pipeline)</h1>
+  <p class="tags"><span class="tag uvm">covergroup</span><span class="tag uvm">coverpoint/bins</span><span class="tag">cross</span><span class="tag">ignore/illegal_bins</span><span class="tag uvm">uvm_subscriber</span><span class="tag uvm">hazard coverage</span></p>
+</header>
+<nav class="toc" aria-label="Mục lục bài lab"><strong>📑 Mục lục</strong><ol>
+<li><a href="#muc-tongquan">1. Tổng quan lab</a></li>
+<li><a href="#m1">2. Vị trí trong testbench</a></li>
+<li><a href="#m2">3. Mục tiêu học</a></li>
+<li><a href="#m3">4. Keyword &amp; khái niệm mới</a></li>
+<li><a href="#m4">5. Chuẩn bị</a></li>
+<li><a href="#m5">6. Lý thuyết ngắn — coverage model (+ UVM bên trong)</a></li>
+<li><a href="#m6">7. Iteration 0 — coverage ISA + hazard</a></li>
+<li><a href="#m7">8. Iterations</a></li>
+<li><a href="#m8">9. Bảng tổng hợp</a></li>
+<li><a href="#m9">10. BASELINE sang Lab 13</a></li>
+<li><a href="#m10">11. Checklist nhớ code</a></li>
+<li><a href="#m11">12. Phỏng vấn — hỏi &amp; đáp</a></li>
+<li><a href="#m12">13. Cheat-sheet</a></li>
+<li><a href="#m13">14. Bài tập code &amp; câu hỏi nâng cao UVM</a></li>
+</ol></nav>
+
+<div class="note" id="muc-tongquan">
+  <strong>Tổng quan lab</strong>
+  <ul>
+    <li><strong>Lab này làm gì:</strong> xây <code>riscv_coverage</code> (subscriber) đo <em>đã kích thích
+      những gì</em>: 19 lệnh (bins), funct3/funct7, rd=x0 vs khác, cross op×rd; và một covergroup
+      <strong>hazard pipeline</strong> (load-use stall, branch flush taken/not-taken) — thứ mà core
+      single-cycle không có. Coverage trả lời "test đã đủ chưa".</li>
+    <li><strong>Tạo ra file nào:</strong> <code>tb/cov/riscv_coverage.sv</code>; nối vào monitor.ap; hazard
+      covergroup sample từ probe vif.</li>
+    <li><strong>Nhận gì từ lab trước:</strong> dòng retire (Lab 4), probe stall/redirect (Lab 1), vseq (Lab 7).</li>
+    <li><strong>Lab sau dùng để làm gì:</strong> Lab 15 regression hợp nhất coverage (xcrg) + verification plan
+      ánh xạ coverage ↔ mục tiêu.</li>
+  </ul>
+</div>
+
+<div class="callout uvm"><strong>Trọng tâm UVM của lab</strong>
+<ul>
+  <li><strong><code>uvm_subscriber</code></strong> bên trong: <code>analysis_export</code> + <code>write()</code> thuần ảo; vì sao coverage là subscriber chứ không nằm trong monitor.</li>
+  <li><strong>Covergroup trong class</strong>: phải <code>new()</code> trong constructor; <code>sample()</code> vs sampling event; <code>with function sample(...)</code>; <code>per_instance</code>.</li>
+  <li><strong>Điều khiển coverage từ config</strong> (<code>coverage_enable</code>); lấy coverage từ chương trình để lái stimulus (adaptive).</li>
+  <li><strong>Closure</strong>: bins, cross, <code>ignore/illegal</code>, <code>auto_bin_max</code>; coverage ≠ chất lượng.</li>
+  <li>Đã sửa <code>vif.mon.ret_cb</code> → <code>vif.ret_cb</code> ở hazard coverage.</li>
+</ul></div>
+
+<div class="note warn"><strong>Pipeline-specific coverage:</strong> ngoài coverage ISA thường thấy, DUT này
+cần đo <em>hazard</em>: có gặp load-use stall không? có branch taken gây flush không? Nếu coverage hazard = 0
+thì dù regfile đúng, ta <strong>chưa</strong> verify logic forwarding/flush — một lỗ hổng đặc trưng pipeline.</div>
+
+
+
+<h2 id="m1">2. Vị trí trong testbench</h2>
+<pre><code> monitor.ap --> [ riscv_coverage ] cg_isa.sample(op,funct3,rd)   (mỗi retire)
+ probe vif ----> cg_hazard.sample(stall, flush, taken)           (theo sự kiện)</code></pre>
+
+<h2 id="m2">3. Mục tiêu học</h2>
+<ul>
+  <li><code>covergroup</code>/<code>coverpoint</code>/<code>bins</code>/<code>cross</code>.</li>
+  <li><code>ignore_bins</code>/<code>illegal_bins</code> cho tổ hợp không hợp lệ.</li>
+  <li><code>uvm_subscriber</code> + <code>sample()</code> theo transaction.</li>
+  <li>Coverage hazard: đo stall/flush — đặc thù pipeline.</li>
+</ul>
+
+<h2 id="m3">4. Keyword &amp; khái niệm mới</h2>
+<div class="table-wrap"><table>
+<tr><th>Keyword</th><th>Giải thích</th><th>Ví dụ</th></tr>
+<tr><td><code>covergroup</code></td><td>Nhóm coverpoint lấy mẫu cùng lúc</td><td><code>covergroup cg; ... endgroup</code></td></tr>
+<tr><td><code>coverpoint</code></td><td>Biến cần đo</td><td><code>cp_op: coverpoint op;</code></td></tr>
+<tr><td><code>bins</code></td><td>Khoảng/giá trị cần đạt</td><td><code>bins r[] = {[ADD:AND]};</code></td></tr>
+<tr><td><code>cross</code></td><td>Tổ hợp 2+ coverpoint</td><td><code>cross cp_op, cp_rd0;</code></td></tr>
+<tr><td><code>illegal_bins</code></td><td>Trúng là lỗi</td><td><code>illegal_bins u = {UNKNOWN};</code></td></tr>
+<tr><td><code>sample()</code></td><td>Lấy mẫu 1 lần</td><td><code>cg.sample();</code></td></tr>
+</table></div>
+
+<h2 id="m4">5. Chuẩn bị</h2>
+<pre><code>cd ~/Study/KLtN/code/tb_uvm/uvm_riscv/tb/cov</code></pre>
+
+<h2 id="m5">6. Lý thuyết ngắn — coverage model (+ UVM bên trong)</h2>
+<ol>
+  <li><strong>Coverage ≠ pass/fail.</strong> Scoreboard nói "đúng/sai"; coverage nói "đã thử đủ chưa". Cần cả
+    hai: 100% coverage + 0 lỗi mới đóng.</li>
+  <li><strong>Decode từ instr:</strong> coverage lấy opcode/funct3/funct7 từ <code>instr</code> trong retire
+    item → phân loại 1 trong 19 lệnh (+ UNKNOWN = illegal).</li>
+  <li><strong>Cross:</strong> op×(rd=x0?) kiểm từng lệnh có được thử với rd=x0 và rd≠0.</li>
+  <li><strong>Hazard:</strong> sample khi <code>stall</code> hoặc <code>redirect</code> pulse để chắc chắn đã
+    kích thích forwarding/flush.</li>
+</ol>
+
+<h3>6.5. <code>uvm_subscriber</code> thực chất là gì</h3>
+<p><code>uvm_subscriber#(T)</code> là <code>uvm_component</code> có sẵn <code>uvm_analysis_imp#(T, uvm_subscriber#(T)) analysis_export</code> và hàm <code>write(T t)</code> <em>pure virtual</em> — bạn chỉ override <code>write</code>. Vì thế mối nối là <code>mon.ap.connect(cov.analysis_export)</code> (không có <code>_imp</code> thủ công). Coverage là subscriber độc lập để: bật/tắt bằng config, tái dùng monitor, và nhiều coverage cùng nghe một monitor.</p>
+
+<h3>6.6. Covergroup trong class — các điểm dễ sai</h3>
+<ul>
+  <li><strong>Phải <code>new()</code></strong> covergroup trong constructor của class (<code>cg = new();</code>); quên → <code>cg.sample()</code> null → lỗi runtime/0% coverage im lặng.</li>
+  <li><strong>Lấy mẫu</strong>: gọi <code>cg.sample()</code> thủ công (lab) hoặc sampling event <code>@(posedge clk)</code>. Với dữ liệu từ transaction, ưu tiên <code>sample()</code> thủ công trong <code>write()</code>.</li>
+  <li><strong><code>covergroup cg with function sample(op_e o, bit rd0)</code></strong>: truyền tham số thẳng thay vì field trung gian (<code>s_op</code>) — sạch hơn, tránh lệch giá trị.</li>
+  <li><strong><code>option.per_instance=1</code></strong>: mỗi instance báo riêng; mặc định gộp theo <em>type</em> (<code>get_coverage()</code> vs <code>get_inst_coverage()</code>).</li>
+  <li><strong>Bins</strong>: <code>auto_bin_max</code> (mặc định 64) chia nhỏ biến rộng; bins tường minh cho enum; <code>ignore_bins</code> loại khỏi mẫu số, <code>illegal_bins</code> trúng = lỗi.</li>
+</ul>
+<pre><code>covergroup cg_isa with function sample(op_e op, bit rd0);
+  option.per_instance = 1;
+  cp_op : coverpoint op { illegal_bins unk = {UNKNOWN}; }
+  cp_rd0: coverpoint rd0 { bins x0 = {1}; bins nz = {0}; }
+  x_op_rd: cross cp_op, cp_rd0 { ignore_bins ign = binsof(cp_rd0.x0) &amp;&amp; binsof(cp_op) intersect {SW,BEQ,BNE,BLT,BGE,BLTU,BGEU}; }
+endgroup
+function void write(riscv_retire_item t);  if (cfg.coverage_enable) cg_isa.sample(decode(t.instr), t.rd == 0);  endfunction
+// (minh họa dạng sample(args)) cfg.coverage_enable là knob TỰ THÊM vào riscv_agent_config — xem bài tập cuối lab;
+// code chạy của lab dùng s_op/s_rd0 + cg_isa.sample() ở bản đầy đủ bên dưới.</code></pre>
+
+<h3>6.7. Coverage thu từ đâu? Quan sát ≠ ý định</h3>
+<p>Lấy mẫu từ <strong>observed item</strong> (retire) chứ không phải stimulus item: “đã thấy DUT thực thi <code>sra</code>” mới là bằng chứng. Nếu sample từ sequence, lệnh bị flush (không bao giờ retire) vẫn được tính → coverage ảo. Ngoại lệ: stimulus coverage (đã <em>gửi</em> đủ loại) có ý nghĩa riêng cho chất lượng sequence.</p>
+
+<h3>6.8. Coverage dẫn dắt stimulus (adaptive)</h3>
+<p>Sequence có thể đọc <code>cov.cg_isa.get_inst_coverage()</code> hoặc cờ “bin còn thiếu” để chọn lớp lệnh kế — vòng phản hồi coverage → stimulus. Cần cẩn thận về độ phức tạp; thực tế phổ biến hơn là phân tích report offline rồi viết sequence nhắm bin trống (Lab 15).</p>
+<div class="callout pitfall"><strong>Bẫy:</strong> 100% functional coverage ≠ verify xong; nó chỉ nói “mô hình coverage bạn <em>đã nghĩ ra</em> đã được chạm”. Coverage model thiếu ý (ví dụ quên hazard) vẫn cho 100%. Luôn đối chiếu với verification plan (Lab 15).</div>
+
+<h2 id="m6">7. Iteration 0 — coverage ISA + hazard</h2>
+
+<details><summary>tb/cov/riscv_coverage.sv</summary>
+<pre><code>// tb/cov/riscv_coverage.sv
+`ifndef RISCV_COVERAGE_SV
+`define RISCV_COVERAGE_SV
+class riscv_coverage extends uvm_subscriber #(riscv_retire_item);
+  `uvm_component_utils(riscv_coverage)
+
+  typedef enum { ADD,SUB,SLL,SLT,SLTU,XOR,SRL,SRA,OR,AND,
+                 ADDI,SLTI,SLTIU,XORI,ORI,ANDI,SLLI,SRLI,SRAI,
+                 LW,SW,BEQ,BNE,BLT,BGE,BLTU,BGEU,
+                 JAL,JALR,LUI,AUIPC, UNKNOWN } op_e;
+
+  // biến sample
+  op_e       s_op;
+  bit [2:0]  s_f3;
+  bit        s_rd0;
+
+  covergroup cg_isa;
+    option.per_instance = 1;
+    cp_op: coverpoint s_op {
+      illegal_bins unk = {UNKNOWN};
+    }
+    cp_rd0: coverpoint s_rd0 { bins x0 = {1}; bins nz = {0}; }
+    cp_f3:  coverpoint s_f3;
+    x_op_rd: cross cp_op, cp_rd0 {
+      // LUI/AUIPC/JAL với rd=x0 ít ý nghĩa nhưng không cấm; ignore để không kẹt 100%
+      ignore_bins ign = binsof(cp_rd0.x0) &amp;&amp; binsof(cp_op) intersect {SW,BEQ,BNE,BLT,BGE,BLTU,BGEU};
+    }
+  endgroup
+
+  function new(string name, uvm_component parent);
+    super.new(name, parent);
+    cg_isa = new();
+  endfunction
+
+  function op_e decode(bit [31:0] w);
+    bit [6:0] opc=w[6:0], f7=w[31:25]; bit [2:0] f3=w[14:12];
+    case (opc)
+      7'b0110011: case({f7[5],f3})
+        4'b0000:return ADD; 4'b1000:return SUB; 4'b0001:return SLL; 4'b0010:return SLT;
+        4'b0011:return SLTU;4'b0100:return XOR; 4'b0101:return SRL; 4'b1101:return SRA;
+        4'b0110:return OR;  4'b0111:return AND; default:return UNKNOWN; endcase
+      7'b0010011: case(f3)
+        3'b000:return ADDI;3'b010:return SLTI;3'b011:return SLTIU;3'b100:return XORI;
+        3'b110:return ORI; 3'b111:return ANDI;3'b001:return SLLI;
+        3'b101:return f7[5]?SRAI:SRLI; default:return UNKNOWN; endcase
+      7'b0000011: return (f3==3'b010)?LW:UNKNOWN;
+      7'b0100011: return (f3==3'b010)?SW:UNKNOWN;
+      7'b1100011: case(f3) 3'b000:return BEQ;3'b001:return BNE;3'b100:return BLT;
+                           3'b101:return BGE;3'b110:return BLTU;3'b111:return BGEU;
+                           default:return UNKNOWN; endcase
+      7'b1101111: return JAL;
+      7'b1100111: return (f3==0)?JALR:UNKNOWN;
+      7'b0110111: return LUI;
+      7'b0010111: return AUIPC;
+      default: return UNKNOWN;
+    endcase
+  endfunction
+
+  function void write(riscv_retire_item t);
+    s_op  = decode(t.instr);
+    s_f3  = t.instr[14:12];
+    s_rd0 = (t.rd == 0);
+    cg_isa.sample();
+  endfunction
+
+  function void report_phase(uvm_phase phase);
+    `uvm_info("COV", $sformatf("ISA coverage = %0.1f%%", cg_isa.get_inst_coverage()), UVM_LOW)
+  endfunction
+endclass
+`endif</code></pre></details>
+
+<details><summary>tb/cov/riscv_hazard_cov.sv (covergroup hazard — sample theo chu kỳ)</summary>
+<pre><code>// Một component nhỏ sample stall/flush mỗi chu kỳ qua vif.
+`ifndef RISCV_HAZARD_COV_SV
+`define RISCV_HAZARD_COV_SV
+class riscv_hazard_cov extends uvm_component;
+  `uvm_component_utils(riscv_hazard_cov)
+  virtual riscv_if vif;
+  bit c_stall, c_flush;
+  covergroup cg_hz;
+    option.per_instance = 1;
+    cp_stall: coverpoint c_stall { bins seen = {1}; }
+    cp_flush: coverpoint c_flush { bins seen = {1}; }
+  endgroup
+  function new(string n, uvm_component p); super.new(n,p); cg_hz=new(); endfunction
+  function void build_phase(uvm_phase phase);
+    if(!uvm_config_db#(virtual riscv_if)::get(this,"","vif",vif)) `uvm_fatal("HZ","thieu vif");
+  endfunction
+  task run_phase(uvm_phase phase);
+    forever begin
+      @(vif.ret_cb);
+      c_stall = vif.ret_cb.stall;
+      c_flush = vif.ret_cb.redirect;   // redirect = branch/jump taken -> flush
+      cg_hz.sample();
+    end
+  endtask
+  function void report_phase(uvm_phase phase);
+    `uvm_info("COV", $sformatf("Hazard coverage = %0.1f%%", cg_hz.get_inst_coverage()), UVM_LOW)
+  endfunction
+endclass
+`endif</code></pre></details>
+
+<details><summary>Nối trong env</summary>
+<pre><code>// riscv_env: thêm
+  riscv_coverage   cov;
+  riscv_hazard_cov hz;
+  // build:
+  cov = riscv_coverage::type_id::create("cov", this);
+  hz  = riscv_hazard_cov::type_id::create("hz", this);
+  uvm_config_db#(virtual riscv_if)::set(this,"hz","vif",cfg.vif);
+  // connect:
+  agent.mon.ap.connect(cov.analysis_export);</code></pre></details>
+
+<p>Thêm vào <code>riscv_pkg.sv</code> (sau <code>riscv_scoreboard.sv</code>, trước <code>riscv_env.sv</code>): <code>`include "riscv_coverage.sv"</code> và <code>`include "riscv_hazard_cov.sv"</code>,
+và thêm <code>-i ../tb/cov</code> vào lệnh biên dịch pkg (danh sách <code>-i</code> của Lab 10 chưa có thư mục cov):</p>
+<p><strong>Lệnh chạy (dài để đủ coverage):</strong></p>
+<pre><code>xvlog -sv -L uvm -i ../tb/agent -i ../tb/ref -i ../tb/sb -i ../tb/cov -i ../tb/seq -i ../tb/env -i ../tb/test ../tb/pkg/riscv_pkg.sv ../tb/top/riscv_tb_top.sv  # + rtl như Lab 5</code></pre>
+<pre><code>xelab -L uvm -timescale 1ns/1ps riscv_tb_top -s top_sim</code></pre>
+<pre><code>xsim top_sim -R -testplusarg UVM_TESTNAME=self_check_test  # vseq hỗn hợp nhiều lệnh</code></pre>
+
+<details><summary>Expected log</summary>
+<pre><code>UVM_INFO ../tb/sb/riscv_scoreboard.sv(96) @ 625000: uvm_test_top.env.sb [SB] SWEEP PASS: regfile+mem khop (retire=24)
+UVM_INFO ../tb/cov/riscv_coverage.sv(67) @ 625000: uvm_test_top.env.cov [COV] ISA coverage = 44.9%        &lt;- chưa đủ: chương trình chỉ có ~9 lệnh
+UVM_INFO ../tb/cov/riscv_hazard_cov.sv(26) @ 625000: uvm_test_top.env.hz [COV] Hazard coverage = 50.0%    &lt;- mới có flush (halt jal x0,0 luôn redirect), chưa có stall (chưa có load-use)
+UVM_ERROR :    0   (số % cụ thể phụ thuộc seed vì vseq random)</code></pre>
+<p><em>Coverage &lt;100% → cần bổ sung stimulus (iteration dưới). Scoreboard vẫn PASS vì những lệnh ĐÃ chạy đều đúng.</em></p>
+</details>
+
+<h2 id="m7">8. Iterations</h2>
+
+<h3>Iteration 1 — bổ sung sequence để kéo ISA coverage lên 100%</h3>
+<p>Thêm vseq nhánh gồm đủ 19 lệnh (ép mỗi op ≥1 lần qua directed sub-seq).</p>
+<details><summary>Khác biệt</summary><p>ISA coverage → 100%. Dạy: coverage chỉ đạo thêm stimulus (coverage-driven).</p></details>
+
+<h3>Iteration 2 — thêm branch taken để lấp hazard flush</h3>
+<p>Dùng chương trình có <code>beq</code> điều kiện đúng (taken).</p>
+<details><summary>Khác biệt</summary><p>Hazard coverage → 100% (cả stall &amp; flush). Dạy: hazard coverage lộ lỗ hổng pipeline mà ISA coverage không thấy.</p></details>
+
+<h3>Iteration 3 — cross funct3 cho branch (6 loại)</h3>
+<p>Thêm coverpoint chỉ cho branch với bins theo funct3 (BEQ..BGEU).</p>
+<details><summary>Khác biệt</summary><p>Đảm bảo cả 6 kiểu so sánh. Dạy: cross/bins có điều kiện (guard bằng op).</p></details>
+
+<h3>Iteration 4 — illegal_bins UNKNOWN kích hoạt (test âm)</h3>
+<p>Tạm cho sequence sinh opcode không hỗ trợ → UNKNOWN trúng illegal.</p>
+<details><summary>Khác biệt</summary><p><code>UVM_ERROR</code> từ illegal_bins. Dạy: illegal_bins bắt tổ hợp cấm — liên kết Lab 14 test âm.</p></details>
+
+<h3>Iteration 5 — bins cho rs1/rs2=x0 (forwarding corner)</h3>
+<p>Thêm coverpoint rs1==0, rs2==0 (đọc x0) và cross với op R-type.</p>
+<details><summary>Khác biệt</summary><p>Đo corner "nguồn là x0" (không forward x0). Dạy: coverpoint cho hazard corner cụ thể.</p></details>
+
+<h2 id="m8">9. Bảng tổng hợp</h2>
+<div class="table-wrap"><table><tr><th>Iter</th><th>Đổi</th><th>Học</th></tr>
+<tr><td>0</td><td>cg ISA + hazard</td><td>covergroup/cross + hazard pipeline</td></tr>
+<tr><td>1</td><td>đủ 19 lệnh</td><td>coverage-driven stimulus</td></tr>
+<tr><td>2</td><td>branch taken</td><td>hazard flush coverage</td></tr>
+<tr><td>3</td><td>cross funct3 branch</td><td>bins có điều kiện</td></tr>
+<tr><td>4</td><td>illegal UNKNOWN</td><td>illegal_bins</td></tr>
+<tr><td>5</td><td>rs=x0</td><td>corner forwarding</td></tr>
+</table></div>
+
+<h2 id="m9">10. BASELINE sang Lab 13</h2>
+<p><code>riscv_coverage</code> (cg_isa: 19 op + cross op×rd0 + funct3, illegal UNKNOWN) +
+<code>riscv_hazard_cov</code> (stall/flush). Đạt ~100% ISA + hazard với stimulus bổ sung. Lab 13 mô hình
+hóa data-memory như "thanh ghi" (RAL-like) frontdoor LW/SW vs backdoor.</p>
+
+<h2 id="m10">11. Checklist nhớ code</h2>
+<ul>
+  <li>[ ] Nhớ decode instr → op_e (opcode+funct3+funct7).</li>
+  <li>[ ] Nhớ <code>cg = new()</code> trong constructor; <code>sample()</code> trong write.</li>
+  <li>[ ] Nhớ hazard covergroup cho pipeline (stall/flush) — đặc thù DUT.</li>
+</ul>
+
+<h2 id="m11">12. Phỏng vấn — hỏi &amp; đáp</h2>
+<p>Bấm câu hỏi để xem đáp án — nên tự trả lời miệng trước khi mở. Mỗi câu có ví dụ cụ thể như khi bị hỏi trong phỏng vấn.</p>
+<div class="qa-list">
+<details class="qa"><summary>Vì sao coverage là <code>uvm_subscriber</code> riêng mà không đặt trong monitor?</summary>
+<div class="ans">
+<p>Tách trách nhiệm: monitor dịch tín hiệu → transaction; coverage quyết định <em>đo gì</em>. Lợi: (1) bật/tắt bằng <code>cfg.coverage_enable</code> mà không đụng monitor, (2) tái dùng monitor ở dự án khác, (3) nhiều coverage (ISA, hazard, protocol) cùng nghe một monitor, (4) coverage không làm chậm đường monitor khi tắt. Thực hành: monitor chỉ <code>ap.write(tr)</code>.</p>
+</div></details>
+<details class="qa"><summary>Quên <code>cg = new()</code> thì điều gì xảy ra?</summary>
+<div class="ans">
+<p>Covergroup trong class là “kiểu”; chưa <code>new</code> thì không có instance. <code>cg.sample()</code> trên handle null → lỗi runtime (hoặc, tùy tool, im lặng và coverage 0%). Dấu hiệu: <code>report_phase</code> in 0.0% dù test chạy nhiều. Quy ước: <code>new()</code> covergroup ngay trong constructor (không phải build_phase), vì covergroup không thuộc hệ phase UVM.</p>
+</div></details>
+<details class="qa"><summary><code>get_coverage()</code> khác <code>get_inst_coverage()</code>? <code>per_instance</code> làm gì?</summary>
+<div class="ans">
+<p><code>get_coverage()</code> trả coverage của <em>kiểu</em> (gộp mọi instance); <code>get_inst_coverage()</code> trả của <em>instance</em> — chỉ có ý nghĩa khi <code>option.per_instance = 1</code>. Khi một env có nhiều agent cùng class coverage (hai core), per_instance cho báo cáo riêng từng agent; không bật thì chỉ thấy số gộp.</p>
+</div></details>
+<details class="qa"><summary><code>ignore_bins</code> và <code>illegal_bins</code> khác nhau thế nào? Cho ví dụ trong lab.</summary>
+<div class="ans">
+<p><code>ignore_bins</code>: loại tổ hợp vô nghĩa khỏi mẫu số — ví dụ <code>SW</code>/branch với <code>rd=x0</code> (không có rd) để không kẹt dưới 100%. <code>illegal_bins</code>: trúng là <strong>lỗi</strong> (báo UVM_ERROR tùy tool): <code>UNKNOWN</code> opcode. Ở Lab 14 negative test <em>cố ý</em> sinh opcode lạ ⇒ illegal_bins sẽ trúng — phải hiểu rằng đó là kỳ vọng và xử lý (tắt/chuyển thành ignore) cho test đó.</p>
+</div></details>
+<details class="qa"><summary>Functional coverage 100% có nghĩa là verify xong không? Phản biện.</summary>
+<div class="ans">
+<p>Không. (1) Model coverage có thể thiếu điểm cần đo (quên hazard, quên giá trị biên). (2) Coverage đo “đã chạm” chứ không đo “đã kiểm đúng” — cần scoreboard/assertion. (3) Cross phức tạp có thể quá ít để phát hiện lỗi chuỗi lệnh. Do đó: coverage + checker + verification plan, với <em>review</em> mô hình coverage như review code.</p>
+</div></details>
+<details class="qa"><summary>Lấy mẫu từ stimulus item hay observed item — chọn gì và vì sao?</summary>
+<div class="ans">
+<p>Observed (retire): chỉ tính những gì DUT thực sự thực thi (loại lệnh bị flush). Stimulus coverage đo chất lượng sinh stimulus (đã gửi đủ loại?). Nên có cả hai, nhưng báo cáo “DUT đã được kiểm” dựa trên observed. Ví dụ lỗi: branch taken được gửi nhiều nhưng lệnh sau bị flush nên “ADD sau branch” không retire — chỉ observed coverage lộ ra.</p>
+</div></details>
+<details class="qa"><summary>Làm sao khóa/tắt coverage trong regression chỉ để chạy nhanh?</summary>
+<div class="ans">
+<p>Config knob: <code>cfg.coverage_enable</code> (mặc định 0 cho regression nhanh, 1 cho nightly); trong <code>write()</code> kiểm cờ trước <code>sample()</code>; hoặc không tạo <code>riscv_coverage</code> ở env khi tắt (<code>if (cfg.has_coverage) cov = ...::create</code>). Ngoài ra tool cho <code>-cov</code> riêng mức compile/run. Quan trọng: giữ hành vi test <em>không đổi</em> giữa hai chế độ.</p>
+</div></details>
+<details class="qa"><summary>Hazard coverage ở lab này lấy mẫu mỗi chu kỳ qua vif. Có cách nào lấy theo sự kiện không?</summary>
+<div class="ans">
+<p>Có: covergroup với sampling event <code>@(posedge vif.clk iff (vif.stall))</code> hoặc dùng <code>sample()</code> chỉ khi có stall (<code>if (c_stall) cg.sample();</code>). Mỗi chu kỳ sample cũng đúng nhưng bins “seen” chỉ có 1 giá trị nên không sai; thiết kế tốt dùng bins có ý nghĩa: <code>stall_len</code> (1,2,3+), <code>flush_after_branch</code> (taken/not).</p>
+</div></details>
+</div>
+
+<h2 id="m12">13. Cheat-sheet</h2>
+<pre><code>covergroup cg_isa;
+  cp_op: coverpoint s_op { illegal_bins unk={UNKNOWN}; }
+  cp_rd0: coverpoint s_rd0 {bins x0={1}; bins nz={0};}
+  x_op_rd: cross cp_op, cp_rd0;
+endgroup
+write(t){ s_op=decode(t.instr); s_rd0=(t.rd==0); cg_isa.sample(); }
+// hazard: @(ret_cb) c_stall=stall; c_flush=redirect; cg_hz.sample();</code></pre>
+
+<h2 id="m13">14. Bài tập code &amp; câu hỏi nâng cao UVM</h2>
+<p>8 bài rèn tay, tăng dần độ khó. Làm trên baseline của lab này; đáp án chỉ là hướng tham khảo — giá trị nằm ở việc bạn tự gõ, chạy và đọc log.</p>
+<div class="ex-progress"><span class="cnt">0 / 8 bài đã làm</span><span class="bar"><i></i></span></div>
+<div class="ex-list">
+<article class="ex"><div class="ex-head"><span class="lv l1">★ Dễ</span><h4>EX1 — <code>sample()</code> có tham số</h4></div>
+Chuyển <code>cg_isa</code> sang <code>with function sample(op_e op, bit rd0)</code> và bỏ <code>s_op/s_rd0</code>. Đảm bảo coverage giống trước.
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p>Gọi <code>cg_isa.sample(decode(t.instr), t.rd==0)</code>. Lợi: không còn biến trung gian có thể lệch giữa lần sample.</p>
+</details>
+</article>
+<article class="ex"><div class="ex-head"><span class="lv l1">★ Dễ</span><h4>EX2 — Bật/tắt coverage bằng cfg</h4></div>
+Thêm <code>bit coverage_enable</code> vào <code>riscv_agent_config</code>; scoreboard/coverage đọc ở <code>build_phase</code>. Test <code>set</code> 0 và 1. Kiểm chứng <code>report_phase</code> in “disabled”.
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p>Đừng quên: quyết định tạo hay không tạo component dựa trên cfg phải xảy ra <em>trong</em> <code>build_phase</code> của cha.</p>
+</details>
+</article>
+<article class="ex"><div class="ex-head"><span class="lv l2">★★ Vừa</span><h4>EX3 — Bins cho khoảng cách phụ thuộc</h4></div>
+Ghi nhớ <code>rd</code> của lệnh trước; coverpoint <code>dep_dist</code>: <code>{0 (không phụ thuộc), 1 (back-to-back), 2, 3+}</code> cho <code>rs1/rs2 == rd_prev</code>. Cross với loại lệnh (ALU/LW).
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p>Cross “LW rồi ALU phụ thuộc” (dist=1) chính là load-use. Bạn vừa tự dựng hazard coverage từ retire stream thay vì probe stall.</p>
+</details>
+</article>
+<article class="ex"><div class="ex-head"><span class="lv l2">★★ Vừa</span><h4>EX4 — Coverage dẫn dắt stimulus</h4></div>
+Viết <code>riscv_cov_driven_seq</code>: vòng lặp 20 lần, mỗi lần đọc <code>cov.cg_isa.cp_op.get_inst_coverage()</code>; nếu &lt; 100% thì chọn lớp lệnh còn thiếu (cần <code>cov</code> handle từ <code>config_db</code>).
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p>Thực tế: cần biết <em>bin nào</em> trống — dùng <code>cp_op.get_coverage(covered, total)</code> hoặc tự giữ <code>bit seen[op_e]</code> trong subscriber (đơn giản và nhanh hơn).</p>
+</details>
+</article>
+<article class="ex"><div class="ex-head"><span class="lv l2">★★ Vừa</span><h4>EX5 — <code>illegal_bins</code> và negative test</h4></div>
+Chạy <code>negative_opcode_test</code> (Lab 14) với <code>illegal_bins unk</code> bật. Quan sát lỗi. Đổi thành <code>ignore_bins</code> cho test này bằng cách điều khiển qua cfg (<code>cfg.allow_unknown</code>).
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p>Không thể bật/tắt <em>bins</em> lúc runtime; thay vào đó dùng hai covergroup (một có <code>illegal_bins</code>, một không), hoặc kiểm <code>cfg.allow_unknown</code> trước khi gọi <code>sample()</code> để bỏ qua mẫu UNKNOWN.</p>
+</details>
+</article>
+<article class="ex"><div class="ex-head"><span class="lv l2">★★ Vừa</span><h4>EX6 — Per-instance coverage</h4></div>
+Tạo hai instance <code>riscv_coverage</code> (một chỉ nghe retire có <code>pc &lt; 0x40</code>, một cho phần còn lại) với <code>per_instance=1</code>. In <code>get_inst_coverage()</code> của từng cái.
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p>Dùng một subscriber lọc rồi forward. Lợi ích: coverage theo vùng chương trình.</p>
+</details>
+</article>
+<article class="ex"><div class="ex-head"><span class="lv l3">★★★ Khó</span><h4>EX7 — Cross có điều kiện (branch × taken)</h4></div>
+Thêm <code>taken</code> vào <code>riscv_retire_item</code> (monitor suy từ PC kế tiếp ≠ PC+4). Coverpoint chỉ cho branch: <code>cross cp_branch_op, cp_taken</code>. Viết directed sequence để lấp mọi bin.
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p>Dùng <code>iff (op inside {BEQ,…})</code> trên coverpoint để chỉ sample khi là branch. Nhớ BGEU “taken” cần số có dấu/không dấu khác nhau để phân biệt BLT/BLTU.</p>
+</details>
+</article>
+<article class="ex"><div class="ex-head"><span class="lv l3">★★★ Khó</span><h4>EX8 — Merge coverage nhiều seed</h4></div>
+Chạy 10 seed với <code>-cov</code>, mở báo cáo từng seed và báo cáo hợp nhất (<code>xcrg -merge_dir</code>). Chỉ ra bin nào chỉ được lấp ở một vài seed — vì sao random một seed không đủ.
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p>Bài này gắn trực tiếp với Lab 15. Thường chỉ vài seed chạm hiếm gặp như BGEU taken khi hai số bằng nhau.</p>
+</details>
+</article>
+</div>
+
+
+<nav class="pager" aria-label="Điều hướng lab"><a class="nav-card prev" href="lab11.html" rel="prev"><small>← Lab trước</small><span>Lab 11 — Scoreboard đầy đủ</span></a><div class="mid"><button type="button" class="btn primary" id="mark-done" aria-pressed="false">Đánh dấu hoàn thành</button></div><a class="nav-card next" href="lab13.html" rel="next"><small>Lab tiếp →</small><span>Lab 13 — RAL (uvm_reg / uvm_mem)</span></a></nav>
+<p class="foot">UVM · RISC-V Pipeline Speedrun — Lab 12 / 15. Phím tắt: <kbd>[</kbd> lab trước · <kbd>]</kbd> lab sau.</p>
+</main>
+</div>
+</body>
+</html>

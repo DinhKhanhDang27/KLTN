@@ -1,0 +1,280 @@
+<mxfile host="app.diagrams.net" modified="2024-01-01T00:00:00.000Z" agent="Mozilla/5.0" etag="1" version="21.0.0" type="device">
+  <diagram id="SHA256_FSM_ASM" name="SHA256 FSM and ASM">
+    <mxGraphModel dx="1200" dy="1200" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- ======================= LABELS ======================= -->
+        <mxCell id="lbl_fsm" value="&lt;b style=&quot;font-size: 18px;&quot;&gt;FSM (Finite State Machine)&lt;/b&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="50" y="40" width="240" height="40" as="geometry" />
+        </mxCell>
+
+        <mxCell id="lbl_asm" value="&lt;b style=&quot;font-size: 18px;&quot;&gt;ASM (Algorithmic State Machine)&lt;/b&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="350" y="10" width="280" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- ======================= FSM NODES ======================= -->
+        <mxCell id="fsm_idle" value="&lt;b&gt;IDLE&lt;/b&gt;" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="100" y="120" width="80" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="fsm_calc" value="&lt;b&gt;CALC&lt;/b&gt;" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="100" y="270" width="80" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="fsm_done" value="&lt;b&gt;DONE&lt;/b&gt;" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="100" y="420" width="80" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- ======================= FSM EDGES ======================= -->
+        <!-- Reset to IDLE -->
+        <mxCell id="rst" value="rst_n=0" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="20" y="60" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="e_rst_idle" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=classic;" edge="1" parent="1" source="rst" target="fsm_idle">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- IDLE to CALC -->
+        <mxCell id="e_idle_calc" value="start=1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=classic;" edge="1" parent="1" source="fsm_idle" target="fsm_calc">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <!-- IDLE to IDLE -->
+        <mxCell id="e_idle_idle" value="start=0" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=classic;" edge="1" parent="1" source="fsm_idle" target="fsm_idle">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="220" y="160" />
+              <mxPoint x="220" y="120" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- CALC to CALC -->
+        <mxCell id="e_calc_calc" value="round &lt; 63" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=classic;" edge="1" parent="1" source="fsm_calc" target="fsm_calc">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="220" y="310" />
+              <mxPoint x="220" y="270" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- CALC to DONE -->
+        <mxCell id="e_calc_done" value="round == 63" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=classic;" edge="1" parent="1" source="fsm_calc" target="fsm_done">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <!-- DONE to IDLE -->
+        <mxCell id="e_done_idle" value="always" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=classic;" edge="1" parent="1" source="fsm_done" target="fsm_idle">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="50" y="460" />
+              <mxPoint x="50" y="160" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- ======================= ASM NODES ======================= -->
+        <mxCell id="asm_start" value="&lt;b&gt;Start / Reset&lt;/b&gt;" style="ellipse;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="400" y="50" width="120" height="50" as="geometry" />
+        </mxCell>
+
+        <mxCell id="asm_idle" value="&lt;b&gt;IDLE&lt;/b&gt;&lt;br&gt;ready = 1&lt;br&gt;hash_valid = 0" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="400" y="140" width="120" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="asm_chk_start" value="start == 1?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="400" y="230" width="120" height="70" as="geometry" />
+        </mxCell>
+
+        <mxCell id="asm_chk_init" value="init == 1?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="400" y="340" width="120" height="70" as="geometry" />
+        </mxCell>
+
+        <mxCell id="asm_load_const" value="h_reg = Constants&lt;br&gt;a..h = Constants" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="240" y="440" width="120" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="asm_load_prev" value="a..h = h_reg" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="560" y="440" width="120" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="asm_load_block" value="w_mem[0:15] = block_in&lt;br&gt;round = 0&lt;br&gt;state = CALC" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="400" y="530" width="120" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="asm_calc_state" value="&lt;b&gt;CALC&lt;/b&gt;&lt;br&gt;Update variables" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="400" y="630" width="120" height="50" as="geometry" />
+        </mxCell>
+
+        <mxCell id="asm_chk_round" value="round == 63?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="400" y="720" width="120" height="70" as="geometry" />
+        </mxCell>
+
+        <mxCell id="asm_inc_round" value="round++" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="580" y="640" width="80" height="30" as="geometry" />
+        </mxCell>
+
+        <mxCell id="asm_done_state" value="&lt;b&gt;DONE&lt;/b&gt;&lt;br&gt;h_reg += a..h&lt;br&gt;hash_out = h_reg&lt;br&gt;hash_valid = 1&lt;br&gt;state = IDLE" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="380" y="830" width="160" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- ======================= ASM EDGES ======================= -->
+        <mxCell id="e_a1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=classic;" edge="1" parent="1" source="asm_start" target="asm_idle">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_a2" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=classic;" edge="1" parent="1" source="asm_idle" target="asm_chk_start">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_a3" value="No" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=classic;" edge="1" parent="1" source="asm_chk_start" target="asm_idle">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="550" y="265" />
+              <mxPoint x="550" y="170" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_a4" value="Yes" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=classic;" edge="1" parent="1" source="asm_chk_start" target="asm_chk_init">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="e_a5" value="Yes" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=classic;" edge="1" parent="1" source="asm_chk_init" target="asm_load_const">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="300" y="375" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_a6" value="No" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=classic;" edge="1" parent="1" source="asm_chk_init" target="asm_load_prev">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="620" y="375" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="e_a7" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=classic;" edge="1" parent="1" source="asm_load_const" target="asm_load_block">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="300" y="510" />
+              <mxPoint x="460" y="510" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_a8" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=classic;" edge="1" parent="1" source="asm_load_prev" target="asm_load_block">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="620" y="510" />
+              <mxPoint x="460" y="510" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="e_a9" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=classic;" edge="1" parent="1" source="asm_load_block" target="asm_calc_state">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_a10" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=classic;" edge="1" parent="1" source="asm_calc_state" target="asm_chk_round">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="e_a11" value="No" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=classic;" edge="1" parent="1" source="asm_chk_round" target="asm_inc_round">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="620" y="755" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_a12" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=classic;" edge="1" parent="1" source="asm_inc_round" target="asm_calc_state">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="620" y="610" />
+              <mxPoint x="460" y="610" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="e_a13" value="Yes" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=classic;" edge="1" parent="1" source="asm_chk_round" target="asm_done_state">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="e_a14" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=classic;" edge="1" parent="1" source="asm_done_state" target="asm_idle">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="230" y="870" />
+              <mxPoint x="230" y="170" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- ======================= WORKING FLOW LABELS ======================= -->
+        <mxCell id="lbl_flow" value="&lt;b style=&quot;font-size: 18px;&quot;&gt;SHA-256 Algorithmic Flow&lt;/b&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="850" y="10" width="250" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- ======================= WORKING FLOW NODES ======================= -->
+        <mxCell id="flow_step1" value="&lt;b&gt;Step 1: Padding&lt;/b&gt;&lt;br&gt;Append &#39;1&#39; bit, zeros, and 64-bit length&lt;br&gt;Total length % 512 = 0" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="850" y="80" width="240" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="flow_step2" value="&lt;b&gt;Step 2: Parsing&lt;/b&gt;&lt;br&gt;Split message into N x 512-bit blocks" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="850" y="180" width="240" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="flow_step3" value="&lt;b&gt;Step 3: Initialization&lt;/b&gt;&lt;br&gt;Set initial hash values H(0) = constants" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="850" y="280" width="240" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="flow_step4" value="&lt;b&gt;Step 4: Message Schedule&lt;/b&gt;&lt;br&gt;Expand 16 words into 64 words (W0..W63)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="850" y="380" width="240" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="flow_step5" value="&lt;b&gt;Step 5: Compression Loop&lt;/b&gt;&lt;br&gt;64 rounds of mixing a..h with W(t) and K(t)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="850" y="480" width="240" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="flow_step6" value="&lt;b&gt;Step 6: Update Hash&lt;/b&gt;&lt;br&gt;H(i) = H(i-1) + intermediate hash (a..h)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="850" y="580" width="240" height="60" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="flow_cond" value="More Blocks?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="910" y="680" width="120" height="70" as="geometry" />
+        </mxCell>
+
+        <mxCell id="flow_step7" value="&lt;b&gt;Step 7: Final Hash&lt;/b&gt;&lt;br&gt;Concatenate H0..H7 into 256-bit output" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="850" y="790" width="240" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- ======================= WORKING FLOW EDGES ======================= -->
+        <mxCell id="e_f1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=classic;" edge="1" parent="1" source="flow_step1" target="flow_step2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_f2" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=classic;" edge="1" parent="1" source="flow_step2" target="flow_step3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_f3" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=classic;" edge="1" parent="1" source="flow_step3" target="flow_step4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_f4" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=classic;" edge="1" parent="1" source="flow_step4" target="flow_step5">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_f5" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=classic;" edge="1" parent="1" source="flow_step5" target="flow_step6">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_f6" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=classic;" edge="1" parent="1" source="flow_step6" target="flow_cond">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_f7" value="Yes" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=classic;" edge="1" parent="1" source="flow_cond" target="flow_step4">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1130" y="715" />
+              <mxPoint x="1130" y="410" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_f8" value="No" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=classic;" edge="1" parent="1" source="flow_cond" target="flow_step7">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

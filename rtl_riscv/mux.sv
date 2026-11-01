@@ -2,10 +2,10 @@
 // 2-to-1 MUX (64-bit)
 // ============================================================================
 module mux2to1 (
-    input  [63:0] in0,
-    input  [63:0] in1,
+    input  [31:0] in0,
+    input  [31:0] in1,
     input         sel,
-    output [63:0] out
+    output [31:0] out
 );
 
     assign out = sel ? in1 : in0;
@@ -16,12 +16,12 @@ endmodule
 // 4-to-1 MUX (64-bit)
 // ============================================================================
 module mux4to1 (
-    input  [63:0] in0,
-    input  [63:0] in1,
-    input  [63:0] in2,
-    input  [63:0] in3,
+    input  [31:0] in0,
+    input  [31:0] in1,
+    input  [31:0] in2,
+    input  [31:0] in3,
     input  [1:0]  sel,
-    output reg [63:0] out
+    output reg [31:0] out
 );
 
     always @(*) begin

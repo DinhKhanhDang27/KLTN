@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RISC-V (RV32I) + SHA256/SHA512 SoC Verification Specification</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+        h1, h2, h3 {
+            color: #0056b3;
+        }
+        h1 {
+            border-bottom: 2px solid #0056b3;
+            padding-bottom: 10px;
+        }
+        h2 {
+            margin-top: 30px;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 5px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            background-color: #fff;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        tr:hover {
+            background-color: #e9ecef;
+        }
+        code {
+            background-color: #eef1f5;
+            padding: 2px 5px;
+            border-radius: 4px;
+            font-family: Consolas, monospace;
+            color: #d63384;
+        }
+        .note {
+            background-color: #e7f3fe;
+            border-left: 6px solid #2196F3;
+            margin-bottom: 15px;
+            padding: 10px 20px;
+        }
+        .highlight {
+            background-color: #fff3cd;
+            border-left: 6px solid #ffc107;
+            margin-bottom: 15px;
+            padding: 10px 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>RISC-V (RV32I) + SHA256/SHA512 SoC Verification Specification</h1>
+    
+    <div class="note">
+        <strong>Overview:</strong> This document serves as the target specification for UVM verification of the custom RISC-V SoC. The design implements the base <strong>RV32I</strong> instruction set, integrated via Qsys (Platform Designer).
+    </div>
+
+    <h2>1. RV32I Base Integer Instruction Set Spec</h2>
+    <p>The core is a 32-bit architecture with 32 integer registers (<code>x0</code>-<code>x31</code>) of 32 bits each. <code>x0</code> is hardwired to zero. The PC is also 32 bits. Verification must ensure standard compliance with the RISC-V Unprivileged ISA.</p>
+    
+    <h3>1.1 R-Type (Register-Register ALU)</h3>
+    <p><code>Opcode: 0110011 (RV32)</code></p>
+    <table>
+        <tr><th>Instruction</th><th>funct3</th><th>funct7</th><th>Description</th></tr>
+        <tr><td>ADD / SUB</td><td>000</td><td>0000000 / 0100000</td><td>Addition / Subtraction</td></tr>
+        <tr><td>SLL</td><td>001</td><td>0000000</td><td>Shift Left Logical</td></tr>
+        <tr><td>SLT / SLTU</td><td>010 / 011</td><td>0000000</td><td>Set Less Than (Signed/Unsigned)</td></tr>
+        <tr><td>XOR</td><td>100</td><td>0000000</td><td>Bitwise XOR</td></tr>
+        <tr><td>SRL / SRA</td><td>101</td><td>0000000 / 0100000</td><td>Shift Right Logical / Arithmetic</td></tr>
+        <tr><td>OR / AND</td><td>110 / 111</td><td>0000000</td><td>Bitwise OR / AND</td></tr>
+    </table>
+
+    <h3>1.2 I-Type (Register-Immediate ALU & Loads)</h3>
+    <p><code>ALU Opcode: 0010011 (RV32)</code><br>
+    <code>Load Opcode: 0000011</code></p>
+    <table>
+        <tr><th>Instruction</th><th>funct3</th><th>Description</th></tr>
+        <tr><td>ADDI</td><td>000</td><td>Add Immediate</td></tr>
+        <tr><td>SLTI / SLTIU</td><td>010 / 011</td><td>Set Less Than Immediate (Signed/Unsigned)</td></tr>
+        <tr><td>XORI / ORI / ANDI</td><td>100 / 110 / 111</td><td>Bitwise Immediate XOR / OR / AND</td></tr>
+        <tr><td>SLLI / SRLI / SRAI</td><td>001 / 101</td><td>Immediate Shifts (Note: funct6/funct7 bits determine type)</td></tr>
+        <tr><td>LB / LH / LW</td><td>000 / 001 / 010</td><td>Load Byte / Halfword / Word (Sign-extended)</td></tr>
+        <tr><td>LBU / LHU</td><td>100 / 101</td><td>Load Byte / Halfword (Zero-extended)</td></tr>
+    </table>
+
+    <h3>1.3 S-Type (Stores)</h3>
+    <p><code>Opcode: 0100011</code></p>
+    <table>
+        <tr><th>Instruction</th><th>funct3</th><th>Description</th></tr>
+        <tr><td>SB / SH</td><td>000 / 001</td><td>Store Byte / Halfword</td></tr>
+        <tr><td>SW</td><td>010</td><td>Store Word</td></tr>
+    </table>
+
+    <h3>1.4 B-Type (Branches)</h3>
+    <p><code>Opcode: 1100011</code></p>
+    <table>
+        <tr><th>Instruction</th><th>funct3</th><th>Description</th></tr>
+        <tr><td>BEQ / BNE</td><td>000 / 001</td><td>Branch Equal / Not Equal</td></tr>
+        <tr><td>BLT / BGE</td><td>100 / 101</td><td>Branch Less Than / Greater Equal (Signed)</td></tr>
+        <tr><td>BLTU / BGEU</td><td>110 / 111</td><td>Branch Less Than / Greater Equal (Unsigned)</td></tr>
+    </table>
+
+    <h3>1.5 U-Type & J-Type (Jumps and Upper Immediates)</h3>
+    <table>
+        <tr><th>Instruction</th><th>Opcode</th><th>Description</th></tr>
+        <tr><td>LUI</td><td>0110111</td><td>Load Upper Immediate</td></tr>
+        <tr><td>AUIPC</td><td>0010111</td><td>Add Upper Immediate to PC</td></tr>
+        <tr><td>JAL</td><td>1101111</td><td>Jump and Link</td></tr>
+        <tr><td>JALR</td><td>1100111</td><td>Jump and Link Register (funct3 = 000)</td></tr>
+    </table>
+
+
+    <h2>2. Standard RISC-V Cryptography Extension (Zknh) Reference</h2>
+    <p>For standard compliance or future ISA migrations, verify the differences against the official <strong>RISC-V Scalar Cryptography Extension (Zknh)</strong>. Unlike the custom accelerator in this project, Zknh provides specific ALU instructions to accelerate hash rounds without stateful peripheral blocks.</p>
+
+    <table>
+        <tr><th>Instruction</th><th>Type</th><th>Hash Function</th><th>Description</th></tr>
+        <tr><td><code>sha256sig0</code></td><td>R</td><td>SHA-256</td><td>Sigma0 computation</td></tr>
+        <tr><td><code>sha256sig1</code></td><td>R</td><td>SHA-256</td><td>Sigma1 computation</td></tr>
+        <tr><td><code>sha256sum0</code></td><td>R</td><td>SHA-256</td><td>Sum0 computation</td></tr>
+        <tr><td><code>sha256sum1</code></td><td>R</td><td>SHA-256</td><td>Sum1 computation</td></tr>
+        <tr><td><code>sha512sig0</code></td><td>R</td><td>SHA-512</td><td>Sigma0 computation</td></tr>
+        <tr><td><code>sha512sig1</code></td><td>R</td><td>SHA-512</td><td>Sigma1 computation</td></tr>
+        <tr><td><code>sha512sum0</code></td><td>R</td><td>SHA-512</td><td>Sum0 computation</td></tr>
+        <tr><td><code>sha512sum1</code></td><td>R</td><td>SHA-512</td><td>Sum1 computation</td></tr>
+    </table>
+
+    <p style="margin-top:40px; font-size:12px; text-align:center; color:#777;">Generated for UVM Verification testbench (@tb_uvm/uvm_riscv)</p>
+</body>
+</html>

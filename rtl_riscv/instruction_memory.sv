@@ -3,7 +3,7 @@
 // Program: Simple Counter i++ (1 to 10)
 // ============================================================================
 module instruction_memory (
-    input  [63:0] addr,
+    input  [31:0] addr,
     output [31:0] instruction
 );
 

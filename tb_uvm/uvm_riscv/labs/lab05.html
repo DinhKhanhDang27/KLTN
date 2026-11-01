@@ -1,0 +1,540 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Lab 05 — RISC-V Agent + Config + Package + Env + Base Test</title>
+<link rel="stylesheet" href="assets/lab.css">
+<script src="assets/lab.js" defer></script>
+</head>
+<body data-lab="5" data-total="15">
+<div id="readbar" aria-hidden="true"></div>
+<header class="topbar">
+  <button type="button" class="iconbtn" id="toc-toggle" aria-label="Mở mục lục">☰</button>
+  <a class="brand" href="index.html"><span class="brand-mark">UVM</span><span>RISC-V <small>Speedrun</small></span></a>
+  <nav class="labdots" aria-label="Chọn lab"><a href="lab01.html" data-n="1" title="Lab 01 — Interface & clocking">1</a><a href="lab02.html" data-n="2" title="Lab 02 — Sequence item">2</a><a href="lab03.html" data-n="3" title="Lab 03 — Driver">3</a><a href="lab04.html" data-n="4" title="Lab 04 — Monitor & analysis port">4</a><a href="lab05.html" data-n="5" title="Lab 05 — Agent, env, test, config" aria-current="page">5</a><a href="lab06.html" data-n="6" title="Lab 06 — Sequence library">6</a><a href="lab07.html" data-n="7" title="Lab 07 — Virtual sequencer">7</a><a href="lab08.html" data-n="8" title="Lab 08 — SVA & bind trong UVM">8</a><a href="lab09.html" data-n="9" title="Lab 09 — Reference model">9</a><a href="lab10.html" data-n="10" title="Lab 10 — Scoreboard in-order">10</a><a href="lab11.html" data-n="11" title="Lab 11 — Scoreboard đầy đủ">11</a><a href="lab12.html" data-n="12" title="Lab 12 — Functional coverage">12</a><a href="lab13.html" data-n="13" title="Lab 13 — RAL (uvm_reg / uvm_mem)">13</a><a href="lab14.html" data-n="14" title="Lab 14 — Factory, callback, catcher">14</a><a href="lab15.html" data-n="15" title="Lab 15 — Regression & closure">15</a></nav>
+  <button type="button" class="iconbtn" id="theme-toggle" aria-label="Đổi giao diện sáng/tối">☾</button>
+</header>
+<div class="layout">
+<aside class="side" aria-label="Mục lục">
+  <nav class="side-toc">
+    <p class="side-title">Trong bài này</p>
+    <ol>
+<li><a href="#muc-tongquan">1. Tổng quan lab</a></li>
+<li><a href="#m1">2. Vị trí trong testbench</a></li>
+<li><a href="#m2">3. Mục tiêu học</a></li>
+<li><a href="#m3">4. Keyword &amp; khái niệm mới</a></li>
+<li><a href="#m4">5. Chuẩn bị</a></li>
+<li><a href="#m5">6. Lý thuyết ngắn — cây component &amp; phase (+ UVM bên trong)</a></li>
+<li><a href="#m6">7. Iteration 0 — kiến trúc đầy đủ chạy 1 sequence</a></li>
+<li><a href="#m7">8. Iterations</a></li>
+<li><a href="#m8">9. Bảng tổng hợp</a></li>
+<li><a href="#m9">10. BASELINE sang Lab 6</a></li>
+<li><a href="#m10">11. Checklist nhớ code</a></li>
+<li><a href="#m11">12. Phỏng vấn — hỏi &amp; đáp</a></li>
+<li><a href="#m12">13. Cheat-sheet</a></li>
+<li><a href="#m13">14. Bài tập code &amp; câu hỏi nâng cao UVM</a></li>
+    </ol>
+  </nav>
+  <div class="side-tools">
+    <button type="button" class="btn" data-act="expand">Mở tất cả spoiler</button>
+    <button type="button" class="btn" data-act="collapse">Đóng tất cả spoiler</button>
+    <button type="button" class="btn" data-act="qa-close">Ẩn đáp án QA (tự test)</button>
+    <button type="button" class="btn" data-act="top">↑ Lên đầu trang</button>
+  </div>
+</aside>
+<main class="main">
+<header class="hero" data-num="05">
+  <div class="eyebrow"><span class="pill">Lab 05 / 15</span><span class="phase">Nền tảng</span></div>
+  <h1>Lab 05 — Agent + Config + Package + Env + Base Test</h1>
+  <p class="tags"><span class="tag uvm">uvm_agent</span><span class="tag">is_active</span><span class="tag uvm">uvm_env</span><span class="tag uvm">uvm_test</span><span class="tag">package + include guard</span><span class="tag uvm">config object</span><span class="tag uvm">config_db set/get</span></p>
+</header>
+<nav class="toc" aria-label="Mục lục bài lab"><strong>📑 Mục lục</strong><ol>
+<li><a href="#muc-tongquan">1. Tổng quan lab</a></li>
+<li><a href="#m1">2. Vị trí trong testbench</a></li>
+<li><a href="#m2">3. Mục tiêu học</a></li>
+<li><a href="#m3">4. Keyword &amp; khái niệm mới</a></li>
+<li><a href="#m4">5. Chuẩn bị</a></li>
+<li><a href="#m5">6. Lý thuyết ngắn — cây component &amp; phase (+ UVM bên trong)</a></li>
+<li><a href="#m6">7. Iteration 0 — kiến trúc đầy đủ chạy 1 sequence</a></li>
+<li><a href="#m7">8. Iterations</a></li>
+<li><a href="#m8">9. Bảng tổng hợp</a></li>
+<li><a href="#m9">10. BASELINE sang Lab 6</a></li>
+<li><a href="#m10">11. Checklist nhớ code</a></li>
+<li><a href="#m11">12. Phỏng vấn — hỏi &amp; đáp</a></li>
+<li><a href="#m12">13. Cheat-sheet</a></li>
+<li><a href="#m13">14. Bài tập code &amp; câu hỏi nâng cao UVM</a></li>
+</ol></nav>
+
+<div class="note" id="muc-tongquan">
+  <strong>Tổng quan lab</strong>
+  <ul>
+    <li><strong>Lab này làm gì:</strong> gom các mảnh rời (seq_item, driver, monitor, retire_item) vào một
+      <strong>kiến trúc UVM chuẩn</strong>: <code>riscv_agent</code> (chứa sequencer+driver+monitor),
+      <code>riscv_agent_config</code> (object cấu hình), <code>riscv_env</code> (chứa agent),
+      <code>riscv_base_test</code> (dựng env + chạy sequence), đóng tất cả trong 1
+      <code>riscv_pkg</code>, và 1 top <code>riscv_tb_top</code> chính thức (DUT + interface + shadow + set vif).</li>
+    <li><strong>Tạo ra file nào:</strong> <code>riscv_agent_config.sv</code>, <code>riscv_sequencer.sv</code>
+      (typedef), <code>riscv_agent.sv</code>, <code>riscv_env.sv</code>, <code>riscv_base_test.sv</code>,
+      <code>tb/pkg/riscv_pkg.sv</code>, <code>tb/top/riscv_tb_top.sv</code> (bản chính thức).</li>
+    <li><strong>Nhận gì từ lab trước:</strong> toàn bộ Lab 1–4.</li>
+    <li><strong>Lab sau dùng để làm gì:</strong> Lab 6 viết sequences thật; Lab 7 virtual sequencer; mọi lab
+      sau chỉ thêm component vào env (ref model, scoreboard, coverage).</li>
+  </ul>
+</div>
+
+<div class="callout uvm"><strong>Trọng tâm UVM của lab</strong>
+<ul>
+  <li><strong>Cây component &amp; phases</strong>: top-down build, bottom-up connect, run song song; thứ tự đầy đủ các phase và khi nào dùng cái nào.</li>
+  <li><strong>config_db</strong>: quy tắc ưu tiên, scope, wildcard, <em>kiểu phải khớp</em>; vs. config object.</li>
+  <li><strong>Factory registry</strong>: <code>type_id::create</code> thực sự làm gì; <code>factory.print()</code>.</li>
+  <li><strong>is_active</strong> &amp; tái dùng agent (ACTIVE/PASSIVE); package &amp; thứ tự compile.</li>
+  <li>Đây là lab “bản lề”: từ đây mọi lab sau chỉ <em>thêm component vào env</em>.</li>
+</ul></div>
+
+
+
+<h2 id="m1">2. Vị trí trong testbench</h2>
+<pre><code>riscv_base_test
+ └─ riscv_env
+     └─ riscv_agent (is_active=UVM_ACTIVE)
+         ├─ riscv_sequencer  ──┐
+         ├─ riscv_driver   ◄───┘ seq_item_port/export
+         └─ riscv_monitor  ──ap──► (Lab 10: scoreboard, Lab 12: coverage)
+ top: riscv_tb_top (clk, riscv_if, riscv_pipeline_top dut, shadow pipeline, set vif)</code></pre>
+
+<h2 id="m2">3. Mục tiêu học</h2>
+<ul>
+  <li><code>uvm_agent</code> + <code>is_active</code>: ACTIVE dựng sequencer+driver; PASSIVE chỉ monitor.</li>
+  <li>Config object (<code>riscv_agent_config</code>) truyền qua <code>uvm_config_db</code>.</li>
+  <li><code>uvm_env</code>, <code>uvm_test</code>, <code>run_test()</code> + hierarchy build/connect.</li>
+  <li><code>package</code> + include guard để biên dịch 1 lần, tránh double-include.</li>
+</ul>
+
+<h2 id="m3">4. Keyword &amp; khái niệm mới</h2>
+<div class="table-wrap"><table>
+<tr><th>Keyword</th><th>Giải thích</th><th>Ví dụ</th></tr>
+<tr><td><code>uvm_agent</code></td><td>Gói sequencer+driver+monitor</td><td><code>class riscv_agent extends uvm_agent;</code></td></tr>
+<tr><td><code>is_active</code></td><td>ACTIVE/PASSIVE quyết định dựng gì</td><td><code>if(is_active==UVM_ACTIVE)...</code></td></tr>
+<tr><td><code>uvm_env</code></td><td>Khung chứa agent + checker</td><td><code>class riscv_env extends uvm_env;</code></td></tr>
+<tr><td><code>uvm_test</code></td><td>Lớp top chạy bởi run_test</td><td><code>class riscv_base_test extends uvm_test;</code></td></tr>
+<tr><td>config object</td><td>Gom cấu hình truyền 1 lần</td><td><code>riscv_agent_config cfg;</code></td></tr>
+<tr><td><code>package</code>/guard</td><td>Đóng gói + chống include trùng</td><td><code>`ifndef ..._SV ... `endif</code></td></tr>
+</table></div>
+
+<h2 id="m4">5. Chuẩn bị</h2>
+<pre><code>cd ~/Study/KLtN/code/tb_uvm/uvm_riscv/tb  # agent/ env/ test/ pkg/ top/</code></pre>
+
+<h2 id="m5">6. Lý thuyết ngắn — cây component &amp; phase (+ UVM bên trong)</h2>
+<ol>
+  <li><strong>build_phase (top→đáy):</strong> tạo con, đọc config. <strong>connect_phase (đáy→top):</strong>
+    nối TLM port. <strong>run_phase:</strong> chạy, có objection.</li>
+  <li><strong>config_db:</strong> top <code>set</code> vif + cfg; component <code>get</code> ở build. Khóa
+    theo đường dẫn &amp; tên field.</li>
+  <li><strong>Agent ACTIVE/PASSIVE:</strong> dùng lại cùng agent cho môi trường chủ động (có stimulus) hay
+    chỉ giám sát (passive) bằng cách đổi <code>is_active</code>.</li>
+  <li><strong>Package:</strong> compile một lần, import ở test/top. Include guard tránh lỗi "đã định nghĩa".</li>
+</ol>
+
+<h3>6.5. Toàn bộ phase của UVM và hướng chạy</h3>
+<div class="table-wrap"><div class="table-wrap"><table>
+<tr><th>Phase</th><th>Loại</th><th>Hướng</th><th>Dùng để</th></tr>
+<tr><td><code>build_phase</code></td><td>function</td><td>top → down</td><td>tạo con, <code>get</code> config</td></tr>
+<tr><td><code>connect_phase</code></td><td>function</td><td>bottom → up</td><td>nối TLM port/export</td></tr>
+<tr><td><code>end_of_elaboration_phase</code></td><td>function</td><td>bottom → up</td><td><code>print_topology</code>, kiểm tra cấu hình</td></tr>
+<tr><td><code>start_of_simulation_phase</code></td><td>function</td><td>bottom → up</td><td>banner, mở file log</td></tr>
+<tr><td><code>run_phase</code></td><td><strong>task</strong></td><td><strong>song song</strong> mọi component</td><td>kích thích, quan sát, so sánh</td></tr>
+<tr><td><code>extract_phase</code></td><td>function</td><td>bottom → up</td><td>thu thập kết quả cuối (đếm, đọc DUT)</td></tr>
+<tr><td><code>check_phase</code></td><td>function</td><td>bottom → up</td><td>kiểm tra “cuối test” (queue rỗng?)</td></tr>
+<tr><td><code>report_phase</code></td><td>function</td><td>bottom → up</td><td>in PASS/FAIL, coverage</td></tr>
+<tr><td><code>final_phase</code></td><td>function</td><td>top → down</td><td>đóng file, dọn dẹp</td></tr>
+</table></div></div>
+<p>Giữa <code>run_phase</code> còn 12 <em>runtime phase</em> (reset/configure/main/shutdown…) chạy song song với <code>run_phase</code>; phần lớn dự án dùng <code>run_phase</code> thuần. Chỉ <code>run_phase</code> (và runtime phases) là task — tức là <em>chỉ ở đó</em> mới tiêu thời gian.</p>
+
+<h3>6.6. Objection — cơ chế kết thúc</h3>
+<p><code>run_phase</code> kết thúc khi <strong>tổng objection của cả cây = 0</strong>. Mỗi <code>raise_objection</code> tăng bộ đếm, <code>drop_objection</code> giảm. Hết thì UVM chờ thêm <code>drain_time</code> (nếu có), rồi kill mọi tiến trình <code>run_phase</code> còn lại.</p>
+<pre><code>phase.raise_objection(this, "test running");          // nên mô tả để thấy trong +UVM_OBJECTION_TRACE
+...
+phase.phase_done.set_drain_time(this, 200ns);          // cho monitor/scoreboard xả nốt
+phase.drop_objection(this);</code></pre>
+<div class="callout debug"><strong>Debug:</strong> <code>+UVM_PHASE_TRACE</code> (xem phase chuyển), <code>+UVM_OBJECTION_TRACE</code> (ai raise/drop), <code>+UVM_TIMEOUT=100000,NO</code> (watchdog toàn cục).</div>
+
+<h3>6.7. <code>config_db</code> — quy tắc mà phỏng vấn hay hỏi</h3>
+<ul>
+  <li><strong>Khớp theo 3 thứ</strong>: kiểu <code>T</code>, <em>đường dẫn</em> (<code>cntxt + inst_name</code> khớp với <code>get_full_name()</code> của người get), và <em>tên field</em>.</li>
+  <li><strong>Ưu tiên</strong>: <code>set</code> từ cấp <em>cao hơn</em> trong hierarchy thắng cấp thấp (test thắng env thắng agent); cùng cấp thì <em>set sau thắng</em>.</li>
+  <li><strong>Wildcard</strong>: <code>"*"</code>, <code>"env.agent*"</code> hợp lệ trong <code>inst_name</code>.</li>
+  <li><strong>Thời điểm</strong>: <code>set</code> phải trước <code>build_phase</code> của component get. Cha <code>set</code> trong build của <em>mình</em> trước khi tạo con là an toàn.</li>
+  <li><strong>Kiểu</strong>: <code>int</code> ≠ <code>int unsigned</code> ≠ <code>bit [31:0]</code> → fail <em>im lặng</em> (<code>get</code> trả 0).</li>
+</ul>
+<pre><code>// Test set vif ở scope tuyệt đối từ null:
+uvm_config_db#(virtual riscv_if)::set(null, "uvm_test_top", "vif", vif);
+//  → component get với get(this,"","vif",v) chỉ thấy nếu this.get_full_name() == "uvm_test_top" hoặc khớp pattern.
+//    Env/agent KHÔNG thấy; vì vậy test get rồi đưa vào cfg.vif và set lại xuống env/agent (pattern lab).</code></pre>
+
+<h3>6.8. Config object vs. từng field</h3>
+<p>Gom tham số vào một <code>uvm_object</code> (<code>riscv_agent_config</code>): một <code>set</code>/một <code>get</code>, thêm tham số mới không đụng chỗ truyền, có thể <em>randomize</em> config (config-space random), có <code>copy/print</code>. Nhược: handle <em>chia sẻ</em> — agent sửa <code>cfg</code> thì người khác thấy. Muốn bất biến: <code>clone()</code> ở người nhận hoặc <code>cfg</code> chỉ có getter.</p>
+
+<h3>6.9. <code>type_id::create</code> thật sự làm gì</h3>
+<p><code>`uvm_component_utils(T)</code> tạo <code>T::type_id = uvm_component_registry#(T,"T")</code> và đăng ký vào <code>uvm_factory</code> singleton lúc <em>elaboration</em>. <code>create(name,parent)</code> hỏi factory: có <em>instance override</em> khớp <code>parent.get_full_name()+"."+name</code> không? có <em>type override</em>? → tạo đối tượng tương ứng. Vì vậy factory phải <em>biết</em> lớp con (đã biên dịch trong package) trước khi <code>create</code> được gọi.</p>
+<pre><code>uvm_factory::get().print();           // liệt kê type đã đăng ký + override đang hiệu lực
+uvm_top.print_topology();             // cây component thực tế sau build</code></pre>
+
+<h2 id="m6">7. Iteration 0 — kiến trúc đầy đủ chạy 1 sequence</h2>
+
+<details><summary>riscv_agent_config.sv</summary>
+<pre><code>`ifndef RISCV_AGENT_CONFIG_SV
+`define RISCV_AGENT_CONFIG_SV
+class riscv_agent_config extends uvm_object;
+  `uvm_object_utils(riscv_agent_config)
+  virtual riscv_if   vif;
+  uvm_active_passive_enum is_active = UVM_ACTIVE;
+  int unsigned       drain = 8;
+  function new(string name="riscv_agent_config"); super.new(name); endfunction
+endclass
+`endif</code></pre></details>
+
+<details><summary>riscv_sequencer.sv</summary>
+<pre><code>`ifndef RISCV_SEQUENCER_SV
+`define RISCV_SEQUENCER_SV
+typedef uvm_sequencer #(riscv_seq_item) riscv_sequencer;
+`endif</code></pre></details>
+
+<details><summary>riscv_agent.sv</summary>
+<pre><code>`ifndef RISCV_AGENT_SV
+`define RISCV_AGENT_SV
+class riscv_agent extends uvm_agent;
+  `uvm_component_utils(riscv_agent)
+  riscv_agent_config cfg;
+  riscv_sequencer    sqr;
+  riscv_driver       drv;
+  riscv_monitor      mon;
+
+  function new(string name, uvm_component parent); super.new(name,parent); endfunction
+
+  function void build_phase(uvm_phase phase);
+    super.build_phase(phase);
+    if (!uvm_config_db#(riscv_agent_config)::get(this,"","cfg",cfg))
+      `uvm_fatal("AGT","thieu cfg")
+    mon = riscv_monitor::type_id::create("mon", this);
+    uvm_config_db#(virtual riscv_if)::set(this,"mon","vif",cfg.vif);
+    if (cfg.is_active == UVM_ACTIVE) begin
+      sqr = riscv_sequencer::type_id::create("sqr", this);
+      drv = riscv_driver   ::type_id::create("drv", this);
+      uvm_config_db#(virtual riscv_if)::set(this,"drv","vif",cfg.vif);
+      uvm_config_db#(int unsigned)   ::set(this,"drv","drain",cfg.drain);
+    end
+  endfunction
+
+  function void connect_phase(uvm_phase phase);
+    if (cfg.is_active == UVM_ACTIVE)
+      drv.seq_item_port.connect(sqr.seq_item_export);
+  endfunction
+endclass
+`endif</code></pre></details>
+
+<details><summary>riscv_env.sv</summary>
+<pre><code>`ifndef RISCV_ENV_SV
+`define RISCV_ENV_SV
+class riscv_env extends uvm_env;
+  `uvm_component_utils(riscv_env)
+  riscv_agent        agent;
+  riscv_agent_config cfg;
+  function new(string name, uvm_component parent); super.new(name,parent); endfunction
+  function void build_phase(uvm_phase phase);
+    super.build_phase(phase);
+    if (!uvm_config_db#(riscv_agent_config)::get(this,"","cfg",cfg))
+      `uvm_fatal("ENV","thieu cfg");
+    agent = riscv_agent::type_id::create("agent", this);
+    uvm_config_db#(riscv_agent_config)::set(this,"agent","cfg",cfg);
+  endfunction
+endclass
+`endif</code></pre></details>
+
+<details><summary>riscv_base_test.sv</summary>
+<pre><code>`ifndef RISCV_BASE_TEST_SV
+`define RISCV_BASE_TEST_SV
+class riscv_base_test extends uvm_test;
+  `uvm_component_utils(riscv_base_test)
+  riscv_env          env;
+  riscv_agent_config cfg;
+
+  function new(string name, uvm_component parent); super.new(name,parent); endfunction
+
+  function void build_phase(uvm_phase phase);
+    super.build_phase(phase);
+    cfg = riscv_agent_config::type_id::create("cfg");
+    if (!uvm_config_db#(virtual riscv_if)::get(this,"","vif",cfg.vif))
+      `uvm_fatal("TEST","top chua set vif");
+    cfg.is_active = UVM_ACTIVE;
+    env = riscv_env::type_id::create("env", this);
+    uvm_config_db#(riscv_agent_config)::set(this,"env","cfg",cfg);
+  endfunction
+
+  // sequence mặc định (override ở test con)
+  virtual function uvm_sequence#(riscv_seq_item) get_seq();
+    return prog_seq::type_id::create("seq");
+  endfunction
+
+  task run_phase(uvm_phase phase);
+    uvm_sequence#(riscv_seq_item) seq = get_seq();
+    phase.raise_objection(this);
+    seq.start(env.agent.sqr);
+    repeat (30) @(posedge cfg.vif.clk);
+    `uvm_info("TEST", $sformatf("x1=%0d x2=%0d x3=%0d",
+              cfg.vif.peek_reg(1), cfg.vif.peek_reg(2), cfg.vif.peek_reg(3)), UVM_LOW)
+    phase.drop_objection(this);
+  endtask
+endclass
+`endif</code></pre></details>
+
+<details><summary>tb/pkg/riscv_pkg.sv</summary>
+<pre><code>`ifndef RISCV_PKG_SV
+`define RISCV_PKG_SV
+package riscv_pkg;
+  import uvm_pkg::*;
+  `include "uvm_macros.svh"
+  `include "riscv_seq_item.sv"
+  `include "riscv_retire_item.sv"
+  `include "riscv_driver.sv"
+  `include "riscv_monitor.sv"
+  `include "riscv_agent_config.sv"
+  `include "riscv_sequencer.sv"
+  `include "riscv_agent.sv"
+  `include "prog_seq.sv"        // sequence cứng (tách ra file riêng)
+  `include "riscv_env.sv"
+  `include "riscv_base_test.sv"
+endpackage
+`endif</code></pre></details>
+
+<details><summary>tb/seq/prog_seq.sv (tách sequence ra file)</summary>
+<pre><code>`ifndef PROG_SEQ_SV
+`define PROG_SEQ_SV
+class prog_seq extends uvm_sequence #(riscv_seq_item);
+  `uvm_object_utils(prog_seq)
+  function new(string name="prog_seq"); super.new(name); endfunction
+  task body();
+    bit [31:0] words[] = '{32'h00500093,32'h00308113,32'h002081b3,32'h0000006f};
+    foreach (words[i]) begin
+      riscv_seq_item it = riscv_seq_item::type_id::create($sformatf("it%0d",i));
+      start_item(it); void'(it.randomize());
+      it.raw_word=words[i]; it.use_raw=1; it.last_instr=(i==words.size()-1);
+      finish_item(it);
+    end
+  endtask
+endclass
+`endif</code></pre></details>
+
+<details><summary>tb/top/riscv_tb_top.sv (bản chính thức — import pkg)</summary>
+<pre><code>`timescale 1ns/1ps
+module riscv_tb_top;
+  import uvm_pkg::*; import riscv_pkg::*; `include "uvm_macros.svh"
+
+  logic clk = 0; always #5 clk = ~clk;
+  riscv_if vif (.clk(clk));
+  riscv_pipeline_top dut (.clk(clk), .rst(vif.rst), .out_pc(), .out_alu_result());
+
+  // probe + shadow pipeline (như Lab 1/4)
+  assign vif.pc_if=dut.pc_if; assign vif.alu_result_ex=dut.alu_result_ex;
+  assign vif.stall=dut.stall; assign vif.redirect=dut.redirect;
+  logic s_idex_valid,s_exmem_valid,s_memwb_valid;
+  logic [31:0] s_idex_pc,s_exmem_pc,s_memwb_pc,s_idex_instr,s_exmem_instr,s_memwb_instr;
+  logic s_memwb_mwrite; logic [31:0] s_memwb_maddr,s_memwb_mwdata;
+  always @(posedge clk or posedge vif.rst) if(vif.rst) begin
+    s_idex_valid&lt;=0;s_exmem_valid&lt;=0;s_memwb_valid&lt;=0;
+  end else begin
+    s_idex_valid&lt;=(dut.redirect|dut.stall)?1'b0:dut.ifid_valid;
+    s_idex_pc&lt;=dut.ifid_pc; s_idex_instr&lt;=dut.ifid_instr;
+    s_exmem_valid&lt;=s_idex_valid; s_exmem_pc&lt;=s_idex_pc; s_exmem_instr&lt;=s_idex_instr;
+    s_memwb_valid&lt;=s_exmem_valid; s_memwb_pc&lt;=s_exmem_pc; s_memwb_instr&lt;=s_exmem_instr;
+    s_memwb_mwrite&lt;=dut.exmem_mem_write; s_memwb_maddr&lt;=dut.exmem_alu_result; s_memwb_mwdata&lt;=dut.exmem_store_data;
+  end
+  assign vif.ret_valid=s_memwb_valid; assign vif.ret_pc=s_memwb_pc; assign vif.ret_instr=s_memwb_instr;
+  assign vif.ret_reg_write=dut.memwb_reg_write_r; assign vif.ret_rd=dut.memwb_rd_r; assign vif.ret_wb_data=dut.memwb_wb_value_r;
+  assign vif.ret_mem_write=s_memwb_mwrite; assign vif.ret_mem_addr=s_memwb_maddr; assign vif.ret_mem_wdata=s_memwb_mwdata;
+
+  initial begin
+    uvm_config_db#(virtual riscv_if)::set(null,"uvm_test_top","vif",vif);
+    run_test("riscv_base_test");
+  end
+endmodule</code></pre></details>
+
+<p><strong>Lệnh chạy:</strong></p>
+<pre><code>cd ~/Study/KLtN/code/tb_uvm/uvm_riscv/sim</code></pre>
+<pre><code>xvlog -sv ../tb/if/riscv_if.sv ../rtl/instruction_memory.sv ../rtl/register_file.sv ../rtl/data_memory.sv ../rtl/control_unit.sv ../rtl/imm_gen.sv ../rtl/alu_control.sv ../rtl/alu.sv ../rtl/branch_control.sv ../rtl/mux.sv ../rtl/adder.sv ../rtl/riscv_pipeline_top.sv</code></pre>
+<pre><code>xvlog -sv -L uvm -i ../tb/agent -i ../tb/seq -i ../tb/env -i ../tb/test ../tb/pkg/riscv_pkg.sv</code></pre>
+<pre><code>xvlog -sv -L uvm ../tb/top/riscv_tb_top.sv</code></pre>
+<pre><code>xelab -L uvm -timescale 1ns/1ps riscv_tb_top -s top_sim</code></pre>
+<pre><code>xsim top_sim -R -testplusarg UVM_TESTNAME=riscv_base_test</code></pre>
+
+<details><summary>Expected log</summary>
+<pre><code>UVM_INFO @ 0: reporter [RNTST] Running test riscv_base_test...
+UVM_INFO ../tb/agent/riscv_monitor.sv(37) @ 85000: uvm_test_top.env.agent.mon [MON] [1] pc=0x00000000 instr=0x00500093 x1&lt;=0x00000005
+UVM_INFO ... @ 95000:  ... [MON] [2] pc=0x00000004 instr=0x00308113 x2&lt;=0x00000008
+UVM_INFO ... @ 105000: ... [MON] [3] pc=0x00000008 instr=0x002081b3 x3&lt;=0x0000000d
+UVM_INFO ... @ 115000: ... [MON] [4] pc=0x0000000c instr=0x0000006f x0&lt;=0x00000010      &lt;-- jal x0,0 tự nhảy về chính nó,
+UVM_INFO ../tb/agent/riscv_driver.sv(52) @ 155000: uvm_test_top.env.agent.drv [DRV] Chay xong 4 lenh (+8 drain)    retire lặp lại [5]..[11]
+UVM_INFO ../tb/test/riscv_base_test.sv(31) @ 325000: uvm_test_top [TEST] x1=5 x2=8 x3=13
+UVM_INFO ../tb/agent/riscv_monitor.sv(44) @ 325000: uvm_test_top.env.agent.mon [MON] Tong so lenh retire = 11
+UVM_ERROR :    0   UVM_FATAL :    0</code></pre>
+<p><em>Dùng <code>-i</code> để xvlog tìm file include theo thư mục. Có thể gộp hết vào 1 lệnh biên dịch pkg.</em></p>
+</details>
+
+<h2 id="m7">8. Iterations</h2>
+
+<h3>Iteration 1 — agent PASSIVE (chỉ monitor)</h3>
+<p>Đặt <code>cfg.is_active = UVM_PASSIVE</code> trong test <strong>và</strong> bảo vệ lệnh start sequence (chỉ ACTIVE mới có <code>env.agent.sqr</code>), nếu không test chết ngay
+bằng <code>UVM_FATAL [SEQ] neither the item's sequencer nor dedicated sequencer has been supplied</code> (đã chạy thử):</p>
+<pre><code>    if (cfg.is_active == UVM_ACTIVE) seq.start(env.agent.sqr);   // trong run_phase của riscv_base_test</code></pre>
+<details><summary>Khác biệt</summary><p>Không dựng sequencer/driver → không nạp chương trình → không có retire (<code>x1=0 x2=0 x3=0</code>, <code>Tong so lenh retire = 0</code>). Dạy: ACTIVE/PASSIVE điều khiển
+có/không stimulus; passive dùng khi tích hợp với core thật đã chạy.</p></details>
+
+<h3>Iteration 2 — tạo test con <code>sanity_test</code> override sequence</h3>
+<p>Extends <code>riscv_base_test</code>, override <code>get_seq()</code> trả sequence khác.</p>
+<details><summary>Khác biệt</summary><p>Chạy <code>UVM_TESTNAME=sanity_test</code> dùng env y hệt, chỉ đổi stimulus. Dạy: test = env + sequence chọn.</p></details>
+
+<h3>Iteration 3 — đổi <code>cfg.drain</code> qua config_db</h3>
+<p>Đặt <code>cfg.drain = 12</code> trong test; driver <code>get</code> ở build.</p>
+<details><summary>Khác biệt</summary><p>Driver nhận DRAIN mới mà không sửa code driver. Dạy: config object truyền tham số toàn testbench.</p></details>
+
+<h3>Iteration 4 — in cây topology bằng <code>uvm_top.print_topology()</code></h3>
+<p>Trong <code>end_of_elaboration_phase</code> gọi <code>uvm_top.print_topology()</code>.</p>
+<details><summary>Khác biệt</summary><p>Thấy cây env→agent→sqr/drv/mon. Dạy: kiểm tra hierarchy đã dựng đúng.</p></details>
+
+<h3>Iteration 5 — quên set vif ở top (lỗi)</h3>
+<p>Comment dòng <code>uvm_config_db#(virtual riscv_if)::set(...)</code> ở top.</p>
+<details><summary>Khác biệt</summary><p><code>UVM_FATAL [TEST] top chua set vif</code>. Dạy: config_db set phải xảy ra trước build của component get.</p></details>
+
+<h2 id="m8">9. Bảng tổng hợp</h2>
+<div class="table-wrap"><table><tr><th>Iter</th><th>Đổi</th><th>Học</th></tr>
+<tr><td>0</td><td>agent+env+test+pkg đầy đủ</td><td>kiến trúc UVM chuẩn</td></tr>
+<tr><td>1</td><td>PASSIVE</td><td>is_active</td></tr>
+<tr><td>2</td><td>test con override seq</td><td>test = env + seq</td></tr>
+<tr><td>3</td><td>đổi drain qua cfg</td><td>config object</td></tr>
+<tr><td>4</td><td>print_topology</td><td>kiểm hierarchy</td></tr>
+<tr><td>5</td><td>quên set vif</td><td>thứ tự config_db</td></tr>
+</table></div>
+
+<h2 id="m9">10. BASELINE sang Lab 6</h2>
+<p>Bộ khung chuẩn: <code>riscv_pkg</code> gom mọi class; <code>riscv_tb_top</code> chính thức (DUT+shadow+set vif);
+agent ACTIVE với sqr/drv/mon; base_test chọn sequence qua <code>get_seq()</code>. Lab 6 thay
+<code>prog_seq</code> cứng bằng các sequence random theo lớp lệnh.</p>
+
+<h2 id="m10">11. Checklist nhớ code</h2>
+<ul>
+  <li>[ ] Nhớ agent dựng mon luôn, sqr/drv chỉ khi ACTIVE.</li>
+  <li>[ ] Nhớ set vif cho cả drv và mon trong agent build.</li>
+  <li>[ ] Nhớ include guard mọi file + thứ tự include trong pkg (item trước, dùng sau).</li>
+</ul>
+
+<h2 id="m11">12. Phỏng vấn — hỏi &amp; đáp</h2>
+<p>Bấm câu hỏi để xem đáp án — nên tự trả lời miệng trước khi mở. Mỗi câu có ví dụ cụ thể như khi bị hỏi trong phỏng vấn.</p>
+<div class="qa-list">
+<details class="qa"><summary>Vì sao <code>build_phase</code> chạy top-down còn <code>connect_phase</code> bottom-up? Điều gì hỏng nếu đảo?</summary>
+<div class="ans">
+<p>Cha phải <em>tồn tại</em> mới tạo được con → build top-down (test → env → agent → driver…). <code>connect</code> cần <em>cả hai đầu</em> đã được tạo; chạy bottom-up đảm bảo khi cha nối port của con thì các con đã nối xong phần của mình. Nếu nối trong <code>build_phase</code>: <code>drv.seq_item_port.connect(sqr.seq_item_export)</code> có thể gặp <code>sqr == null</code> (chưa tạo) → null deref. Quy tắc nhớ: <em>build = tạo + cấu hình; connect = nối; không trộn</em>.</p>
+</div></details>
+<details class="qa"><summary><code>uvm_config_db#(int)::set(this,"agt","N",5)</code> và <code>set(null,"*","N",9)</code> — agent <code>get</code> ra bao nhiêu?</summary>
+<div class="ans">
+<p>Phụ thuộc <strong>ai set ở cấp cao hơn</strong>: <code>set(null,"*",…)</code> từ top có ngữ cảnh <code>null</code> (cấp cao nhất) nên <em>thắng</em> → agent thấy <strong>9</strong>, dù <code>set(this,"agt",…)</code> cụ thể hơn. Đây là điều gây bất ngờ: “cụ thể hơn” không thắng, “cấp cao hơn trong hierarchy” mới thắng (trừ khi cùng cấp, set sau thắng). Muốn ghi đè từ dưới: set ở cấp cao hơn, hoặc dùng scope chính xác ở cùng cấp.</p>
+<p>Debug: <code>+UVM_CONFIG_DB_TRACE</code> hiện từng bản ghi và ai thắng.</p>
+</div></details>
+<details class="qa"><summary><code>drain</code> được set bằng <code>int unsigned</code> nhưng driver get bằng <code>int</code>. Điều gì xảy ra? Làm sao phát hiện?</summary>
+<div class="ans">
+<p><code>get</code> trả 0 (không tìm thấy), driver giữ giá trị mặc định, <strong>không có lỗi/warning</strong>. Phát hiện: (1) kiểm tra giá trị trả về của <code>get</code> và <code>uvm_info</code> khi fail; (2) <code>+UVM_CONFIG_DB_TRACE</code> thấy “read: … not found”; (3) in giá trị thực dùng trong <code>end_of_elaboration_phase</code>. Quy ước dự án: dùng <em>config object</em> thay vì các field rời để tránh cả họ lỗi này.</p>
+</div></details>
+<details class="qa"><summary>ACTIVE và PASSIVE khác nhau ở đâu? Khi nào dùng PASSIVE?</summary>
+<div class="ans">
+<p>ACTIVE: agent tạo sequencer + driver (và monitor) — tự kích thích DUT. PASSIVE: chỉ monitor. Dùng PASSIVE khi stimulus đến từ nơi khác: DUT đã được agent khác/firmware thật lái; hoặc <em>vertical reuse</em> — agent dùng ở block-level là ACTIVE, lên system-level thì PASSIVE quan sát interface nội bộ.</p>
+<pre><code>if (cfg.is_active == UVM_ACTIVE) begin
+  sqr = riscv_sequencer::type_id::create("sqr", this);
+  drv = riscv_driver   ::type_id::create("drv", this);
+end</code></pre>
+</div></details>
+<details class="qa"><summary>Config object so với đặt từng field vào config_db — ưu nhược?</summary>
+<div class="ans">
+<p><strong>Object:</strong> một chỗ set/get, dễ mở rộng, có thể randomize, tự mô tả (print/copy). <strong>Từng field:</strong> không cần định nghĩa class, nhưng mỗi tham số một cặp <code>set/get</code>, dễ lệch kiểu/tên, khó thấy toàn cảnh. Thực tế: config object cho agent/env; field rời chỉ cho thứ thật sự nhỏ (<code>verbosity</code>, <code>vif</code>). Lưu ý handle chia sẻ — nếu một component sửa cfg, cả cây thấy.</p>
+</div></details>
+<details class="qa"><summary>Phase kết thúc khi nào? Nếu test không raise objection thì sao?</summary>
+<div class="ans">
+<p>Khi tổng objection = 0 (+ <code>drain_time</code>). Nếu test không raise gì, <code>run_phase</code> kết thúc ngay ở time 0: các <code>forever</code> của driver/monitor bị kill, báo cáo cuối in 0 retire, <em>test “PASS” rỗng</em> — lỗi nguy hiểm. Phòng: assertion cuối test “đã có ≥ N giao dịch” trong <code>check_phase</code>, và luôn có <code>+UVM_TIMEOUT</code>.</p>
+</div></details>
+<details class="qa"><summary><code>uvm_test_top</code> là gì? Vì sao set vif theo đường dẫn đó?</summary>
+<div class="ans">
+<p>Tên instance mặc định của test do <code>run_test()</code> tạo (con của <code>uvm_top</code>). <code>set(null,"uvm_test_top","vif",vif)</code> khớp với <code>get(this,"","vif")</code> khi <code>this</code> là test. Env/agent có đường dẫn dài hơn (<code>uvm_test_top.env.agent.drv</code>) nên không khớp chính xác — vì thế bản lab để test <code>get</code> rồi nhét vào <code>cfg.vif</code>. Muốn mọi component nhìn thấy trực tiếp: <code>set(null,"uvm_test_top.*","vif",vif)</code>.</p>
+</div></details>
+<details class="qa"><summary>Factory registry thật sự lưu gì? Điều gì xảy ra nếu một lớp quên <code>`uvm_component_utils</code>?</summary>
+<div class="ans">
+<p>Lưu ánh xạ <em>tên → proxy</em> (<code>uvm_component_registry</code>) với hàm <code>create_component</code>. Quên macro: (1) <code>T::type_id</code> không tồn tại → lỗi compile khi gọi <code>type_id::create</code>; (2) nếu dùng <code>new()</code> thì chạy nhưng <em>không override được</em> và <code>run_test("T")</code> báo <code>UVM_FATAL INVTST</code> “requested test not found”. Kiểm tra bằng <code>uvm_factory::get().print()</code>.</p>
+</div></details>
+</div>
+
+<h2 id="m12">13. Cheat-sheet</h2>
+<pre><code>agent.build: get cfg; create mon(+set vif); if ACTIVE create sqr,drv(+set vif,drain)
+agent.connect: if ACTIVE drv.seq_item_port.connect(sqr.seq_item_export)
+env.build: get cfg; create agent; set cfg to agent
+test.build: create cfg; get vif; create env; set cfg to env
+top: set vif(uvm_test_top); run_test("riscv_base_test")</code></pre>
+
+<h2 id="m13">14. Bài tập code &amp; câu hỏi nâng cao UVM</h2>
+<p>8 bài rèn tay, tăng dần độ khó. Làm trên baseline của lab này; đáp án chỉ là hướng tham khảo — giá trị nằm ở việc bạn tự gõ, chạy và đọc log.</p>
+<div class="ex-progress"><span class="cnt">0 / 8 bài đã làm</span><span class="bar"><i></i></span></div>
+<div class="ex-list">
+<article class="ex"><div class="ex-head"><span class="lv l1">★ Dễ</span><h4>EX1 — In cây và factory</h4></div>
+Thêm <code>end_of_elaboration_phase</code> trong test: <code>uvm_top.print_topology(); uvm_factory::get().print();</code> Chỉ ra component nào là <code>riscv_sequencer</code> (typedef!) và nó hiện tên gì.
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p>Vì <code>typedef uvm_sequencer#(riscv_seq_item) riscv_sequencer;</code> không phải class mới, type name hiện là <code>uvm_sequencer #(riscv_seq_item)</code>. Muốn tên đẹp và <code>get_type_name</code> đúng thì khai class thật <code>class riscv_sequencer extends uvm_sequencer#(riscv_seq_item); `uvm_component_utils(...)</code> — như bản AXI.</p>
+</details>
+</article>
+<article class="ex"><div class="ex-head"><span class="lv l1">★ Dễ</span><h4>EX2 — Bẫy ưu tiên config_db</h4></div>
+Trong test <code>set(this,"env.agent.drv","drain",20)</code> và trong agent <code>set(this,"drv","drain",cfg.drain)</code>. Driver thấy giá trị nào? Đổi vai trò (test set sau agent) có khác không? Xác nhận bằng <code>+UVM_CONFIG_DB_TRACE</code>.
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p>Test ở cấp cao hơn → test thắng (20), bất kể thứ tự thời gian. Đây là cơ chế cho phép test ghi đè mặc định của env/agent.</p>
+</details>
+</article>
+<article class="ex"><div class="ex-head"><span class="lv l2">★★ Vừa</span><h4>EX3 — Kiểu sai kiểu — im lặng</h4></div>
+Đổi get của <code>drain</code> thành <code>int</code>. Chạy và chứng minh không có lỗi nào. Sau đó thêm guard in <code>`uvm_warning</code> khi get fail và xem log.
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p>Đây là bài kinh điển: kết quả “chạy đúng” nhưng DRAIN mặc định thay thế cấu hình. Guard + trace là hai công cụ bắt lỗi.</p>
+</details>
+</article>
+<article class="ex"><div class="ex-head"><span class="lv l2">★★ Vừa</span><h4>EX4 — Agent PASSIVE &amp; firmware thật</h4></div>
+Đặt <code>is_active=UVM_PASSIVE</code>. Viết test khác nạp ROM bằng <code>vif.load_hex(...)</code> rồi nhả reset từ test (không qua driver). Chứng minh monitor vẫn quan sát retire.
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p>Đây chính là mô hình Lab 15 (firmware). Chú ý: khi driver không tồn tại thì ai điều khiển reset? Test phải làm — và phải làm <em>trong run_phase có objection</em>.</p>
+</details>
+</article>
+<article class="ex"><div class="ex-head"><span class="lv l2">★★ Vừa</span><h4>EX5 — Config object randomizable</h4></div>
+Thêm vào <code>riscv_agent_config</code> các field <code>rand int unsigned drain; rand bit en_cov;</code> và constraint <code>drain inside {[8:16]}</code>. Test randomize cfg trước khi set. Chạy 5 seed, ghi lại <code>drain</code> thực dùng.
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p>Config-space randomization: mỗi seed một cấu hình → mở rộng coverage ở mức môi trường. Nhớ <code>cfg.randomize()</code> <em>trước</em> khi set, và in <code>cfg.sprint()</code> để tái lập.</p>
+</details>
+</article>
+<article class="ex"><div class="ex-head"><span class="lv l2">★★ Vừa</span><h4>EX6 — Timeout &amp; objection debug</h4></div>
+Cố ý để một component raise objection mà không drop (ví dụ driver). Chạy với <code>+UVM_OBJECTION_TRACE</code> và <code>+UVM_TIMEOUT=5000,NO</code>. Chụp log để chỉ ra ai giữ objection.
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p>Log trace in <code>raised/dropped</code> kèm đường dẫn component và mô tả → tìm được thủ phạm. Watchdog sinh <code>UVM_FATAL PH_TIMEOUT</code>.</p>
+</details>
+</article>
+<article class="ex"><div class="ex-head"><span class="lv l3">★★★ Khó</span><h4>EX7 — Hai agent, một env</h4></div>
+Tạo <code>agent_a</code> (ACTIVE) và <code>agent_b</code> (PASSIVE) cùng class, mỗi cái có <code>cfg</code> riêng. Dùng scope <code>"agent_a"</code>/<code>"agent_b"</code> để set. Viết tại sao scope <code>"*"</code> sẽ làm hỏng bài này.
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p>Với <code>"*"</code>, cả hai nhận cùng <code>cfg</code> (hoặc cái nào set sau), nên <code>is_active</code> của agent_b bị ghi đè — lỗi cấu hình kinh điển trong env nhiều agent.</p>
+</details>
+</article>
+<article class="ex"><div class="ex-head"><span class="lv l3">★★★ Khó</span><h4>EX8 — Đảo build/connect (có chủ đích)</h4></div>
+Chuyển dòng <code>drv.seq_item_port.connect(...)</code> từ <code>connect_phase</code> sang cuối <code>build_phase</code> của agent. Có chạy không? Rồi đặt nó trước dòng tạo <code>sqr</code>. Giải thích kết quả bằng thứ tự phase.
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p>Ở cuối build thì thường vẫn chạy vì sqr/drv đã tạo; trước khi tạo thì null → fatal. Nhưng nối port trong build vi phạm quy ước (đầu kia ở cấp dưới có thể chưa tạo ở env phức tạp) — một lỗi ẩn chỉ xuất hiện khi hierarchy sâu hơn.</p>
+</details>
+</article>
+</div>
+
+
+<nav class="pager" aria-label="Điều hướng lab"><a class="nav-card prev" href="lab04.html" rel="prev"><small>← Lab trước</small><span>Lab 04 — Monitor & analysis port</span></a><div class="mid"><button type="button" class="btn primary" id="mark-done" aria-pressed="false">Đánh dấu hoàn thành</button></div><a class="nav-card next" href="lab06.html" rel="next"><small>Lab tiếp →</small><span>Lab 06 — Sequence library</span></a></nav>
+<p class="foot">UVM · RISC-V Pipeline Speedrun — Lab 05 / 15. Phím tắt: <kbd>[</kbd> lab trước · <kbd>]</kbd> lab sau.</p>
+</main>
+</div>
+</body>
+</html>

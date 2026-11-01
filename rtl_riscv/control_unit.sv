@@ -10,13 +10,7 @@ module control_unit (
     output reg       alu_src,
     output reg       reg_write,
     output reg       jump,       // JAL
-    output reg       jalr,       // JALR
-    output reg       sha2rst,
-    output reg       sha2push,
-    output reg       sha2start,
-    output reg       sha2perform,
-    output reg       sha2finish,
-    output reg       sha2read
+    output reg       jalr        // JALR
 );
 
     always @(*) begin
@@ -30,12 +24,6 @@ module control_unit (
         reg_write = 1'b0;
         jump      = 1'b0;
         jalr      = 1'b0;
-        sha2rst   = 1'b0;
-        sha2push  = 1'b0;
-        sha2start = 1'b0;
-        sha2perform = 1'b0;
-        sha2finish  = 1'b0;
-        sha2read    = 1'b0;
 
         case (opcode)
             // R-type (ADD, SUB, AND, OR, XOR, SLL, SRL, SRA, SLT, SLTU)
@@ -96,24 +84,6 @@ module control_unit (
                 reg_write = 1'b1;
             end
 
-            // SHA-256 custom R-type extension
-            // opcode = 0x0F, funct3 = 0, funct7 selects operation.
-            7'b0001111: begin
-                if (funct3 == 3'b000) begin
-                    case (funct7)
-                        7'd1:  sha2rst     = 1'b1;
-                        7'd2:  sha2push    = 1'b1;
-                        7'd4:  sha2start   = 1'b1;
-                        7'd8:  sha2perform = 1'b1;
-                        7'd16: sha2finish  = 1'b1;
-                        7'd32: begin
-                            sha2read  = 1'b1;
-                            reg_write = 1'b1;
-                        end
-                        default: ;
-                    endcase
-                end
-            end
 
             default: begin
                 // NOP / Unknown

@@ -1,0 +1,569 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Lab 02 — RISC-V Sequence Item (1 lệnh RV32I)</title>
+<link rel="stylesheet" href="assets/lab.css">
+<script src="assets/lab.js" defer></script>
+</head>
+<body data-lab="2" data-total="15">
+<div id="readbar" aria-hidden="true"></div>
+<header class="topbar">
+  <button type="button" class="iconbtn" id="toc-toggle" aria-label="Mở mục lục">☰</button>
+  <a class="brand" href="index.html"><span class="brand-mark">UVM</span><span>RISC-V <small>Speedrun</small></span></a>
+  <nav class="labdots" aria-label="Chọn lab"><a href="lab01.html" data-n="1" title="Lab 01 — Interface & clocking">1</a><a href="lab02.html" data-n="2" title="Lab 02 — Sequence item" aria-current="page">2</a><a href="lab03.html" data-n="3" title="Lab 03 — Driver">3</a><a href="lab04.html" data-n="4" title="Lab 04 — Monitor & analysis port">4</a><a href="lab05.html" data-n="5" title="Lab 05 — Agent, env, test, config">5</a><a href="lab06.html" data-n="6" title="Lab 06 — Sequence library">6</a><a href="lab07.html" data-n="7" title="Lab 07 — Virtual sequencer">7</a><a href="lab08.html" data-n="8" title="Lab 08 — SVA & bind trong UVM">8</a><a href="lab09.html" data-n="9" title="Lab 09 — Reference model">9</a><a href="lab10.html" data-n="10" title="Lab 10 — Scoreboard in-order">10</a><a href="lab11.html" data-n="11" title="Lab 11 — Scoreboard đầy đủ">11</a><a href="lab12.html" data-n="12" title="Lab 12 — Functional coverage">12</a><a href="lab13.html" data-n="13" title="Lab 13 — RAL (uvm_reg / uvm_mem)">13</a><a href="lab14.html" data-n="14" title="Lab 14 — Factory, callback, catcher">14</a><a href="lab15.html" data-n="15" title="Lab 15 — Regression & closure">15</a></nav>
+  <button type="button" class="iconbtn" id="theme-toggle" aria-label="Đổi giao diện sáng/tối">☾</button>
+</header>
+<div class="layout">
+<aside class="side" aria-label="Mục lục">
+  <nav class="side-toc">
+    <p class="side-title">Trong bài này</p>
+    <ol>
+<li><a href="#muc-tongquan">1. Tổng quan lab</a></li>
+<li><a href="#m1">2. Vị trí trong testbench</a></li>
+<li><a href="#m2">3. Mục tiêu học</a></li>
+<li><a href="#m3">4. Keyword &amp; khái niệm mới</a></li>
+<li><a href="#m4">5. Chuẩn bị</a></li>
+<li><a href="#m5">6. Lý thuyết UVM — sequence item &amp; randomization</a></li>
+<li><a href="#m6">7. Iteration 0 — item tối thiểu + encode R/I</a></li>
+<li><a href="#m7">8. Iterations</a></li>
+<li><a href="#m8">9. Bảng tổng hợp</a></li>
+<li><a href="#m9">10. BASELINE sang Lab 3</a></li>
+<li><a href="#m10">11. Checklist nhớ code</a></li>
+<li><a href="#m11">12. Phỏng vấn — hỏi &amp; đáp</a></li>
+<li><a href="#m12">13. Cheat-sheet</a></li>
+<li><a href="#m13">14. Bài tập code &amp; câu hỏi nâng cao UVM</a></li>
+    </ol>
+  </nav>
+  <div class="side-tools">
+    <button type="button" class="btn" data-act="expand">Mở tất cả spoiler</button>
+    <button type="button" class="btn" data-act="collapse">Đóng tất cả spoiler</button>
+    <button type="button" class="btn" data-act="qa-close">Ẩn đáp án QA (tự test)</button>
+    <button type="button" class="btn" data-act="top">↑ Lên đầu trang</button>
+  </div>
+</aside>
+<main class="main">
+<header class="hero" data-num="02">
+  <div class="eyebrow"><span class="pill">Lab 02 / 15</span><span class="phase">Nền tảng</span></div>
+  <h1>Lab 02 — RISC-V Sequence Item (1 lệnh RV32I)</h1>
+  <p class="tags"><span class="tag uvm">uvm_sequence_item</span><span class="tag">rand/constraint</span><span class="tag">typedef enum</span><span class="tag">field macros</span><span class="tag">encode 32-bit</span><span class="tag">6 formats R/I/S/B/U/J</span></p>
+</header>
+<nav class="toc" aria-label="Mục lục bài lab"><strong>📑 Mục lục</strong><ol>
+<li><a href="#muc-tongquan">1. Tổng quan lab</a></li>
+<li><a href="#m1">2. Vị trí trong testbench</a></li>
+<li><a href="#m2">3. Mục tiêu học</a></li>
+<li><a href="#m3">4. Keyword &amp; khái niệm mới</a></li>
+<li><a href="#m4">5. Chuẩn bị</a></li>
+<li><a href="#m5">6. Lý thuyết UVM — sequence item &amp; randomization</a></li>
+<li><a href="#m6">7. Iteration 0 — item tối thiểu + encode R/I</a></li>
+<li><a href="#m7">8. Iterations</a></li>
+<li><a href="#m8">9. Bảng tổng hợp</a></li>
+<li><a href="#m9">10. BASELINE sang Lab 3</a></li>
+<li><a href="#m10">11. Checklist nhớ code</a></li>
+<li><a href="#m11">12. Phỏng vấn — hỏi &amp; đáp</a></li>
+<li><a href="#m12">13. Cheat-sheet</a></li>
+<li><a href="#m13">14. Bài tập code &amp; câu hỏi nâng cao UVM</a></li>
+</ol></nav>
+
+<div class="note" id="muc-tongquan">
+  <strong>Tổng quan lab</strong>
+  <ul>
+    <li><strong>Lab này làm gì:</strong> định nghĩa <code>riscv_seq_item</code> — một "giao dịch" = <strong>một
+      lệnh RV32I</strong>. Có trường ngẫu nhiên (loại lệnh, rs1/rs2/rd, immediate), ràng buộc để lệnh
+      <em>hợp lệ và nằm trong tập core hỗ trợ</em>, và hàm <code>encode()</code> ghép thành word 32-bit
+      đúng 6 format (R/I/S/B/U/J).</li>
+    <li><strong>Tạo ra file nào:</strong> <code>tb/agent/riscv_seq_item.sv</code> + top thử nghiệm nhỏ
+      <code>riscv_item_tb.sv</code> (randomize vài item, in + nạp vào ROM để kiểm chứng encode).</li>
+    <li><strong>Nhận gì từ lab trước:</strong> <code>riscv_if.sv</code> baseline (Lab 1).</li>
+    <li><strong>Lab sau dùng để làm gì:</strong> Lab 3 driver lấy item này, gọi <code>encode()</code> rồi
+      backdoor nạp ROM; Lab 9 ISS dùng chính các trường để dự đoán; Lab 12 coverage sample các trường.</li>
+  </ul>
+</div>
+
+<div class="callout uvm"><strong>Trọng tâm UVM của lab</strong>
+<ul>
+  <li><code>uvm_sequence_item</code> là <strong>uvm_object</strong> (không có phase, không có parent): vòng đời, <code>type_id::create(name)</code>, và 5 “data method” <code>copy/clone/compare/print/pack</code>.</li>
+  <li><strong>Field macros vs <code>do_*</code> thủ công</strong> — đánh đổi hiệu năng/độ kiểm soát mà phỏng vấn hay hỏi.</li>
+  <li><strong>Constrained random</strong>: solver, <code>solve…before</code>, <code>rand_mode</code>/<code>constraint_mode</code>, inline <code>with</code> và bẫy <code>local::</code>, <code>pre/post_randomize</code>.</li>
+  <li><strong>Polymorphism</strong>: <code>virtual</code> là điều kiện để <em>factory override</em> (Lab 14) thật sự đổi hành vi — đã sửa <code>encode()</code> thành <code>virtual</code> trong code của lab.</li>
+  <li>Encode 6 format RISC-V chỉ là “thân hàm” — phần UVM là cách item được thiết kế để tái dùng.</li>
+</ul></div>
+
+
+
+<h2 id="m1">2. Vị trí trong testbench</h2>
+<pre><code> [ riscv_seq_item (LAB 2) ] --encode()--> 32-bit word --(Lab 3 driver backdoor)--> ROM
+     rand: op, rs1, rs2, rd, imm        constraint: hợp lệ + trong tập hỗ trợ</code></pre>
+
+<h2 id="m2">3. Mục tiêu học</h2>
+<ul>
+  <li><code>uvm_sequence_item</code>, <code>`uvm_object_utils_begin/end</code> + field macros để in/copy/compare tự động.</li>
+  <li><code>rand</code> + <code>constraint</code> + <code>typedef enum</code> cho 19 lệnh được hỗ trợ.</li>
+  <li>Viết <code>encode()</code>: ghép bit theo đúng R/I/S/B/U/J (điểm phỏng vấn kinh điển).</li>
+  <li>Biết <code>post_randomize()</code> để chốt opcode/funct từ enum.</li>
+</ul>
+
+<h2 id="m3">4. Keyword &amp; khái niệm mới</h2>
+<div class="table-wrap"><table>
+<tr><th>Keyword</th><th>Giải thích</th><th>Ví dụ</th></tr>
+<tr><td><code>uvm_sequence_item</code></td><td>Lớp cơ sở cho 1 giao dịch</td><td><code>class riscv_seq_item extends uvm_sequence_item;</code></td></tr>
+<tr><td><code>typedef enum</code></td><td>Đặt tên cho tập hằng</td><td><code>typedef enum {ADD,SUB,...} instr_e;</code></td></tr>
+<tr><td><code>rand</code>/<code>randc</code></td><td>Trường random / random không lặp</td><td><code>rand instr_e op;</code></td></tr>
+<tr><td><code>constraint</code></td><td>Ràng buộc miền giá trị</td><td><code>constraint c{ rd inside {[1:31]}; }</code></td></tr>
+<tr><td><code>inside</code>/<code>dist</code></td><td>Thuộc tập / phân bố trọng số</td><td><code>op dist {ADD:=5, LW:=1};</code></td></tr>
+<tr><td>field macros</td><td>Tự sinh print/copy/compare</td><td><code>`uvm_field_int(rd, UVM_ALL_ON)</code></td></tr>
+<tr><td><code>post_randomize</code></td><td>Chạy sau randomize để chốt dữ liệu dẫn xuất</td><td>chốt opcode/funct3/funct7 từ <code>op</code></td></tr>
+</table></div>
+
+<h2 id="m4">5. Chuẩn bị</h2>
+<pre><code>mkdir -p ~/Study/KLtN/code/tb_uvm/uvm_riscv/tb/agent</code></pre>
+
+<h2 id="m5">6. Lý thuyết UVM — sequence item &amp; randomization</h2>
+<h3>6.1. Item = <code>uvm_object</code>, không phải component</h3>
+<div class="table-wrap"><div class="table-wrap"><table>
+<tr><th></th><th><code>uvm_object</code> (item, sequence, config, reg)</th><th><code>uvm_component</code> (driver, monitor, env…)</th></tr>
+<tr><td>Constructor</td><td><code>new(string name="")</code></td><td><code>new(string name, uvm_component parent)</code></td></tr>
+<tr><td>Factory create</td><td><code>T::type_id::create("n")</code></td><td><code>T::type_id::create("n", this)</code></td></tr>
+<tr><td>Phase</td><td>Không</td><td>Có (build/connect/run…)</td></tr>
+<tr><td>Hierarchy</td><td>Không có cha/con</td><td>Có — cây <code>get_full_name()</code></td></tr>
+<tr><td>Vòng đời</td><td>Tạo/hủy liên tục theo giao dịch (GC)</td><td>Sống suốt mô phỏng</td></tr>
+<tr><td>Macro</td><td><code>`uvm_object_utils</code></td><td><code>`uvm_component_utils</code></td></tr>
+</table></div></div>
+<p><code>uvm_sequence_item</code> kế thừa <code>uvm_transaction</code> → <code>uvm_object</code>, thêm <code>sequence_id</code>, <code>transaction_id</code>,
+con trỏ <code>m_sequencer</code>/<code>m_parent_sequence</code> (dùng để định tuyến response về đúng sequence).</p>
+
+<h3>6.2. Năm data method &amp; hai cách hiện thực</h3>
+<p>Mọi <code>uvm_object</code> có <code>copy(rhs)</code>, <code>clone()</code>, <code>compare(rhs)</code>, <code>print()</code>, <code>pack()/unpack()</code>. Chúng gọi các hook <code>do_copy/do_compare/do_print/do_pack</code>.
+Hai cách điền hook:</p>
+<div class="table-wrap"><div class="table-wrap"><table>
+<tr><th></th><th>Field macros (<code>`uvm_field_*</code>)</th><th>Viết tay <code>do_*</code></th></tr>
+<tr><td>Công sức</td><td>Ít — 1 dòng/field</td><td>Nhiều hơn</td></tr>
+<tr><td>Hiệu năng</td><td>Chậm (duyệt qua <code>uvm_field_op</code>, flag decode)</td><td>Nhanh — code thuần</td></tr>
+<tr><td>Kiểm soát</td><td>Khó bỏ field dẫn xuất, khó so “có điều kiện”</td><td>Toàn quyền (bỏ qua <code>wb_data</code> khi <code>rd==0</code>…)</td></tr>
+<tr><td>Debug</td><td>Khó đọc khi mismatch</td><td>Tự viết thông điệp</td></tr>
+<tr><td>Thực tế</td><td>Phổ biến trong tutorial/lab</td><td>Nhiều team công nghiệp cấm field macros</td></tr>
+</table></div></div>
+<pre><code>// Bản viết tay tương đương, có so sánh “có điều kiện”
+virtual function bit do_compare(uvm_object rhs, uvm_comparer comparer);
+  riscv_seq_item r;
+  if (!$cast(r, rhs)) return 0;
+  return super.do_compare(rhs, comparer) &amp;&amp; (op == r.op) &amp;&amp; (rd == r.rd) &amp;&amp; (rs1 == r.rs1) &amp;&amp; (imm == r.imm);
+endfunction
+virtual function void do_copy(uvm_object rhs);
+  riscv_seq_item r;
+  super.do_copy(rhs);
+  if (!$cast(r, rhs)) `uvm_fatal("COPY", "rhs khong phai riscv_seq_item")
+  op = r.op; rs1 = r.rs1; rs2 = r.rs2; rd = r.rd; imm = r.imm;
+endfunction</code></pre>
+
+<h3>6.3. Randomization — những điều solver làm thật sự</h3>
+<ul>
+  <li><strong><code>randomize()</code> trả 0 khi mâu thuẫn ràng buộc</strong>; nếu bạn không kiểm tra, item giữ giá trị cũ và test “chạy” với stimulus sai. Luôn <code>if (!it.randomize()) `uvm_fatal(...)</code> hoặc <code>assert</code>.</li>
+  <li><code>rand</code> (có lặp) vs <code>randc</code> (hoán vị tuần hoàn, mỗi giá trị 1 lần rồi mới lặp — chỉ ≤ 8 bit hợp lý).</li>
+  <li><code>dist</code>: <code>:=</code> gán trọng số cho <em>từng</em> giá trị; <code>:/</code> chia trọng số cho cả khoảng.</li>
+  <li><code>solve a before b</code>: đổi <em>phân bố</em>, không đổi tập nghiệm hợp lệ.</li>
+  <li><code>rand_mode(0)</code> tắt random 1 biến; <code>constraint_mode(0)</code> tắt 1 constraint — cách “nới” constraint cho negative test mà không sửa class.</li>
+  <li><code>pre_randomize()</code> chạy trước, <code>post_randomize()</code> chỉ chạy khi randomize <em>thành công</em> → nơi chốt trường dẫn xuất (opcode/funct).</li>
+</ul>
+<div class="callout pitfall"><strong>Bẫy <code>with</code>:</strong> trong <code>it.randomize() with { rd == rd; }</code>, cả hai vế đều resolve vào field của <code>it</code> (luôn đúng!). Muốn so với biến cục bộ của sequence phải viết <code>rd == local::rd;</code>. Lỗi này khiến constraint “biến mất” mà không có cảnh báo.</div>
+
+<h3>6.4. Polymorphism &amp; factory — vì sao <code>virtual</code></h3>
+<p>Lab 14 sẽ <em>override</em> <code>riscv_seq_item</code> bằng <code>riscv_illegal_item</code>. Driver giữ handle kiểu <code>riscv_seq_item</code>; chỉ khi <code>encode()</code> là <code>virtual</code> thì
+lời gọi <code>req.encode()</code> mới đi vào bản của lớp con. Nếu quên <code>virtual</code>, override “có vẻ thành công” (đúng kiểu object trong <code>print()</code>) nhưng hành vi vẫn là của lớp cha — lỗi rất khó thấy.</p>
+
+<h3>6.5. Stimulus item vs observed item</h3>
+<p><code>riscv_seq_item</code> mô tả <em>ý định</em> (op, rs, imm) và <strong>randomizable</strong>; <code>riscv_retire_item</code> (Lab 4) mô tả <em>quan sát</em> và <strong>không rand</strong>. Tách hai lớp giúp scoreboard so ý định ↔ thực tế, và monitor không kéo theo constraint thừa.</p>
+
+<details class="recap"><summary>RISC-V recap: 6 format lệnh &amp; opcode (bạn đã biết — mở nếu cần)</summary>
+<pre><code>R:  funct7[31:25] rs2[24:20] rs1[19:15] funct3[14:12] rd[11:7]  opcode[6:0]
+I:  imm[31:20]              rs1[19:15] funct3[14:12] rd[11:7]  opcode   (shift: funct7+shamt)
+S:  imm[31:25] rs2[24:20] rs1[19:15] funct3[14:12] imm[11:7]  opcode
+B:  imm[12|10:5] rs2 rs1 funct3 imm[4:1|11] opcode
+U:  imm[31:12]                          rd[11:7]  opcode
+J:  imm[20|10:1|11|19:12]                rd[11:7]  opcode</code></pre>
+<div class="note">Opcode tập hỗ trợ: R=<code>0110011</code>, I-ALU=<code>0010011</code>, LW=<code>0000011</code>(f3=010),
+SW=<code>0100011</code>(f3=010), Branch=<code>1100011</code>, JAL=<code>1101111</code>, JALR=<code>1100111</code>(f3=000),
+LUI=<code>0110111</code>, AUIPC=<code>0010111</code>.</div>
+</details>
+
+<h2 id="m6">7. Iteration 0 — item tối thiểu + encode R/I</h2>
+<details><summary>Xem full code: tb/agent/riscv_seq_item.sv</summary>
+<pre><code>// tb/agent/riscv_seq_item.sv
+`ifndef RISCV_SEQ_ITEM_SV
+`define RISCV_SEQ_ITEM_SV
+
+class riscv_seq_item extends uvm_sequence_item;
+
+  // Tập lệnh được core hỗ trợ (19 lệnh).
+  typedef enum {
+    ADD, SUB, SLL, SLT, SLTU, XOR, SRL, SRA, OR, AND,           // R-type
+    ADDI, SLTI, SLTIU, XORI, ORI, ANDI, SLLI, SRLI, SRAI,       // I-type ALU
+    LW, SW, BEQ, BNE, BLT, BGE, BLTU, BGEU,                     // mem + branch
+    JAL, JALR, LUI, AUIPC                                       // jump + upper imm
+  } instr_e;
+
+  rand instr_e      op;
+  rand bit [4:0]    rs1, rs2, rd;
+  rand bit [31:0]   imm;
+
+  // Trường dẫn xuất (chốt ở post_randomize) — dùng khi encode/debug.
+  bit [6:0] opcode, funct7;
+  bit [2:0] funct3;
+
+  `uvm_object_utils_begin(riscv_seq_item)
+    `uvm_field_enum(instr_e, op, UVM_ALL_ON)
+    `uvm_field_int(rs1, UVM_ALL_ON)
+    `uvm_field_int(rs2, UVM_ALL_ON)
+    `uvm_field_int(rd,  UVM_ALL_ON)
+    `uvm_field_int(imm, UVM_ALL_ON)
+  `uvm_object_utils_end
+
+  function new(string name="riscv_seq_item"); super.new(name); endfunction
+
+  // ---- Ràng buộc hợp lệ ----
+  // Tránh ghi x0 vô ích cho lệnh có writeback (x0 bất biến) -> dễ quan sát.
+  constraint c_rd_nonzero { if (op != SW && op != BEQ && op != BNE && op != BLT
+                               && op != BGE && op != BLTU && op != BGEU) rd != 0; }
+  // Shift chỉ dùng 5 bit shamt.
+  // LƯU Ý xsim 2023.2: KHÔNG dùng `if (op inside {A,B,C}) ...` làm điều kiện trong constraint —
+  // solver coi ràng buộc là vô điều kiện (randomize() ... with {op==JAL; imm==32'h800;} bị fail).
+  // Viết điều kiện bằng so sánh `==` nối `||` thì đúng.
+  constraint c_shamt { if (op == SLLI || op == SRLI || op == SRAI) imm inside {[0:31]}; }
+
+  // ---- Chốt opcode/funct3/funct7 từ op ----
+  function void post_randomize();
+    opcode = 7'b0; funct3 = 3'b0; funct7 = 7'b0;
+    case (op)
+      ADD :begin opcode=7'b0110011; funct3=3'b000; funct7=7'b0000000; end
+      SUB :begin opcode=7'b0110011; funct3=3'b000; funct7=7'b0100000; end
+      SLL :begin opcode=7'b0110011; funct3=3'b001; end
+      SLT :begin opcode=7'b0110011; funct3=3'b010; end
+      SLTU:begin opcode=7'b0110011; funct3=3'b011; end
+      XOR :begin opcode=7'b0110011; funct3=3'b100; end
+      SRL :begin opcode=7'b0110011; funct3=3'b101; funct7=7'b0000000; end
+      SRA :begin opcode=7'b0110011; funct3=3'b101; funct7=7'b0100000; end
+      OR  :begin opcode=7'b0110011; funct3=3'b110; end
+      AND :begin opcode=7'b0110011; funct3=3'b111; end
+      ADDI :begin opcode=7'b0010011; funct3=3'b000; end
+      SLTI :begin opcode=7'b0010011; funct3=3'b010; end
+      SLTIU:begin opcode=7'b0010011; funct3=3'b011; end
+      XORI :begin opcode=7'b0010011; funct3=3'b100; end
+      ORI  :begin opcode=7'b0010011; funct3=3'b110; end
+      ANDI :begin opcode=7'b0010011; funct3=3'b111; end
+      SLLI :begin opcode=7'b0010011; funct3=3'b001; funct7=7'b0000000; end
+      SRLI :begin opcode=7'b0010011; funct3=3'b101; funct7=7'b0000000; end
+      SRAI :begin opcode=7'b0010011; funct3=3'b101; funct7=7'b0100000; end
+      LW   :begin opcode=7'b0000011; funct3=3'b010; end
+      SW   :begin opcode=7'b0100011; funct3=3'b010; end
+      BEQ  :begin opcode=7'b1100011; funct3=3'b000; end
+      BNE  :begin opcode=7'b1100011; funct3=3'b001; end
+      BLT  :begin opcode=7'b1100011; funct3=3'b100; end
+      BGE  :begin opcode=7'b1100011; funct3=3'b101; end
+      BLTU :begin opcode=7'b1100011; funct3=3'b110; end
+      BGEU :begin opcode=7'b1100011; funct3=3'b111; end
+      JAL  :begin opcode=7'b1101111; end
+      JALR :begin opcode=7'b1100111; funct3=3'b000; end
+      LUI  :begin opcode=7'b0110111; end
+      AUIPC:begin opcode=7'b0010111; end
+    endcase
+  endfunction
+
+  // ---- Ghép 32-bit theo format ----
+  // `virtual` là BẮT BUỘC: Lab 14 override item bằng factory; nếu encode() không virtual thì
+  // handle kiểu riscv_seq_item vẫn gọi bản cơ sở → override không có tác dụng.
+  virtual function bit [31:0] encode();
+    bit [31:0] w; bit [11:0] i12; bit [4:0] shamt;
+    i12   = imm[11:0];
+    shamt = imm[4:0];
+    unique case (op)
+      // R-type
+      ADD,SUB,SLL,SLT,SLTU,XOR,SRL,SRA,OR,AND:
+        w = {funct7, rs2, rs1, funct3, rd, opcode};
+      // I-type shift (shamt + funct7)
+      SLLI,SRLI,SRAI:
+        w = {funct7, shamt, rs1, funct3, rd, opcode};
+      // I-type ALU + LW + JALR
+      ADDI,SLTI,SLTIU,XORI,ORI,ANDI,LW,JALR:
+        w = {i12, rs1, funct3, rd, opcode};
+      // S-type (SW)
+      SW:
+        w = {i12[11:5], rs2, rs1, funct3, i12[4:0], opcode};
+      // B-type
+      BEQ,BNE,BLT,BGE,BLTU,BGEU:
+        w = {imm[12], imm[10:5], rs2, rs1, funct3, imm[4:1], imm[11], opcode};
+      // U-type
+      LUI,AUIPC:
+        w = {imm[31:12], rd, opcode};
+      // J-type
+      JAL:
+        w = {imm[20], imm[10:1], imm[11], imm[19:12], rd, opcode};
+      default: w = 32'h00000013; // NOP = addi x0,x0,0
+    endcase
+    return w;
+  endfunction
+
+  function string convert2str();
+    return $sformatf("%s rd=x%0d rs1=x%0d rs2=x%0d imm=0x%0h -> 0x%08h",
+                     op.name(), rd, rs1, rs2, imm, encode());
+  endfunction
+
+endclass
+`endif</code></pre></details>
+
+<details><summary>Xem full code: tb/top/riscv_item_tb.sv (thử encode)</summary>
+<pre><code>`timescale 1ns/1ps
+module riscv_item_tb;
+  import uvm_pkg::*; `include "uvm_macros.svh"
+  `include "riscv_seq_item.sv"
+  initial begin
+    riscv_seq_item it;
+    for (int k=0;k&lt;5;k++) begin
+      it = riscv_seq_item::type_id::create($sformatf("it%0d",k));
+      assert(it.randomize());
+      `uvm_info("ITEM", it.convert2str(), UVM_LOW)
+    end
+    // Kiểm chứng tay: ADDI x1,x0,5 phải ra 0x00500093
+    begin riscv_seq_item a;
+      a = riscv_seq_item::type_id::create("a");
+      assert(a.randomize() with { op==ADDI; rd==1; rs1==0; imm==5; });
+      `uvm_info("CHK", $sformatf("ADDI x1,x0,5 = 0x%08h (mong 0x00500093)", a.encode()), UVM_LOW)
+    end
+    $finish;
+  end
+endmodule</code></pre></details>
+
+<p><strong>Lệnh chạy:</strong></p>
+<pre><code>cd ~/Study/KLtN/code/tb_uvm/uvm_riscv/sim</code></pre>
+<pre><code>xvlog -sv -L uvm -i ../tb/agent ../tb/top/riscv_item_tb.sv</code></pre>
+<pre><code>xelab -L uvm -timescale 1ns/1ps riscv_item_tb -s item_sim</code></pre>
+<pre><code>xsim item_sim -R</code></pre>
+
+<details><summary>Expected log</summary>
+<pre><code># UVM_INFO riscv_item_tb.sv(..) @ 0: reporter [ITEM] ADD rd=x7 rs1=x3 rs2=x19 imm=0x... -> 0x013383B3
+# UVM_INFO ... [ITEM] SRLI rd=x12 rs1=x5 rs2=x.. imm=0x7 -> 0x0072D613
+# UVM_INFO ... [ITEM] BEQ  rd=x0 rs1=x2 rs2=x9 imm=0x... -> 0x...
+# UVM_INFO ... [CHK] ADDI x1,x0,5 = 0x00500093 (mong 0x00500093)
+# $finish called at time : 0 ns</code></pre>
+<p><em>Giá trị random khác mỗi lần; quan trọng là dòng [CHK] khớp 0x00500093.</em></p>
+</details>
+
+<h2 id="m7">8. Iterations</h2>
+
+<h3>Iteration 1 — thêm kiểm chứng SW/Branch</h3>
+<p>Thêm trong top: <code>SW x5,8(x1)</code> mong <code>0x0050A423</code> (nếu ra <code>0x00502423</code> là bạn đang encode <code>SW x5,8(x0)</code>, rs1=x0); <code>BEQ x1,x2,+8</code> mong <code>0x00208463</code>.</p>
+<details><summary>Khác biệt</summary><p>Xác nhận ghép bit S/B (phần đảo thứ tự immediate) đúng. Đây là chỗ hay sai nhất khi phỏng vấn.</p></details>
+
+<h3>Iteration 2 — phân bố <code>dist</code> thiên về ALU</h3>
+<p>Thêm <code>constraint c_dist { op dist { [ADD:SRAI]:=8, LW:=2, SW:=2, [BEQ:BGEU]:=3, JAL:=1, JALR:=1, LUI:=2, AUIPC:=1 }; }</code>.
+(Range là <code>[ADD:SRAI]</code>, không phải <code>[ADD:ANDI]</code>: dải <code>ANDI</code> bỏ sót <code>SLLI/SRLI/SRAI</code> → trọng số 0 → Lab 6 <code>itype_seq</code> không sinh được shift.)</p>
+<div class="note warn"><strong>Kiểm chứng trên xsim 2023.2:</strong> khi <code>op</code> còn xuất hiện trong ràng buộc khác (ở đây <code>c_rd_nonzero</code>),
+xsim vẫn tôn trọng <em>miền</em> của <code>dist</code> nhưng <strong>bỏ qua trọng số</strong> → 400 lần randomize ra ~đều trên mọi lệnh (ALU chỉ ~30%, không phải ~85%).
+Dist đứng một mình thì đúng. Muốn phân bố thật sự lệch, bốc <code>op</code> có trọng số ở <code>pre_randomize</code> rồi ép (bản dưới đã chạy được: ALU ≈ 82%).</div>
+<details><summary>Full phần thêm vào riscv_seq_item (bản trọng số chắc chắn)</summary>
+<pre><code>  // Iteration 2: thiên về ALU. Trọng số `dist` bị xsim 2023.2 BỎ QUA khi op còn dính ràng buộc khác
+  // (ở đây c_rd_nonzero) -> ra phân bố đều. Cách chắc chắn: bốc op có trọng số trong pre_randomize
+  // rồi ép bằng ràng buộc; tắt bằng use_dist=0 khi sequence tự `with { op ... }`.
+  bit       use_dist = 1;
+  instr_e   pick;                       // KHÔNG rand: solver coi là hằng
+  constraint c_pick { if (use_dist) op == pick; }
+  function void pre_randomize();
+    int unsigned r = $urandom_range(0, 178);          // tổng trọng số = 179
+    if      (r < 152) pick = instr_e'(ADD + (r / 8)); // ADD..SRAI: 19 lệnh x 8
+    else if (r < 154) pick = LW;
+    else if (r < 156) pick = SW;
+    else if (r < 174) pick = instr_e'(BEQ + ((r - 156) / 3)); // 6 branch x 3
+    else if (r < 175) pick = JAL;
+    else if (r < 176) pick = JALR;
+    else if (r < 178) pick = LUI;
+    else              pick = AUIPC;
+  endfunction</code></pre></details>
+<details><summary>Khác biệt</summary><p>Phần lớn item là ALU; lệnh hiếm (JAL/JALR) vẫn xuất hiện. Dạy điều khiển phân bố stimulus — quan trọng cho coverage Lab 12.
+Khi sequence cần ràng buộc <code>op</code> riêng (<code>randomize() with { op==...; }</code>) hãy đặt <code>use_dist=0</code> trước, nếu không <code>c_pick</code> sẽ xung đột.</p></details>
+
+<h3>Iteration 3 — ràng buộc imm theo loại lệnh</h3>
+<p>Thêm: load/store dùng imm nhỏ, căn chỉnh 4: <code>if(op == LW || op == SW) imm inside {[0:255]}; if(op == LW || op == SW) imm[1:0]==0;</code> (dùng <code>==</code>/<code>||</code>, không dùng <code>if(op inside{...})</code> — xsim 2023.2 xử lý sai, xem chú thích ở <code>c_shamt</code>).</p>
+<details><summary>Khác biệt</summary><p>Địa chỉ data mem nằm trong 2048 byte và căn chỉnh word (DUT chỉ hỗ trợ word). Tránh sinh địa chỉ ngoài vùng.</p></details>
+
+<h3>Iteration 4 — cho phép rd=x0 ở 10% (để test x0 bất biến)</h3>
+<p>Nới <code>c_rd_nonzero</code> thành <code>dist</code>: <code>rd dist {0:=1, [1:31]:=9};</code> (bỏ constraint cũ).
+Trên xsim 2023.2 <code>dist</code> này <strong>không cho 10%</strong> (đo 1000 lần: chỉ ~2 lần rd=0 vì trọng số bị bỏ qua — cùng lỗi như Iteration 2),
+nên dùng bản bốc ở <code>pre_randomize</code> (đo được 100/1000):</p>
+<details><summary>Full phần thay c_rd_nonzero</summary>
+<pre><code>  bit [4:0] rd_pick;                    // KHÔNG rand: solver coi là hằng
+  constraint c_rd0 { rd == rd_pick; }   // thay c_rd_nonzero (bỏ constraint cũ)
+  function void pre_randomize();
+    rd_pick = ($urandom_range(0, 9) == 0) ? 5'd0 : 5'($urandom_range(1, 31));   // 10% x0
+  endfunction</code></pre></details>
+<details><summary>Khác biệt</summary><p>Thỉnh thoảng rd=x0 → Lab 8 SVA và Lab 11 scoreboard phải thấy x0 vẫn =0 dù reg_write=1. Tạo stimulus cho test âm.</p></details>
+
+<h3>Iteration 5 — in bằng field macro <code>uvm_default_printer</code></h3>
+<p>Gọi <code>it.print();</code> thay cho convert2str để thấy bảng field tự sinh.</p>
+<details><summary>Expected log</summary>
+<pre><code># ----------------------------------
+# Name   Type        Size  Value
+# ----------------------------------
+# it0    riscv_seq_item  -   @...
+#   op   instr_e     32    ADD
+#   rs1  integral    5     'h3
+#   rd   integral    5     'h7
+#   imm  integral    32    'h...
+# ----------------------------------</code></pre></details>
+<details><summary>Khác biệt</summary><p>Field macros tự lo print/copy/compare → Lab 10 scoreboard dùng <code>compare()</code> miễn phí.</p></details>
+
+<h3>Iteration 6 — cố ý bỏ <code>post_randomize</code></h3>
+<p>Comment <code>post_randomize</code> → opcode=0 → encode ra sai.</p>
+<details><summary>Khác biệt</summary><p>[CHK] không còn ra 0x00500093 (opcode=0). Dạy: dữ liệu dẫn xuất phải chốt sau randomize, nếu không encode rác.</p></details>
+
+<h2 id="m8">9. Bảng tổng hợp</h2>
+<div class="table-wrap"><table><tr><th>Iter</th><th>Đổi</th><th>Học</th></tr>
+<tr><td>0</td><td>item + encode R/I</td><td>field macros, encode cơ bản</td></tr>
+<tr><td>1</td><td>check SW/BEQ</td><td>ghép bit S/B</td></tr>
+<tr><td>2</td><td>dist</td><td>điều khiển phân bố</td></tr>
+<tr><td>3</td><td>imm theo loại</td><td>địa chỉ hợp lệ</td></tr>
+<tr><td>4</td><td>rd có thể x0</td><td>stimulus test âm</td></tr>
+<tr><td>5</td><td>print()</td><td>field automation</td></tr>
+<tr><td>6</td><td>bỏ post_randomize</td><td>dữ liệu dẫn xuất</td></tr>
+</table></div>
+
+<h2 id="m9">10. BASELINE sang Lab 3</h2>
+<p><code>tb/agent/riscv_seq_item.sv</code> bản chuẩn: enum 19 lệnh, <code>dist</code> thiên ALU, ràng buộc shamt +
+imm load/store căn chỉnh, <code>post_randomize</code> chốt opcode/funct, <code>encode()</code> đủ 6 format,
+<code>convert2str()</code>. (Giữ bản rd có thể x0 ở mức thấp để phục vụ test âm sau.)</p>
+
+<h2 id="m10">11. Checklist nhớ code</h2>
+<ul>
+  <li>[ ] Gõ lại enum 19 lệnh + opcode/funct tương ứng.</li>
+  <li>[ ] Nhớ ghép bit S-type và B-type (đảo thứ tự immediate).</li>
+  <li>[ ] Nhớ <code>uvm_object_utils_begin</code> + field macros.</li>
+</ul>
+
+<h2 id="m11">12. Phỏng vấn — hỏi &amp; đáp</h2>
+<p>Bấm câu hỏi để xem đáp án — nên tự trả lời miệng trước khi mở. Mỗi câu có ví dụ cụ thể như khi bị hỏi trong phỏng vấn.</p>
+<div class="qa-list">
+<details class="qa"><summary><code>uvm_object</code> khác <code>uvm_component</code> ở những điểm nào? Vì sao item không phải component?</summary>
+<div class="ans">
+<p>Component có <strong>parent/hierarchy</strong> và <strong>phase</strong>; object thì không. Item được tạo/hủy mỗi giao dịch (hàng nghìn–triệu lần) nên cần nhẹ, không phải gắn vào cây và không tham gia phase. Dấu hiệu nhận biết trong code: constructor <code>new(string name)</code> (object) vs <code>new(string name, uvm_component parent)</code> (component); macro <code>uvm_object_utils</code> vs <code>uvm_component_utils</code>.</p>
+<pre><code>riscv_seq_item it = riscv_seq_item::type_id::create("it");     // object: 1 tham số
+riscv_driver   d  = riscv_driver::type_id::create("drv", this); // component: có parent</code></pre>
+</div></details>
+<details class="qa"><summary><code>type_id::create()</code> khác <code>new()</code> thế nào? Cho ví dụ override thành công và thất bại.</summary>
+<div class="ans">
+<p><code>create()</code> hỏi <strong>factory</strong> “đang có override nào cho kiểu này không?” rồi trả đối tượng đúng kiểu; <code>new()</code> bỏ qua factory.</p>
+<pre><code>set_type_override_by_type(riscv_seq_item::get_type(), riscv_illegal_item::get_type());
+a = riscv_seq_item::type_id::create("a");   // → thực chất là riscv_illegal_item  ✔
+b = new("b");                               // → riscv_seq_item, override KHÔNG áp dụng  ✘</code></pre>
+<p>Một điều kiện nữa: lớp con phải <em>đăng ký</em> với factory (<code>`uvm_object_utils</code>) và được <em>biên dịch</em> trong package.</p>
+</div></details>
+<details class="qa"><summary>Ưu/nhược điểm của field macros? Bạn dùng gì ở dự án thật?</summary>
+<div class="ans">
+<p><strong>Ưu:</strong> nhanh để viết, tự có print/copy/compare/pack. <strong>Nhược:</strong> chậm khi chạy lượng lớn transaction, khó kiểm soát (không bỏ qua field, không so có điều kiện), thông điệp mismatch kém, hành vi đổi theo flag (<code>UVM_NOCOMPARE</code>…) dễ nhầm.</p>
+<p>Thực tế: item “quan sát” (monitor) hay dùng field macros để print nhanh khi debug; item dùng trong scoreboard hiệu năng cao viết tay <code>do_compare/do_copy/do_print</code> và <code>convert2str()</code>. Trả lời tốt nên nêu được <em>vì sao</em>, kèm đoạn <code>do_compare</code> ngắn.</p>
+</div></details>
+<details class="qa"><summary><code>randomize()</code> trả về 0 — bạn debug thế nào?</summary>
+<div class="ans">
+<p>Nguyên nhân thường: ràng buộc mâu thuẫn (kể cả từ <code>with</code> inline), <code>rand_mode(0)</code> làm biến thành hằng gây xung đột, tràn bit.</p>
+<pre><code>if (!it.randomize() with { rd == 0; })    // class có: constraint c_rd_nonzero { rd != 0; }
+  `uvm_fatal("RAND", $sformatf("randomize fail: %s", it.convert2str()))</code></pre>
+<p>Cách điều tra: (1) bật log solver của tool (xsim: <code>-debug_solver</code>/báo conflict), (2) tắt từng constraint bằng <code>constraint_mode(0)</code> để thu hẹp, (3) đơn giản hóa <code>with</code>, (4) kiểm tra <code>rand_mode</code>. Luôn kiểm tra giá trị trả về — bản lab dùng <code>assert(it.randomize())</code>.</p>
+</div></details>
+<details class="qa"><summary><code>dist</code> với <code>:=</code> và <code>:/</code> khác nhau thế nào? Cho số liệu.</summary>
+<div class="ans">
+<pre><code>x dist { 0 := 1, [1:3] := 1 };   // 0,1,2,3 mỗi giá trị trọng số 1 → mỗi giá trị 25%
+x dist { 0 := 1, [1:3] :/ 1 };   // khoảng [1:3] CHIA 1 → mỗi giá trị 1/3 → 0 là 50%, 1/2/3 mỗi cái ~16.7%</code></pre>
+<p>Trong lab: <code>op dist { [ADD:ANDI] := 8, LW := 2, … }</code> dùng <code>:=</code> trên khoảng enum → <em>mỗi</em> lệnh trong khoảng được 8 → ALU áp đảo. Nếu chủ ý “cả nhóm ALU chiếm 8 phần” thì phải dùng <code>:/</code>.</p>
+</div></details>
+<details class="qa"><summary>Giải thích <code>local::</code> trong inline constraint với ví dụ.</summary>
+<div class="ans">
+<pre><code>// trong sequence có biến cục bộ  int rd = 5;
+it.randomize() with { rd == rd; };          // luôn đúng: cả hai là it.rd → KHÔNG ràng buộc gì
+it.randomize() with { rd == local::rd; };   // đúng: it.rd == 5 (biến cục bộ của sequence)</code></pre>
+<p>Quy tắc: trong <code>with</code>, tên được tra cứu trong scope <em>của đối tượng được randomize</em> trước; muốn dùng biến bên ngoài phải qualify bằng <code>local::</code>.</p>
+</div></details>
+<details class="qa"><summary><code>pre_randomize</code>/<code>post_randomize</code> dùng để làm gì? Khi nào <code>post_randomize</code> không chạy?</summary>
+<div class="ans">
+<p><code>post_randomize</code> chốt <em>trường dẫn xuất</em> (opcode/funct3/funct7 từ <code>op</code>) và có thể kiểm tra sanity; <code>pre_randomize</code> chuẩn bị (ví dụ bật/tắt <code>rand_mode</code>). <code>post_randomize</code> <strong>không chạy khi <code>randomize()</code> thất bại</strong> — nên item mang giá trị dẫn xuất cũ/rác: một lý do nữa phải kiểm tra giá trị trả về.</p>
+<p>Lab này minh họa: bỏ <code>post_randomize</code> (Iteration 6) → opcode=0 → <code>encode()</code> ra word rác.</p>
+</div></details>
+<details class="qa"><summary><code>copy</code>, <code>clone</code> và gán handle khác nhau thế nào? Vì sao monitor phải tạo item mới cho mỗi lần <code>write()</code>?</summary>
+<div class="ans">
+<p>Gán handle (<code>b = a</code>) chỉ sao chép <em>con trỏ</em> — hai biến cùng một object. <code>b.copy(a)</code> sao chép nội dung vào object <code>b</code> đã có. <code>b = a.clone()</code> tạo object mới rồi copy (trả <code>uvm_object</code>, cần <code>$cast</code>).</p>
+<p>Analysis port không sao chép — subscriber nhận <em>cùng handle</em>. Nếu monitor tái dùng một item rồi sửa tiếp, subscriber lưu handle (scoreboard queue) sẽ thấy dữ liệu đổi ngầm. Vì thế monitor <code>create</code> item mới mỗi giao dịch (hoặc subscriber phải <code>clone()</code> khi cần giữ).</p>
+</div></details>
+</div>
+
+<h2 id="m12">13. Cheat-sheet</h2>
+<pre><code>class riscv_seq_item extends uvm_sequence_item;
+  rand instr_e op; rand bit[4:0] rs1,rs2,rd; rand bit[31:0] imm;
+  function void post_randomize(); // chốt opcode/funct3/funct7 theo op
+  virtual function bit[31:0] encode(); // R:{f7,rs2,rs1,f3,rd,op}  I:{imm12,rs1,f3,rd,op}
+    //  S:{imm[11:5],rs2,rs1,f3,imm[4:0],op}  B:{imm[12],imm[10:5],rs2,rs1,f3,imm[4:1],imm[11],op}
+    //  U:{imm[31:12],rd,op}  J:{imm[20],imm[10:1],imm[11],imm[19:12],rd,op}</code></pre>
+
+<h2 id="m13">14. Bài tập code &amp; câu hỏi nâng cao UVM</h2>
+<p>8 bài rèn tay, tăng dần độ khó. Làm trên baseline của lab này; đáp án chỉ là hướng tham khảo — giá trị nằm ở việc bạn tự gõ, chạy và đọc log.</p>
+<div class="ex-progress"><span class="cnt">0 / 8 bài đã làm</span><span class="bar"><i></i></span></div>
+<div class="ex-list">
+<article class="ex"><div class="ex-head"><span class="lv l1">★ Dễ</span><h4>EX1 — Kiểm tra giá trị trả về</h4></div>
+Sửa <code>riscv_item_tb</code>: bọc mọi <code>randomize()</code> bằng <code>if (!…) `uvm_fatal</code>. Thêm một <code>with { rd == 0; op == ADD; }</code> (mâu thuẫn <code>c_rd_nonzero</code>) và xem fatal có ra không.
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p>Bạn sẽ thấy <code>UVM_FATAL … randomize fail</code>. Nếu chỉ dùng <code>void'(it.randomize())</code> thì không thấy gì — item giữ giá trị cũ. Đây là lỗi im lặng nguy hiểm nhất của constrained random.</p>
+</details>
+</article>
+<article class="ex"><div class="ex-head"><span class="lv l1">★ Dễ</span><h4>EX2 — Histogram phân bố</h4></div>
+Randomize 2000 item, đếm số lần mỗi <code>op</code> trong mảng associative <code>int hist[string]</code>, in ra. So khi dùng <code>:=</code> và <code>:/</code> trên khoảng <code>[ADD:ANDI]</code>.
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<pre><code>int hist[string];
+repeat (2000) begin assert(it.randomize()); hist[it.op.name()]++; end
+foreach (hist[k]) `uvm_info("HIST", $sformatf("%-6s %0d", k, hist[k]), UVM_LOW)</code></pre>
+</details>
+</article>
+<article class="ex"><div class="ex-head"><span class="lv l2">★★ Vừa</span><h4>EX3 — Viết tay do_compare / do_copy / do_print</h4></div>
+Bỏ field macros, hiện thực <code>do_copy/do_compare/do_print</code>. <code>do_compare</code> bỏ qua <code>rs2</code> khi <code>op</code> là I-type. Viết test: hai item khác <code>rs2</code> nhưng cùng <code>ADDI</code> phải so bằng nhau.
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p>Dùng <code>comparer.compare_field_int("rd", rd, r.rd, 5)</code> để mismatch hiện đúng trong report; hoặc trả <code>bit</code> thuần như ví dụ §6.2. Nhớ gọi <code>super.do_compare</code>.</p>
+</details>
+</article>
+<article class="ex"><div class="ex-head"><span class="lv l2">★★ Vừa</span><h4>EX4 — <code>constraint_mode</code> &amp; <code>rand_mode</code></h4></div>
+Viết test directed: tắt <code>c_rd_nonzero</code> bằng <code>it.c_rd_nonzero.constraint_mode(0)</code> rồi ép <code>rd==0</code>; riêng <code>imm</code> dùng <code>it.imm.rand_mode(0); it.imm = 32'h7ff;</code>. Giải thích khác biệt giữa hai hàm.
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p><code>constraint_mode</code> bật/tắt <em>một ràng buộc</em> theo tên; <code>rand_mode</code> bật/tắt <em>một biến</em> (biến thành state variable, solver coi là hằng). Cả hai đều “nới” item không cần sửa class — công cụ cho negative test.</p>
+</details>
+</article>
+<article class="ex"><div class="ex-head"><span class="lv l2">★★ Vừa</span><h4>EX5 — Bẫy <code>local::</code></h4></div>
+Trong một sequence thử: <code>int rd = 7; it.randomize() with { rd == rd; };</code> rồi sửa thành <code>local::rd</code>. In <code>it.rd</code> qua 20 lần chạy mỗi bản.
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p>Bản đầu: <code>rd</code> ngẫu nhiên (constraint vô nghĩa). Bản sau: luôn 7 — nhưng nếu <code>c_rd_nonzero</code> vẫn bật và bạn đặt <code>local::rd = 0</code> thì <code>randomize()</code> trả 0.</p>
+</details>
+</article>
+<article class="ex"><div class="ex-head"><span class="lv l2">★★ Vừa</span><h4>EX6 — <code>solve … before</code> và độ lệch phân bố</h4></div>
+Thêm biến <code>rand bit big;</code> và constraint <code>big -&gt; imm &gt; 1000;</code>. Chạy 5000 lần, đếm <code>big</code> trước và sau khi thêm <code>solve big before imm;</code>.
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p>Không có <code>solve before</code>, <code>big=1</code> chiếm tỷ lệ ~ theo số nghiệm của <code>imm</code> (thường &gt;99%). Với <code>solve big before imm</code> ~50/50. Chú ý: không đổi <em>tập nghiệm</em>, chỉ đổi phân bố.</p>
+</details>
+</article>
+<article class="ex"><div class="ex-head"><span class="lv l3">★★★ Khó</span><h4>EX7 — Pack/unpack và so sánh bằng bitstream</h4></div>
+Dùng <code>pack_ints()</code>/<code>unpack_ints()</code> (hoặc <code>pack_bytes</code>) để serialize item rồi dựng lại. Kiểm chứng <code>it2.compare(it)</code>. Thảo luận khi nào pack hữu ích (DPI-C, file trace).
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<pre><code>int unsigned bits[];  void'(it.pack_ints(bits));
+riscv_seq_item it2 = riscv_seq_item::type_id::create("it2");
+void'(it2.unpack_ints(bits));  assert(it.compare(it2));</code></pre>
+<p>Lưu ý: field nào không có flag <code>UVM_PACK</code> sẽ không được serialize.</p>
+</details>
+</article>
+<article class="ex"><div class="ex-head"><span class="lv l3">★★★ Khó</span><h4>EX8 — Bắt lỗi “virtual” bằng test</h4></div>
+Cố ý bỏ <code>virtual</code> khỏi <code>encode()</code>. Viết <code>riscv_illegal_item</code> override <code>encode()</code> trả <code>32'h0000000b</code>. Dùng factory override rồi gọi qua handle kiểu cha. Chứng minh override không có tác dụng, rồi sửa lại.
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p>Dùng <code>`uvm_info("T", $sformatf("type=%s enc=%08h", it.get_type_name(), it.encode()), UVM_LOW)</code>: <code>get_type_name()</code> (virtual, đã có sẵn) sẽ báo <code>riscv_illegal_item</code> nhưng <code>encode()</code> không đổi → minh chứng sự khác biệt giữa “đúng kiểu” và “đúng hành vi”.</p>
+</details>
+</article>
+</div>
+
+
+<nav class="pager" aria-label="Điều hướng lab"><a class="nav-card prev" href="lab01.html" rel="prev"><small>← Lab trước</small><span>Lab 01 — Interface & clocking</span></a><div class="mid"><button type="button" class="btn primary" id="mark-done" aria-pressed="false">Đánh dấu hoàn thành</button></div><a class="nav-card next" href="lab03.html" rel="next"><small>Lab tiếp →</small><span>Lab 03 — Driver</span></a></nav>
+<p class="foot">UVM · RISC-V Pipeline Speedrun — Lab 02 / 15. Phím tắt: <kbd>[</kbd> lab trước · <kbd>]</kbd> lab sau.</p>
+</main>
+</div>
+</body>
+</html>

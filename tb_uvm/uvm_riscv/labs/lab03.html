@@ -1,0 +1,554 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Lab 03 — RISC-V Driver (backdoor nạp chương trình + drain pipeline)</title>
+<link rel="stylesheet" href="assets/lab.css">
+<script src="assets/lab.js" defer></script>
+</head>
+<body data-lab="3" data-total="15">
+<div id="readbar" aria-hidden="true"></div>
+<header class="topbar">
+  <button type="button" class="iconbtn" id="toc-toggle" aria-label="Mở mục lục">☰</button>
+  <a class="brand" href="index.html"><span class="brand-mark">UVM</span><span>RISC-V <small>Speedrun</small></span></a>
+  <nav class="labdots" aria-label="Chọn lab"><a href="lab01.html" data-n="1" title="Lab 01 — Interface & clocking">1</a><a href="lab02.html" data-n="2" title="Lab 02 — Sequence item">2</a><a href="lab03.html" data-n="3" title="Lab 03 — Driver" aria-current="page">3</a><a href="lab04.html" data-n="4" title="Lab 04 — Monitor & analysis port">4</a><a href="lab05.html" data-n="5" title="Lab 05 — Agent, env, test, config">5</a><a href="lab06.html" data-n="6" title="Lab 06 — Sequence library">6</a><a href="lab07.html" data-n="7" title="Lab 07 — Virtual sequencer">7</a><a href="lab08.html" data-n="8" title="Lab 08 — SVA & bind trong UVM">8</a><a href="lab09.html" data-n="9" title="Lab 09 — Reference model">9</a><a href="lab10.html" data-n="10" title="Lab 10 — Scoreboard in-order">10</a><a href="lab11.html" data-n="11" title="Lab 11 — Scoreboard đầy đủ">11</a><a href="lab12.html" data-n="12" title="Lab 12 — Functional coverage">12</a><a href="lab13.html" data-n="13" title="Lab 13 — RAL (uvm_reg / uvm_mem)">13</a><a href="lab14.html" data-n="14" title="Lab 14 — Factory, callback, catcher">14</a><a href="lab15.html" data-n="15" title="Lab 15 — Regression & closure">15</a></nav>
+  <button type="button" class="iconbtn" id="theme-toggle" aria-label="Đổi giao diện sáng/tối">☾</button>
+</header>
+<div class="layout">
+<aside class="side" aria-label="Mục lục">
+  <nav class="side-toc">
+    <p class="side-title">Trong bài này</p>
+    <ol>
+<li><a href="#muc-tongquan">1. Tổng quan lab</a></li>
+<li><a href="#m1">2. Vị trí trong testbench</a></li>
+<li><a href="#m2">3. Mục tiêu học</a></li>
+<li><a href="#m3">4. Keyword &amp; khái niệm mới</a></li>
+<li><a href="#m4">5. Chuẩn bị</a></li>
+<li><a href="#m5">6. Lý thuyết ngắn — driver pull + drain (+ UVM bên trong)</a></li>
+<li><a href="#m6">7. Iteration 0 — driver nạp + chạy chương trình cứng</a></li>
+<li><a href="#m7">8. Iterations</a></li>
+<li><a href="#m8">9. Bảng tổng hợp</a></li>
+<li><a href="#m9">10. BASELINE sang Lab 4</a></li>
+<li><a href="#m10">11. Checklist nhớ code</a></li>
+<li><a href="#m11">12. Phỏng vấn — hỏi &amp; đáp</a></li>
+<li><a href="#m12">13. Cheat-sheet</a></li>
+<li><a href="#m13">14. Bài tập code &amp; câu hỏi nâng cao UVM</a></li>
+    </ol>
+  </nav>
+  <div class="side-tools">
+    <button type="button" class="btn" data-act="expand">Mở tất cả spoiler</button>
+    <button type="button" class="btn" data-act="collapse">Đóng tất cả spoiler</button>
+    <button type="button" class="btn" data-act="qa-close">Ẩn đáp án QA (tự test)</button>
+    <button type="button" class="btn" data-act="top">↑ Lên đầu trang</button>
+  </div>
+</aside>
+<main class="main">
+<header class="hero" data-num="03">
+  <div class="eyebrow"><span class="pill">Lab 03 / 15</span><span class="phase">Nền tảng</span></div>
+  <h1>Lab 03 — RISC-V Driver (backdoor nạp chương trình + drain pipeline)</h1>
+  <p class="tags"><span class="tag uvm">uvm_driver</span><span class="tag">get_next_item/item_done</span><span class="tag uvm">config_db get vif</span><span class="tag uvm">virtual interface</span><span class="tag">@(posedge)/fork</span><span class="tag">drain latency</span></p>
+</header>
+<nav class="toc" aria-label="Mục lục bài lab"><strong>📑 Mục lục</strong><ol>
+<li><a href="#muc-tongquan">1. Tổng quan lab</a></li>
+<li><a href="#m1">2. Vị trí trong testbench</a></li>
+<li><a href="#m2">3. Mục tiêu học</a></li>
+<li><a href="#m3">4. Keyword &amp; khái niệm mới</a></li>
+<li><a href="#m4">5. Chuẩn bị</a></li>
+<li><a href="#m5">6. Lý thuyết ngắn — driver pull + drain (+ UVM bên trong)</a></li>
+<li><a href="#m6">7. Iteration 0 — driver nạp + chạy chương trình cứng</a></li>
+<li><a href="#m7">8. Iterations</a></li>
+<li><a href="#m8">9. Bảng tổng hợp</a></li>
+<li><a href="#m9">10. BASELINE sang Lab 4</a></li>
+<li><a href="#m10">11. Checklist nhớ code</a></li>
+<li><a href="#m11">12. Phỏng vấn — hỏi &amp; đáp</a></li>
+<li><a href="#m12">13. Cheat-sheet</a></li>
+<li><a href="#m13">14. Bài tập code &amp; câu hỏi nâng cao UVM</a></li>
+</ol></nav>
+
+<div class="note" id="muc-tongquan">
+  <strong>Tổng quan lab</strong>
+  <ul>
+    <li><strong>Lab này làm gì:</strong> xây <code>riscv_driver</code>. Với CPU pipeline <em>không</em> có bus,
+      "lái DUT" = (1) giữ reset &amp; xóa ROM, (2) lấy từng <code>riscv_seq_item</code>, <code>encode()</code>
+      rồi <strong>backdoor nạp vào ROM</strong> theo index tăng dần, (3) nhả reset, (4) <strong>drain</strong>
+      đủ chu kỳ để mọi lệnh "chảy" tới WB và commit.</li>
+    <li><strong>Tạo ra file nào:</strong> <code>tb/agent/riscv_driver.sv</code>, thêm 1 trường
+      <code>last_instr</code> vào <code>riscv_seq_item.sv</code>, và top chạy thử
+      <code>riscv_drv_tb.sv</code> (sequencer + sequence nhỏ + test tối giản).</li>
+    <li><strong>Nhận gì từ lab trước:</strong> <code>riscv_if.sv</code> (Lab 1) + <code>riscv_seq_item.sv</code> (Lab 2).</li>
+    <li><strong>Lab sau dùng để làm gì:</strong> Lab 5 gói driver vào agent; Lab 6 thay sequence cứng bằng
+      sequence theo lớp lệnh; monitor (Lab 4) chạy song song quan sát retire.</li>
+  </ul>
+</div>
+
+<div class="callout uvm"><strong>Trọng tâm UVM của lab</strong>
+<ul>
+  <li><strong>Handshake sequencer ↔ driver</strong>: <code>get_next_item</code> / <code>item_done</code>, và khi nào dùng <code>get</code>, <code>peek</code>, <code>try_next_item</code>.</li>
+  <li><strong><code>run_phase</code> &amp; objection</strong>: ai giữ test sống, vì sao driver không raise objection.</li>
+  <li><strong>Reset-aware driver</strong> và nguyên tắc “driver chỉ thực thi, không quyết định stimulus”.</li>
+  <li><strong>config_db</strong> trong <code>build_phase</code>: kiểu phải khớp tuyệt đối (<code>int unsigned</code> ≠ <code>int</code>). Code đã được sửa để driver thực sự <code>get</code> <code>drain</code>.</li>
+  <li>CPU không có bus nên “drive” = nạp chương trình + reset + drain — nhưng cấu trúc driver y như driver AXI.</li>
+</ul></div>
+
+<div class="note warn"><strong>Giao thức "nạp rồi chạy":</strong> khác driver AXI lái từng chu kỳ bus. Ở đây
+driver nạp <em>cả chương trình</em> lúc reset (tức thì, qua backdoor), rồi mới cho chạy. Quy ước: item cuối
+cùng của chương trình đặt <code>last_instr=1</code> để driver biết dừng nạp và bắt đầu drain.</div>
+
+
+
+<h2 id="m1">2. Vị trí trong testbench</h2>
+<pre><code> sequence --(seq_item)--> [ sequencer ] --(get_next_item)--> [ riscv_driver (LAB 3) ]
+                                                                 │ encode()+load_instr(idx++)
+                                                                 ▼
+                                               ROM(u_imem) --> pipeline chạy --> drain tới WB</code></pre>
+
+<h2 id="m2">3. Mục tiêu học</h2>
+<ul>
+  <li><code>uvm_driver #(riscv_seq_item)</code> + vòng <code>get_next_item/item_done</code> (TLM pull).</li>
+  <li>Lấy virtual interface qua <code>uvm_config_db#(virtual riscv_if)::get</code>.</li>
+  <li>Reset đúng cách CPU: giữ <code>rst=1</code>, xóa ROM, nạp chương trình, nhả reset.</li>
+  <li>Hiểu <strong>drain latency</strong>: phải chạy thêm (chiều sâu pipeline) chu kỳ để lệnh cuối commit.</li>
+  <li>Tách rõ "phase nạp" (reset cao) và "phase chạy" (reset thấp).</li>
+</ul>
+
+<h2 id="m3">4. Keyword &amp; khái niệm mới</h2>
+<div class="table-wrap"><table>
+<tr><th>Keyword</th><th>Giải thích</th><th>Ví dụ</th></tr>
+<tr><td><code>uvm_driver#(T)</code></td><td>Component nhận item, lái DUT</td><td><code>class riscv_driver extends uvm_driver#(riscv_seq_item);</code></td></tr>
+<tr><td><code>seq_item_port</code></td><td>Cổng kéo item từ sequencer</td><td><code>seq_item_port.get_next_item(req);</code></td></tr>
+<tr><td><code>get_next_item/item_done</code></td><td>Lấy item (block) / báo xong</td><td>cặp luôn đi đôi</td></tr>
+<tr><td><code>uvm_config_db get</code></td><td>Lấy vif do top set</td><td><code>uvm_config_db#(virtual riscv_if)::get(this,"","vif",vif)</code></td></tr>
+<tr><td>drain / flush latency</td><td>Số chu kỳ chạy thêm để pipeline rỗng</td><td><code>repeat(n+DRAIN) @cb;</code></td></tr>
+<tr><td><code>run_phase</code></td><td>Phase chạy mô phỏng (có objection)</td><td><code>task run_phase(uvm_phase phase);</code></td></tr>
+</table></div>
+
+<h2 id="m4">5. Chuẩn bị</h2>
+<pre><code>cd ~/Study/KLtN/code/tb_uvm/uvm_riscv
+# dùng lại tb/if/riscv_if.sv (Lab1), tb/agent/riscv_seq_item.sv (Lab2)</code></pre>
+<p>Thêm trường <code>last_instr</code> vào seq_item (báo lệnh cuối của chương trình):</p>
+<pre><code>// trong class riscv_seq_item, thêm (KHÔNG rand - do sequence đặt tay):
+  bit last_instr;      // 1 = lệnh cuối chương trình
+  // và trong `uvm_object_utils_begin ... thêm:
+  //   `uvm_field_int(last_instr, UVM_ALL_ON)</code></pre>
+
+<h2 id="m5">6. Lý thuyết ngắn — driver pull + drain (+ UVM bên trong)</h2>
+<ol>
+  <li><strong>Pull model:</strong> driver chủ động <code>get_next_item</code> (block tới khi sequence đưa item),
+    xử lý, rồi <code>item_done</code>. Không có item thì driver ngủ.</li>
+  <li><strong>Nạp lúc reset:</strong> ghi ROM bằng backdoor là tức thì (không tốn chu kỳ), nên nạp cả chương
+    trình trong lúc <code>rst=1</code> rồi mới nhả — PC bắt đầu từ 0 đọc đúng lệnh.</li>
+  <li><strong>Drain:</strong> lệnh cuối ở index <code>N-1</code> cần ~5 chu kỳ nữa mới tới WB. Chạy
+    <code>N + DRAIN</code> chu kỳ (DRAIN≈8 cho an toàn, tính cả stall) để chắc chắn commit hết.</li>
+  <li><strong>Vì sao cần <code>last_instr</code>?</strong> Driver pull không biết chương trình dài bao nhiêu;
+    cờ này báo "nạp xong, chuyển sang chạy".</li>
+</ol>
+
+<h3>6.5. Giao thức sequencer ↔ driver bên trong</h3>
+<p>Driver có <code>seq_item_port</code> (<code>uvm_seq_item_pull_port#(REQ,RSP)</code>), sequencer có <code>seq_item_export</code>. <code>start_item(it)</code> của sequence <em>block</em> tới khi sequencer cấp quyền
+(arbitration), <code>finish_item(it)</code> gửi item và <em>block</em> tới khi driver gọi <code>item_done()</code>.</p>
+<pre><code>sequence                sequencer                  driver
+ start_item(it)  ───►   chờ arbitration
+                  ◄───  grant
+ it.randomize()
+ finish_item(it) ───►   đặt vào hàng đợi  ───►    get_next_item(req)   // block tới khi có item
+   (block)                                          …lái DUT…
+                                            ◄───    item_done()          // sequence được thả
+ (return)        ◄───</code></pre>
+<div class="table-wrap"><div class="table-wrap"><table>
+<tr><th>API (driver)</th><th>Hành vi</th><th>Dùng khi</th></tr>
+<tr><td><code>get_next_item(req)</code></td><td>Block tới khi có item; phải gọi <code>item_done()</code> sau</td><td>Mặc định — 1 item = 1 giao dịch</td></tr>
+<tr><td><code>try_next_item(req)</code></td><td>Không block; <code>req==null</code> nếu chưa có</td><td>Driver phải lái idle khi không có item (bus có clock chạy)</td></tr>
+<tr><td><code>get(req)</code></td><td>Lấy và <em>tự</em> done (không cần <code>item_done</code>)</td><td>Pipelining: nhận item mới trước khi xử lý xong item cũ</td></tr>
+<tr><td><code>peek(req)</code></td><td>Xem item, không lấy khỏi sequencer</td><td>Lookahead</td></tr>
+<tr><td><code>item_done(rsp)</code></td><td>Báo xong, tùy chọn trả response</td><td>Sequence cần đọc dữ liệu trả về</td></tr>
+</table></div></div>
+
+<h3>6.6. <code>run_phase</code>, objection và kết thúc test</h3>
+<p><code>run_phase</code> của mọi component chạy <strong>song song</strong>; phase kết thúc khi <em>không còn objection nào</em>. Driver chạy <code>forever</code> chờ item nên <strong>không</strong> raise objection — nếu nó raise rồi không drop, test không bao giờ kết thúc.
+Người raise là <em>test</em> (hoặc sequence gốc): “còn việc kích thích đang chạy”. Khi hết objection, UVM kill các <code>forever</code> còn lại và sang <code>extract/check/report</code>.</p>
+<div class="callout pitfall"><strong>Bẫy hay gặp:</strong> (1) quên <code>item_done()</code> → sequence kẹt ở <code>finish_item</code> → mô phỏng treo (Iteration 5). (2) <code>get_next_item</code> hai lần liên tiếp không có <code>item_done</code> → <code>UVM_WARNING</code> “get_next_item/try_next_item called twice without item_done or get in between”. (3) Không raise objection ở test → <code>run_phase</code> kết thúc tại time 0, không có log nào.</div>
+
+<h3>6.7. Driver có biết reset không?</h3>
+<p>Driver “thật” phải chịu được reset giữa chừng: nếu DUT reset khi đang lái item thì item dở dang phải bỏ, driver quay về trạng thái idle. Hai mẫu phổ biến:
+<code>fork … join_any</code> với <code>wait(vif.rst)</code> để hủy (như AXI driver), hoặc UVM 1.2 <em>reset_phase/domain</em> (ít dùng trong thực tế). Ở lab này reset là một phần của giao thức (“nạp lúc reset”), nên driver chủ động điều khiển reset thay vì phản ứng với nó.</p>
+<pre><code>// mẫu reset-aware cho bus driver (tham khảo)
+task drive_one(riscv_seq_item req);
+  fork
+    begin : do_xfer   /* lái item */ end
+    begin : watch_rst  wait (vif.rst === 1'b1); end
+  join_any
+  disable fork;     // hủy phần còn lại nếu reset giữa chừng
+endtask</code></pre>
+
+<h3>6.8. Quy tắc thiết kế driver</h3>
+<ul>
+  <li><strong>Stateless theo item</strong>: kết quả lái chỉ phụ thuộc item (+ config), không phụ thuộc “item trước là gì” (trừ việc bus cần).</li>
+  <li><strong>Không randomize trong driver</strong> — stimulus thuộc về sequence; driver chỉ thực thi. Nhờ vậy sequence tái dùng được với driver khác.</li>
+  <li><strong>Không so sánh/check</strong> — việc của monitor + scoreboard.</li>
+  <li>Cấu hình qua <code>config_db</code> (<code>drain</code>), không hard-code: <code>uvm_config_db#(int unsigned)::get(this,"","drain",DRAIN)</code>. Kiểu <code>int</code> ≠ <code>int unsigned</code> → get trả 0, giữ giá trị mặc định, không ai báo.</li>
+</ul>
+<div class="callout debug"><strong>Debug:</strong> chạy <code>+UVM_CONFIG_DB_TRACE</code> để thấy dòng <code>get</code> của <code>drain</code> thành công hay thất bại; <code>+UVM_VERBOSITY=UVM_HIGH</code> để thấy từng <code>load[i]</code>.</div>
+
+<h2 id="m6">7. Iteration 0 — driver nạp + chạy chương trình cứng</h2>
+
+<details><summary>Xem full code: tb/agent/riscv_driver.sv</summary>
+<pre><code>// tb/agent/riscv_driver.sv
+`ifndef RISCV_DRIVER_SV
+`define RISCV_DRIVER_SV
+
+class riscv_driver extends uvm_driver #(riscv_seq_item);
+  `uvm_component_utils(riscv_driver)
+
+  virtual riscv_if vif;
+  int unsigned DRAIN = 8;   // số chu kỳ drain pipeline
+
+  function new(string name, uvm_component parent);
+    super.new(name, parent);
+  endfunction
+
+  function void build_phase(uvm_phase phase);
+    super.build_phase(phase);
+    if (!uvm_config_db#(virtual riscv_if)::get(this, "", "vif", vif))
+      `uvm_fatal("DRV", "Khong lay duoc virtual interface 'vif'")
+    // DRAIN do agent/cfg set (Lab 5). Kiểu phải KHỚP TUYỆT ĐỐI (int unsigned) hoặc get() trả 0 âm thầm.
+    void'(uvm_config_db#(int unsigned)::get(this, "", "drain", DRAIN));
+  endfunction
+
+  // Reset: giữ rst cao, xóa ROM về NOP
+  task automatic reset_dut();
+    vif.rst &lt;= 1'b1;
+    vif.clear_imem();
+    repeat (3) @(posedge vif.clk);
+  endtask
+
+  task run_phase(uvm_phase phase);
+    riscv_seq_item req;
+    int idx = 0;
+
+    reset_dut();
+
+    // ---- Phase NẠP: pull item, encode, ghi ROM tới khi gặp last_instr ----
+    forever begin
+      seq_item_port.get_next_item(req);
+      vif.load_instr(idx, req.encode());
+      `uvm_info("DRV", $sformatf("load[%0d] = 0x%08h (%s)", idx, req.encode(),
+                                 req.convert2str()), UVM_HIGH)
+      idx++;
+      seq_item_port.item_done();
+      if (req.last_instr) break;
+    end
+
+    // ---- Phase CHẠY: nhả reset, drain pipeline ----
+    @(posedge vif.clk);
+    vif.rst &lt;= 1'b0;
+    repeat (idx + DRAIN) @(posedge vif.clk);
+
+    `uvm_info("DRV", $sformatf("Chay xong %0d lenh (+%0d drain)", idx, DRAIN), UVM_LOW)
+  endtask
+
+endclass
+`endif</code></pre>
+</details>
+
+<details><summary>Xem full code: tb/top/riscv_drv_tb.sv (sequencer + sequence + test tối giản)</summary>
+<pre><code>// tb/top/riscv_drv_tb.sv — harness tối giản để chạy thử driver (chưa có agent/env)
+`timescale 1ns/1ps
+module riscv_drv_tb;
+  import uvm_pkg::*; `include "uvm_macros.svh"
+  `include "riscv_seq_item.sv"
+  `include "riscv_driver.sv"
+
+  // clock + interface + DUT (giống Lab 1)
+  logic clk = 0; always #5 clk = ~clk;
+  riscv_if vif (.clk(clk));
+  riscv_pipeline_top dut (.clk(clk), .rst(vif.rst), .out_pc(), .out_alu_result());
+
+  // probe + shadow pipeline (rút gọn từ Lab 1 — cần cho peek)
+  // (ở đây chỉ cần backdoor peek_reg, nên không bắt buộc shadow; vẫn giữ để đồng bộ Lab 1)
+
+  typedef uvm_sequencer #(riscv_seq_item) riscv_sequencer;
+
+  // Sequence cứng: addi x1,x0,5 ; addi x2,x1,3 ; add x3,x1,x2 ; jal x0,0(last)
+  class prog_seq extends uvm_sequence #(riscv_seq_item);
+    `uvm_object_utils(prog_seq)
+    function new(string name="prog_seq"); super.new(name); endfunction
+    task body();
+      bit [31:0] words[] = '{32'h00500093, 32'h00308113, 32'h002081b3, 32'h0000006f};
+      foreach (words[i]) begin
+        riscv_seq_item it = riscv_seq_item::type_id::create($sformatf("it%0d",i));
+        start_item(it);
+        // ép item mang đúng word: dùng constraint inline qua các trường đã có
+        void'(it.randomize() with { }); // giữ random hợp lệ nhưng ta ghi đè encode bằng raw
+        it.raw_word  = words[i];          // (thêm trường raw_word - xem ghi chú)
+        it.use_raw   = 1'b1;
+        it.last_instr= (i == words.size()-1);
+        finish_item(it);
+      end
+    endtask
+  endclass
+
+  class drv_test extends uvm_test;
+    `uvm_component_utils(drv_test)
+    riscv_driver   drv;
+    riscv_sequencer sqr;
+    function new(string n, uvm_component p); super.new(n,p); endfunction
+    function void build_phase(uvm_phase phase);
+      drv = riscv_driver::type_id::create("drv", this);
+      sqr = riscv_sequencer::type_id::create("sqr", this);
+      uvm_config_db#(virtual riscv_if)::set(this, "drv", "vif", vif);
+    endfunction
+    function void connect_phase(uvm_phase phase);
+      drv.seq_item_port.connect(sqr.seq_item_export);
+    endfunction
+    task run_phase(uvm_phase phase);
+      prog_seq seq = prog_seq::type_id::create("seq");
+      phase.raise_objection(this);
+      seq.start(sqr);
+      // chờ driver drain xong rồi kiểm tra regfile
+      repeat (20) @(posedge clk);
+      `uvm_info("TEST", $sformatf("x1=%0d x2=%0d x3=%0d (mong 5,8,13)",
+                vif.peek_reg(1), vif.peek_reg(2), vif.peek_reg(3)), UVM_LOW)
+      phase.drop_objection(this);
+    endtask
+  endclass
+
+  initial begin
+    uvm_config_db#(virtual riscv_if)::set(null, "*", "vif", vif);
+    run_test("drv_test");
+  end
+endmodule</code></pre>
+</details>
+
+<div class="note warn"><strong>Ghi chú về <code>raw_word</code>/<code>use_raw</code>:</strong> để nạp đúng word
+cứng (thay vì phụ thuộc random), Lab 3 thêm 2 trường tiện ích vào <code>riscv_seq_item</code>:
+<code>bit [31:0] raw_word; bit use_raw;</code> và sửa <code>encode()</code> trả <code>raw_word</code> khi
+<code>use_raw=1</code>. Từ Lab 6 trở đi ta dùng sequence random thực sự nên không cần nữa; giữ lại phục vụ
+directed test.</div>
+<pre><code>// tb/agent/riscv_seq_item.sv — 3 chỗ sửa (đã compile + chạy trên xsim 2023.2)
+// (1) cạnh "bit [6:0] opcode, funct7;"
+  bit        last_instr;
+  bit [31:0] raw_word;
+  bit        use_raw;
+// (2) trong `uvm_object_utils_begin ... uvm_object_utils_end, thêm:
+    `uvm_field_int(last_instr, UVM_ALL_ON)
+// (3) dòng đầu thân encode(), ngay sau phần khai báo biến:
+    if (use_raw) return raw_word;</code></pre>
+
+<p><strong>Lệnh chạy:</strong></p>
+<pre><code>cd ~/Study/KLtN/code/tb_uvm/uvm_riscv/sim</code></pre>
+<pre><code>xvlog -sv ../tb/if/riscv_if.sv ../rtl/instruction_memory.sv ../rtl/register_file.sv ../rtl/data_memory.sv ../rtl/control_unit.sv ../rtl/imm_gen.sv ../rtl/alu_control.sv ../rtl/alu.sv ../rtl/branch_control.sv ../rtl/mux.sv ../rtl/adder.sv ../rtl/riscv_pipeline_top.sv</code></pre>
+<pre><code>xvlog -sv -L uvm -i ../tb/agent ../tb/top/riscv_drv_tb.sv</code></pre>
+<pre><code>xelab -L uvm -timescale 1ns/1ps riscv_drv_tb -s drv_sim</code></pre>
+<pre><code>xsim drv_sim -R -testplusarg UVM_TESTNAME=drv_test</code></pre>
+
+<details><summary>Expected log</summary>
+<pre><code>UVM_INFO @ 0: reporter [RNTST] Running test drv_test...
+UVM_INFO ../tb/agent/riscv_driver.sv(52) @ 155000: uvm_test_top.drv [DRV] Chay xong 4 lenh (+8 drain)
+UVM_INFO .../tb/top/riscv_drv_tb.sv(57) @ 225000: uvm_test_top [TEST] x1=5 x2=8 x3=13 (mong 5,8,13)
+UVM_INFO ... [UVM/REPORT/SERVER]
+UVM_ERROR :    0
+UVM_FATAL :    0</code></pre>
+<p><em>Nếu x1/x2/x3 đúng → driver nạp + chạy + drain hoạt động. Các dòng <code>[DRV] load[i]</code> ở mức <code>UVM_HIGH</code> nên mặc định không hiện — xem Iteration 4.
+(Có thêm vài dòng <code>[NO_DPI_TSTNAME]</code>, <code>[UVM/COMP/NAMECHECK]</code> do xsim chạy UVM không DPI — bỏ qua.)</em></p>
+</details>
+
+<h2 id="m7">8. Iterations</h2>
+
+<h3>Iteration 1 — đổi DRAIN = 1 (quá ngắn) để thấy lệnh cuối chưa commit</h3>
+<p>Đặt <code>DRAIN=1</code>. Lệnh cuối chưa kịp tới WB nếu nó ghi reg.</p>
+<details><summary>Khác biệt</summary><p>Với chương trình trên, <code>jal</code> cuối không ghi x nên kết quả vẫn đúng; nhưng nếu lệnh cuối là
+<code>add</code>, DRAIN nhỏ sẽ làm regfile thiếu cập nhật. Dạy: DRAIN phải ≥ chiều sâu pipeline.</p></details>
+
+<h3>Iteration 2 — thêm chuỗi load-use, quan sát driver vẫn đúng</h3>
+<p>Đổi chương trình: <code>addi x1,x0,9; sw x1,0(x0); lw x5,0(x0); add x6,x5,x5; jal x0,0</code>.</p>
+<details><summary>Khác biệt</summary><p>Pipeline tự stall 1 chu kỳ (load-use). Driver không cần biết — nó chỉ nạp + chạy; DRAIN=8 đủ bù stall.
+x5=9, x6=18. Dạy: driver tách biệt khỏi micro-architecture.</p></details>
+
+<h3>Iteration 3 — reset 2 lần (2 chương trình liên tiếp)</h3>
+<p>Trong test, gọi <code>seq.start(sqr)</code> hai lần với 2 chương trình khác nhau.
+<strong>Driver Iteration 0 chỉ chạy một lượt rồi thoát <code>run_phase</code></strong> — lần <code>start</code> thứ hai không còn ai <code>get_next_item</code> nên test <em>treo</em>
+(đã chạy thử: log dừng sau dòng <code>prog1</code>). Bọc thân <code>run_phase</code> trong <code>forever</code>:</p>
+<details><summary>Full run_phase (mới) trong riscv_driver</summary>
+<pre><code>  task run_phase(uvm_phase phase);
+    riscv_seq_item req;
+    int idx;
+    forever begin
+      idx = 0;
+      reset_dut();
+      forever begin                                   // phase NẠP
+        seq_item_port.get_next_item(req);
+        vif.load_instr(idx, req.encode());
+        `uvm_info("DRV", $sformatf("load[%0d] = 0x%08h (%s)", idx, req.encode(),
+                                   req.convert2str()), UVM_HIGH)
+        idx++;
+        seq_item_port.item_done();
+        if (req.last_instr) break;
+      end
+      @(posedge vif.clk);                             // phase CHẠY
+      vif.rst &lt;= 1'b0;
+      repeat (idx + DRAIN) @(posedge vif.clk);
+      `uvm_info("DRV", $sformatf("Chay xong %0d lenh (+%0d drain)", idx, DRAIN), UVM_LOW)
+    end
+  endtask</code></pre></details>
+<p>Trong <code>prog_seq</code> thêm <code>int sel;</code> (chọn bộ <code>words</code>), trong test: <code>seq.start(sqr); ...; seq.sel=1; seq.start(sqr);</code> (đã chạy: 2 dòng <code>[DRV] Chay xong</code>, 4 rồi 3 lệnh).</p>
+<details><summary>Khác biệt</summary><p>Mỗi lần driver <code>reset_dut()</code> → xóa ROM → nạp mới. Regfile cũng bị reset về 0. Dạy: mỗi chương
+trình là một "thí nghiệm" độc lập.</p></details>
+
+<h3>Iteration 4 — <code>UVM_HIGH</code> verbosity in chi tiết nạp</h3>
+<p>Chạy với <code>+UVM_VERBOSITY=UVM_HIGH</code>.</p>
+<details><summary>Khác biệt</summary><p>Thấy từng dòng <code>load[i]=...</code>. Dạy: dùng verbosity để bật/tắt log debug mà không sửa code.</p></details>
+
+<h3>Iteration 5 — quên <code>item_done()</code> (lỗi kinh điển)</h3>
+<p>Comment dòng <code>seq_item_port.item_done();</code>.</p>
+<details><summary>Khác biệt</summary><p>Mô phỏng <strong>treo</strong> (hang): sequence chờ mãi vì driver không báo xong item đầu. Dạy: mỗi
+<code>get_next_item</code> phải có đúng 1 <code>item_done</code>.</p></details>
+
+<h2 id="m8">9. Bảng tổng hợp</h2>
+<div class="table-wrap"><table><tr><th>Iter</th><th>Đổi</th><th>Học</th></tr>
+<tr><td>0</td><td>driver nạp+chạy chương trình cứng</td><td>pull model + drain</td></tr>
+<tr><td>1</td><td>DRAIN=1</td><td>drain ≥ chiều sâu pipeline</td></tr>
+<tr><td>2</td><td>chuỗi load-use</td><td>driver độc lập micro-arch</td></tr>
+<tr><td>3</td><td>reset 2 lần</td><td>thí nghiệm độc lập</td></tr>
+<tr><td>4</td><td>UVM_HIGH</td><td>verbosity</td></tr>
+<tr><td>5</td><td>bỏ item_done</td><td>get/item_done đi đôi</td></tr>
+</table></div>
+
+<h2 id="m9">10. BASELINE sang Lab 4</h2>
+<p><code>riscv_driver.sv</code> bản chuẩn: lấy vif qua config_db, <code>reset_dut()</code>, vòng nạp tới
+<code>last_instr</code>, nhả reset, drain <code>idx+DRAIN</code>. <code>riscv_seq_item.sv</code> có thêm
+<code>last_instr</code> (+ tùy chọn <code>raw_word/use_raw</code>). Lab 4 chạy monitor <em>song song</em> driver.</p>
+
+<h2 id="m10">11. Checklist nhớ code</h2>
+<ul>
+  <li>[ ] Gõ lại <code>build_phase</code> lấy vif + fatal nếu thiếu.</li>
+  <li>[ ] Nhớ vòng <code>get_next_item → load_instr → item_done → if(last) break</code>.</li>
+  <li>[ ] Nhớ 2 phase: nạp (rst=1) rồi chạy (rst=0) + drain.</li>
+</ul>
+
+<h2 id="m11">12. Phỏng vấn — hỏi &amp; đáp</h2>
+<p>Bấm câu hỏi để xem đáp án — nên tự trả lời miệng trước khi mở. Mỗi câu có ví dụ cụ thể như khi bị hỏi trong phỏng vấn.</p>
+<div class="qa-list">
+<details class="qa"><summary><code>get_next_item</code> vs <code>get</code> vs <code>try_next_item</code> — khác nhau ra sao? Khi nào mỗi cái hợp lý?</summary>
+<div class="ans">
+<p><code>get_next_item</code>: block, yêu cầu <code>item_done</code> sau — mặc định. <code>get</code>: block, tự done ngay — dùng khi driver pipeline (nhận item N+1 khi N còn đang lái). <code>try_next_item</code>: không block — dùng khi driver phải <em>tiếp tục lái idle</em> mỗi chu kỳ ngay cả khi chưa có item (bus có clock chạy liên tục).</p>
+<pre><code>forever begin
+  seq_item_port.try_next_item(req);
+  if (req == null) begin  vif.drive_idle();  @(vif.drv_cb);  end
+  else begin              drive(req);        seq_item_port.item_done();  end
+end</code></pre>
+<p>Lỗi hay gặp: dùng <code>try_next_item</code> trong vòng lặp không có <code>@(clk)</code> khi req==null → vòng lặp 0 thời gian → treo mô phỏng.</p>
+</div></details>
+<details class="qa"><summary>Quên <code>item_done()</code> thì chuyện gì xảy ra? Dấu hiệu nhận biết trong log?</summary>
+<div class="ans">
+<p>Sequence kẹt ở <code>finish_item</code> vì không được báo hoàn tất → các item sau không bao giờ được gửi. Mô phỏng không báo lỗi; nó “chạy” nhưng treo hoặc kết thúc vì timeout. Dấu hiệu: log dừng ngay sau <code>load[0]</code>; <code>+UVM_TIMEOUT</code>/watchdog bắn, hoặc <code>UVM_WARNING … get_next_item/try_next_item called twice without item_done</code> ở lần lặp sau.</p>
+<p>Biện pháp phòng: luôn đặt <code>item_done()</code> trong cùng khối với <code>get_next_item()</code>; với driver phức tạp, gói xử lý trong một task riêng và gọi <code>item_done()</code> ở đúng một chỗ sau khi task trả về (kể cả khi bị hủy bởi reset).</p>
+</div></details>
+<details class="qa"><summary>Ai nên raise/drop objection — driver, sequence hay test? Vì sao?</summary>
+<div class="ans">
+<p>Người biết “việc kích thích đã xong chưa”: thường là <strong>test</strong> hoặc <strong>virtual sequence gốc</strong> (<code>starting_phase.raise_objection(this)</code>). Driver/monitor chạy <code>forever</code>, nếu raise sẽ giữ test mãi. Một ngoại lệ hợp lý: scoreboard raise objection khi còn transaction chưa so (Lab 11) rồi drop khi hàng đợi rỗng.</p>
+<pre><code>task run_phase(uvm_phase phase);
+  phase.raise_objection(this, "start stimulus");
+  seq.start(env.agent.sqr);
+  phase.phase_done.set_drain_time(this, 100ns);   // cho DUT/monitor kịp xả
+  phase.drop_objection(this);
+endtask</code></pre>
+</div></details>
+<details class="qa"><summary>Vì sao driver không nên gọi <code>randomize()</code>? Có trường hợp ngoại lệ nào?</summary>
+<div class="ans">
+<p>Phân tách trách nhiệm: <strong>sequence quyết định “gửi gì”</strong>, driver “gửi thế nào”. Nếu driver random, mọi sequence directed/negative mất quyền kiểm soát, và không thể tái hiện stimulus từ log của sequence. Ngoại lệ chấp nhận được: random các tham số <em>timing</em> không ảnh hưởng chức năng (độ trễ giữa 2 giao dịch) — và nên đặt ở <em>config object</em> (<code>cfg.delay_min/max</code>), không hard-code.</p>
+</div></details>
+<details class="qa"><summary><code>uvm_config_db::get(…, "drain", DRAIN)</code> mà sim vẫn dùng giá trị mặc định — nguyên nhân?</summary>
+<div class="ans">
+<p>Các lý do thường gặp, theo xác suất: (1) <strong>kiểu không khớp</strong>: <code>set</code> bằng <code>int unsigned</code> nhưng <code>get</code> bằng <code>int</code> → fail im lặng. (2) <strong>scope</strong>: <code>set(this,"drv",…)</code> từ agent nhưng driver tên khác (<code>driver</code>). (3) <strong>thứ tự</strong>: <code>set</code> sau <code>build_phase</code> của driver. (4) Không kiểm tra giá trị trả về của <code>get</code>.</p>
+<pre><code>if (!uvm_config_db#(int unsigned)::get(this, "", "drain", DRAIN))
+  `uvm_info("CFG", "drain: dung mac dinh 8", UVM_MEDIUM)   // thà báo còn hơn im lặng</code></pre>
+<p>Công cụ: <code>+UVM_CONFIG_DB_TRACE</code> in mọi set/get kèm kết quả.</p>
+</div></details>
+<details class="qa"><summary>Driver xử lý reset giữa chừng như thế nào? So sánh với driver của lab.</summary>
+<div class="ans">
+<p>Driver bus phải bỏ item đang lái và về idle khi <code>rst</code> assert — thường bằng <code>fork…join_any</code> với <code>wait(rst)</code> rồi <code>disable fork</code>, sau đó gọi <code>item_done()</code> (để sequence không treo) và có thể báo trạng thái reset cho sequence/scoreboard (flush queue).</p>
+<p>Driver của lab đơn giản hơn vì giao thức là “giữ reset → nạp → nhả”; reset do <em>chính driver</em> điều khiển. Nhưng cấu trúc câu trả lời vẫn đáng nhớ: reset-aware = có đường thoát + dọn dẹp + không để sequence kẹt.</p>
+</div></details>
+<details class="qa"><summary>Một sequence nhận được response từ driver bằng cách nào? Khi nào cần?</summary>
+<div class="ans">
+<p>Driver gọi <code>seq_item_port.item_done(rsp)</code> (hoặc <code>put_response(rsp)</code>) với <code>rsp.set_id_info(req)</code> để đúng sequence nhận. Trong sequence: <code>get_response(rsp)</code> sau <code>finish_item</code>. Cần khi item mang dữ liệu trả về (đọc bus) hoặc trạng thái (lỗi). Với CPU lab: “response” chính là retire — nhưng nó đi qua <em>monitor + analysis port</em>, không qua kênh response của sequencer, vì kết quả đến sau nhiều chu kỳ và không gắn 1-1 với item nạp.</p>
+</div></details>
+<details class="qa"><summary><code>seq_item_port</code> và <code>seq_item_export</code> khác nhau thế nào? Quên kết nối thì thấy gì?</summary>
+<div class="ans">
+<p><code>seq_item_port</code> (<code>uvm_seq_item_pull_port</code>) nằm ở <strong>driver</strong> — phía <em>yêu cầu</em> item; <code>seq_item_export</code> nằm ở <strong>sequencer</strong> — phía <em>cung cấp</em>. Nối từ bên yêu cầu sang bên cung cấp: <code>drv.seq_item_port.connect(sqr.seq_item_export);</code> trong <code>connect_phase</code> của agent (chỉ khi ACTIVE).</p>
+<p>Quên nối: tới cuối <code>end_of_elaboration</code> UVM kiểm kết nối và báo <code>UVM_ERROR [Connection Error] connection count of 0 does not meet required minimum of 1</code> — lỗi cấu hình hiện ngay từ time 0, không phải treo lúc chạy. Nối ngược chiều: lỗi compile do sai kiểu port/export.</p>
+</div></details>
+</div>
+
+<h2 id="m12">13. Cheat-sheet</h2>
+<pre><code>class riscv_driver extends uvm_driver#(riscv_seq_item);
+  virtual riscv_if vif;
+  build: uvm_config_db#(virtual riscv_if)::get(this,"","vif",vif)
+  run:  reset_dut();
+        forever begin get_next_item(req); vif.load_instr(idx++,req.encode()); item_done();
+               if(req.last_instr) break; end
+        vif.rst&lt;=0; repeat(idx+DRAIN) @(posedge vif.clk);</code></pre>
+
+<h2 id="m13">14. Bài tập code &amp; câu hỏi nâng cao UVM</h2>
+<p>8 bài rèn tay, tăng dần độ khó. Làm trên baseline của lab này; đáp án chỉ là hướng tham khảo — giá trị nằm ở việc bạn tự gõ, chạy và đọc log.</p>
+<div class="ex-progress"><span class="cnt">0 / 8 bài đã làm</span><span class="bar"><i></i></span></div>
+<div class="ex-list">
+<article class="ex"><div class="ex-head"><span class="lv l1">★ Dễ</span><h4>EX1 — Chứng minh treo do thiếu <code>item_done</code></h4></div>
+Comment <code>item_done()</code>, chạy với <code>+UVM_TIMEOUT=10000,YES</code> (hoặc <code>uvm_top.set_timeout</code>). Ghi lại thông điệp timeout. Sau đó khôi phục.
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p>Thông điệp dạng <code>UVM_FATAL … PH_TIMEOUT</code>: “Explicit timeout of 10000 hit, indicating a probable testbench issue”. Bài học: luôn đặt timeout cho regression.</p>
+</details>
+</article>
+<article class="ex"><div class="ex-head"><span class="lv l1">★ Dễ</span><h4>EX2 — Kiểm tra get cho <code>drain</code></h4></div>
+Thêm <code>`uvm_info("CFG", $sformatf("DRAIN=%0d", DRAIN), UVM_LOW)</code> trong <code>build_phase</code>. Cho agent set <code>drain=12</code> bằng <code>int unsigned</code> và rồi bằng <code>int</code>. So log.
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p>Với <code>int</code> thì DRAIN vẫn là 8 (get fail). Chạy thêm <code>+UVM_CONFIG_DB_TRACE</code> để thấy dòng “read” báo không tìm thấy.</p>
+</details>
+</article>
+<article class="ex"><div class="ex-head"><span class="lv l2">★★ Vừa</span><h4>EX3 — Driver dùng <code>try_next_item</code></h4></div>
+Viết lại vòng lặp driver bằng <code>try_next_item</code> + idle <code>@(posedge vif.clk)</code>. Đếm số chu kỳ idle. Điều gì xảy ra nếu bạn quên <code>@(posedge)</code> khi <code>req==null</code>?
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p>Vòng lặp zero-delay → simulator treo ở time 0 (không có thời gian nào trôi). Đây là lý do <code>try_next_item</code> luôn đi kèm một sự kiện thời gian.</p>
+</details>
+</article>
+<article class="ex"><div class="ex-head"><span class="lv l2">★★ Vừa</span><h4>EX4 — Trả response về sequence</h4></div>
+Mở rộng driver: sau khi nạp item, <code>rsp = riscv_seq_item::type_id::create("rsp"); rsp.set_id_info(req); seq_item_port.item_done(rsp);</code> Trong sequence: <code>get_response(rsp)</code>. In <code>rsp.get_transaction_id()</code> và so với <code>req</code>.
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p>Nhớ: nếu sequence không đọc response mà driver cứ gửi, hàng đợi response đầy → cảnh báo. Có thể tắt bằng <code>seq.set_response_queue_depth(-1)</code> hoặc không gửi rsp khi không cần.</p>
+</details>
+</article>
+<article class="ex"><div class="ex-head"><span class="lv l2">★★ Vừa</span><h4>EX5 — Driver reset-aware</h4></div>
+Thêm khả năng: nếu <code>vif.rst</code> bị assert <em>trong khi đang drain</em>, driver hủy drain, gọi lại <code>reset_dut()</code> và báo <code>`uvm_warning</code>. Dùng <code>fork…join_any</code> + <code>disable fork</code>. Kiểm tra bằng cách đẩy rst từ test.
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p>Dùng một <code>process</code>-safe khối <code>fork … join_any; disable fork;</code> bao <em>trong</em> task con (<code>disable fork</code> hủy cả các tiến trình con của thread hiện tại — bọc trong <code>begin … end</code> riêng để không giết nhầm thứ khác).</p>
+</details>
+</article>
+<article class="ex"><div class="ex-head"><span class="lv l2">★★ Vừa</span><h4>EX6 — Drain động</h4></div>
+Thay hằng <code>DRAIN</code> bằng vòng lặp: chạy tiếp cho tới khi <code>vif.ret_valid</code> không xuất hiện suốt 8 chu kỳ liên tiếp (pipeline rỗng), tối đa <code>MAX_DRAIN</code> từ config. Thảo luận ưu/nhược so với hằng số.
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p>Ưu: không phụ thuộc chiều sâu pipeline/stall. Nhược: halt <code>jal x0,0</code> lặp mãi tạo retire liên tục → điều kiện “không retire” không bao giờ xảy ra! Phải dừng theo PC halt hoặc theo số lệnh đã nạp. Một bài học điển hình về điều kiện dừng sai.</p>
+</details>
+</article>
+<article class="ex"><div class="ex-head"><span class="lv l3">★★★ Khó</span><h4>EX7 — Hai sequence, một driver</h4></div>
+Chạy hai sequence song song (<code>fork seq1.start(sqr); seq2.start(sqr); join</code>). Quan sát thứ tự item đến driver, rồi đổi <code>sqr.set_arbitration(UVM_SEQ_ARB_STRICT_FIFO)</code> và so sánh với <code>UVM_SEQ_ARB_RANDOM</code>.
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p>Mặc định <code>UVM_SEQ_ARB_FIFO</code>: công bằng theo thứ tự yêu cầu. Với <code>STRICT_FIFO</code> ưu tiên theo <code>priority</code> rồi FIFO. Chương trình CPU rất nhạy thứ tự → ví dụ vì sao Lab 7 dùng virtual sequence tuần tự thay vì fork.</p>
+</details>
+</article>
+<article class="ex"><div class="ex-head"><span class="lv l3">★★★ Khó</span><h4>EX8 — Đo chi phí <code>uvm_info</code></h4></div>
+Đặt một <code>`uvm_info("DRV", $sformatf("…%0d", heavy_func()), UVM_HIGH)</code> với <code>heavy_func()</code> in một dòng khi được gọi. Chạy ở UVM_LOW và UVM_HIGH. <code>heavy_func</code> có được gọi khi verbosity thấp không?
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p><code>`uvm_info</code> kiểm tra verbosity <em>trước</em> khi đánh giá đối số (macro bọc <code>if (uvm_report_enabled(...))</code>) → ở UVM_LOW <code>heavy_func</code> không chạy. Nhưng nếu bạn tự tính chuỗi ở ngoài macro (<code>string s = $sformatf(...)</code>) thì chi phí vẫn trả — thói quen xấu trong hot path.</p>
+</details>
+</article>
+</div>
+
+
+<nav class="pager" aria-label="Điều hướng lab"><a class="nav-card prev" href="lab02.html" rel="prev"><small>← Lab trước</small><span>Lab 02 — Sequence item</span></a><div class="mid"><button type="button" class="btn primary" id="mark-done" aria-pressed="false">Đánh dấu hoàn thành</button></div><a class="nav-card next" href="lab04.html" rel="next"><small>Lab tiếp →</small><span>Lab 04 — Monitor & analysis port</span></a></nav>
+<p class="foot">UVM · RISC-V Pipeline Speedrun — Lab 03 / 15. Phím tắt: <kbd>[</kbd> lab trước · <kbd>]</kbd> lab sau.</p>
+</main>
+</div>
+</body>
+</html>

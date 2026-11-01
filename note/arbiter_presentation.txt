@@ -1,0 +1,56 @@
+SLIDE 1: TIÊU ĐỀ
+- Tiêu đề chính: Giải phẫu khối AXI Arbiter (Bộ phân xử Bus)
+- Tiêu đề phụ: Kiến trúc, Nguyên lý hoạt động và Ứng dụng trong SoC
+- Trình bày bởi: [Tên của bạn]
+
+---
+SLIDE 2: BÀI TOÁN - TẠI SAO CẦN ARBITER?
+- Vấn đề: Trong hệ thống SoC của chúng ta, cả RISC-V (CPU) và DMA đều là Master. Cả hai đều muốn truy cập vào Bus AXI để đọc/ghi RAM hoặc giao tiếp với lõi SHA.
+- Nếu cả 2 cùng đòi truy cập cùng lúc ở 1 chu kỳ xung nhịp -> Xung đột dữ liệu!
+- Giải pháp: Cần một "Cảnh sát giao thông" (Arbiter) đứng ở ngã tư để bẻ ghi (điều khiển các bộ MUX), quyết định xem ai được đi trước.
+
+---
+SLIDE 3: GIAO TIẾP I/O CỦA MODULE ARBITER
+- Tín hiệu vào (Input từ Masters):
+  + `request`: Bitmask báo hiệu xin đường (VD: CPU giơ tay, DMA giơ tay).
+  + `acknowledge`: Bitmask báo hiệu Master đã truyền xong data.
+- Tín hiệu ra (Output điều khiển):
+  + `grant`: Tín hiệu báo trúng tuyển (dạng one-hot, cấp cho duy nhất 1 Master).
+  + `grant_encoded`: Mã nhị phân của cổng trúng tuyển (Cắm trực tiếp vào chân `sel` của MUX để bẻ ghi phần cứng).
+
+---
+SLIDE 4: CÁC LUẬT CHƠI (PARAMETERS CẤU HÌNH)
+- `PORTS`: Khai báo số lượng Master tham gia (Mặc định: 4).
+- `ARB_TYPE_ROUND_ROBIN`: Chọn thuật toán.
+  + 0 = Ưu tiên cứng (Kẻ mạnh nhất theo thứ tự cổng luôn thắng).
+  + 1 = Xoay vòng (Công bằng cho tất cả).
+- `ARB_BLOCK`: Chế độ khóa cổng (rất quan trọng cho DMA).
+  + Khi = 1, ngã tư bị khóa lại cho đến khi Master truyền xong 1 cụm data lớn (Burst). Kẻ khác không được cướp quyền giữa chừng.
+
+---
+SLIDE 5: DEEP DIVE - THUẬT TOÁN ROUND-ROBIN HOẠT ĐỘNG THẾ NÀO?
+- Code sử dụng 2 bộ mã hóa ưu tiên (Priority Encoders): 
+  1. Bộ toàn cục: Nhìn tất cả các request.
+  2. Bộ mặt nạ (Masked): Chìa khóa của sự công bằng.
+- Cách chạy: Sau khi Port X được cấp quyền, Arbiter tạo ra một cái "mặt nạ" che Port X và các Port trước nó lại. Ở chu kỳ sau, Arbiter ép hệ thống phải nhìn vào các Port phía sau (chưa được phục vụ). 
+- Khi hết người xếp hàng, vòng lặp (wrap-around) được reset nhờ Bộ toàn cục.
+
+---
+SLIDE 6: CHI PHÍ TÀI NGUYÊN (HARDWARE OVERHEAD)
+- Có tốn tài nguyên FPGA không? -> Có, nhưng CỰC KỲ NHỎ.
+- Cụ thể (với 4 Ports):
+  + FFs (Thanh ghi): 11 FFs.
+  + LUTs (Logic): ~20-30 LUTs (Chỉ chứa vài cổng AND, dịch bit và logic MUX).
+- Độ trễ (Latency): Tốn chính xác 1 chu kỳ xung nhịp (1 Cycle) để đưa ra quyết định cấp quyền.
+
+---
+SLIDE 7: ÁP DỤNG VÀO DỰ ÁN RISC-V + SHA CỦA CHÚNG TA
+- Đề xuất cấu hình: 
+  + `ARB_TYPE_ROUND_ROBIN = 0` (Dùng ưu tiên cứng).
+  + Nối DMA vào cổng có mức ưu tiên cao nhất, CPU vào cổng thấp hơn.
+- Tại sao? CPU có thể tạm dừng (stall) vài nhịp không sao. Nhưng DMA cần băng thông liên tục để "bơm" luồng dữ liệu vào bộ mã hóa SHA. Ưu tiên DMA giúp giải quyết triệt để nút thắt cổ chai hệ thống!
+
+---
+SLIDE 8: Q&A (HỎI ĐÁP)
+- Tóm tắt lại: Arbiter là lõi logic của AXI Interconnect/Crossbar.
+- (Mở phần câu hỏi cho teammate).

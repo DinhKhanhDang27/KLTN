@@ -1,7 +1,7 @@
 module adder (
-    input  [63:0] a,
-    input  [63:0] b,
-    output [63:0] result
+    input  [31:0] a,
+    input  [31:0] b,
+    output [31:0] result
 );
 
     assign result = a + b;

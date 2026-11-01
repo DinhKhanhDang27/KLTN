@@ -1,0 +1,525 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Lab 06 — RISC-V Sequences theo lớp lệnh</title>
+<link rel="stylesheet" href="assets/lab.css">
+<script src="assets/lab.js" defer></script>
+</head>
+<body data-lab="6" data-total="15">
+<div id="readbar" aria-hidden="true"></div>
+<header class="topbar">
+  <button type="button" class="iconbtn" id="toc-toggle" aria-label="Mở mục lục">☰</button>
+  <a class="brand" href="index.html"><span class="brand-mark">UVM</span><span>RISC-V <small>Speedrun</small></span></a>
+  <nav class="labdots" aria-label="Chọn lab"><a href="lab01.html" data-n="1" title="Lab 01 — Interface & clocking">1</a><a href="lab02.html" data-n="2" title="Lab 02 — Sequence item">2</a><a href="lab03.html" data-n="3" title="Lab 03 — Driver">3</a><a href="lab04.html" data-n="4" title="Lab 04 — Monitor & analysis port">4</a><a href="lab05.html" data-n="5" title="Lab 05 — Agent, env, test, config">5</a><a href="lab06.html" data-n="6" title="Lab 06 — Sequence library" aria-current="page">6</a><a href="lab07.html" data-n="7" title="Lab 07 — Virtual sequencer">7</a><a href="lab08.html" data-n="8" title="Lab 08 — SVA & bind trong UVM">8</a><a href="lab09.html" data-n="9" title="Lab 09 — Reference model">9</a><a href="lab10.html" data-n="10" title="Lab 10 — Scoreboard in-order">10</a><a href="lab11.html" data-n="11" title="Lab 11 — Scoreboard đầy đủ">11</a><a href="lab12.html" data-n="12" title="Lab 12 — Functional coverage">12</a><a href="lab13.html" data-n="13" title="Lab 13 — RAL (uvm_reg / uvm_mem)">13</a><a href="lab14.html" data-n="14" title="Lab 14 — Factory, callback, catcher">14</a><a href="lab15.html" data-n="15" title="Lab 15 — Regression & closure">15</a></nav>
+  <button type="button" class="iconbtn" id="theme-toggle" aria-label="Đổi giao diện sáng/tối">☾</button>
+</header>
+<div class="layout">
+<aside class="side" aria-label="Mục lục">
+  <nav class="side-toc">
+    <p class="side-title">Trong bài này</p>
+    <ol>
+<li><a href="#muc-tongquan">1. Tổng quan lab</a></li>
+<li><a href="#m1">2. Vị trí trong testbench</a></li>
+<li><a href="#m2">3. Mục tiêu học</a></li>
+<li><a href="#m3">4. Keyword &amp; khái niệm mới</a></li>
+<li><a href="#m4">5. Chuẩn bị</a></li>
+<li><a href="#m5">6. Lý thuyết ngắn — sequence body &amp; phân tách (+ UVM bên trong)</a></li>
+<li><a href="#m6">7. Iteration 0 — base + R-type + I-type sequence</a></li>
+<li><a href="#m7">8. Iterations</a></li>
+<li><a href="#m8">9. Bảng tổng hợp</a></li>
+<li><a href="#m9">10. BASELINE sang Lab 7</a></li>
+<li><a href="#m10">11. Checklist nhớ code</a></li>
+<li><a href="#m11">12. Phỏng vấn — hỏi &amp; đáp</a></li>
+<li><a href="#m12">13. Cheat-sheet</a></li>
+<li><a href="#m13">14. Bài tập code &amp; câu hỏi nâng cao UVM</a></li>
+    </ol>
+  </nav>
+  <div class="side-tools">
+    <button type="button" class="btn" data-act="expand">Mở tất cả spoiler</button>
+    <button type="button" class="btn" data-act="collapse">Đóng tất cả spoiler</button>
+    <button type="button" class="btn" data-act="qa-close">Ẩn đáp án QA (tự test)</button>
+    <button type="button" class="btn" data-act="top">↑ Lên đầu trang</button>
+  </div>
+</aside>
+<main class="main">
+<header class="hero" data-num="06">
+  <div class="eyebrow"><span class="pill">Lab 06 / 15</span><span class="phase">Stimulus</span></div>
+  <h1>Lab 06 — RISC-V Sequences theo lớp lệnh</h1>
+  <p class="tags"><span class="tag uvm">uvm_sequence</span><span class="tag">start_item/finish_item</span><span class="tag uvm">`uvm_do_with</span><span class="tag">randomize with{}</span><span class="tag uvm">kế thừa sequence</span><span class="tag">halt terminator</span></p>
+</header>
+<nav class="toc" aria-label="Mục lục bài lab"><strong>📑 Mục lục</strong><ol>
+<li><a href="#muc-tongquan">1. Tổng quan lab</a></li>
+<li><a href="#m1">2. Vị trí trong testbench</a></li>
+<li><a href="#m2">3. Mục tiêu học</a></li>
+<li><a href="#m3">4. Keyword &amp; khái niệm mới</a></li>
+<li><a href="#m4">5. Chuẩn bị</a></li>
+<li><a href="#m5">6. Lý thuyết ngắn — sequence body &amp; phân tách (+ UVM bên trong)</a></li>
+<li><a href="#m6">7. Iteration 0 — base + R-type + I-type sequence</a></li>
+<li><a href="#m7">8. Iterations</a></li>
+<li><a href="#m8">9. Bảng tổng hợp</a></li>
+<li><a href="#m9">10. BASELINE sang Lab 7</a></li>
+<li><a href="#m10">11. Checklist nhớ code</a></li>
+<li><a href="#m11">12. Phỏng vấn — hỏi &amp; đáp</a></li>
+<li><a href="#m12">13. Cheat-sheet</a></li>
+<li><a href="#m13">14. Bài tập code &amp; câu hỏi nâng cao UVM</a></li>
+</ol></nav>
+
+<div class="note" id="muc-tongquan">
+  <strong>Tổng quan lab</strong>
+  <ul>
+    <li><strong>Lab này làm gì:</strong> viết <em>thư viện sequence</em> — mỗi lớp lệnh một sequence
+      (R-type, I-type ALU, Load/Store, Branch, Jump, Upper-imm). Tất cả kế thừa
+      <code>riscv_prog_base_seq</code>: sinh thân chương trình (random lệnh hợp lệ, <code>last_instr=0</code>)
+      rồi tự nối lệnh <strong>halt</strong> (<code>jal x0,0</code>, <code>last_instr=1</code>) để driver biết dừng nạp.</li>
+    <li><strong>Tạo ra file nào:</strong> <code>tb/seq/riscv_prog_base_seq.sv</code> + 6 file sequence lớp lệnh,
+      và 6 test con chọn từng sequence.</li>
+    <li><strong>Nhận gì từ lab trước:</strong> toàn bộ khung Lab 5.</li>
+    <li><strong>Lab sau dùng để làm gì:</strong> Lab 7 ghép nhiều sequence thành chương trình hỗn hợp qua
+      virtual sequence; Lab 9+ ISS/scoreboard dùng các lệnh random này để tự kiểm.</li>
+  </ul>
+</div>
+
+<div class="callout uvm"><strong>Trọng tâm UVM của lab</strong>
+<ul>
+  <li><strong>Vòng đời sequence</strong>: <code>pre_start → pre_body → body → post_body → post_start</code>; <code>start()</code> có tham số gì.</li>
+  <li><strong><code>start_item/finish_item</code> bên trong</strong>: arbitration, grant, <code>item_done</code>; so với macro <code>`uvm_do*</code>.</li>
+  <li><strong>Sequence là object</strong>: randomizable, kế thừa, tham số hóa; sequence library &amp; <code>uvm_sequence_library</code>.</li>
+  <li><strong>Sequence không biết DUT</strong>: nó chỉ sinh item; mọi thứ khác (timing, hazard) thuộc driver/DUT.</li>
+  <li>RISC-V: mỗi lớp lệnh một sequence; hazard sinh ra tự nhiên từ phụ thuộc register — không cấm.</li>
+</ul></div>
+
+<div class="note warn"><strong>Hazard pipeline &amp; stimulus:</strong> vì có forwarding + load-use stall, các
+lệnh random phụ thuộc nhau (rd lệnh này = rs lệnh sau) là <em>tốt</em> — chúng kích thích forwarding/stall.
+Ta <em>không</em> cấm phụ thuộc; chỉ đảm bảo lệnh hợp lệ &amp; địa chỉ bộ nhớ trong vùng.</div>
+
+
+
+<h2 id="m1">2. Vị trí trong testbench</h2>
+<pre><code> test chọn seq --> [ riscv_*_seq ] --start_item/finish_item--> sequencer --> driver nạp ROM
+   riscv_prog_base_seq: gen_body() (random) + append halt(last_instr=1)</code></pre>
+
+<h2 id="m2">3. Mục tiêu học</h2>
+<ul>
+  <li><code>uvm_sequence</code> + <code>body()</code> + <code>start_item/finish_item</code> (và macro <code>`uvm_do_with</code>).</li>
+  <li>Kế thừa sequence: base lo khung chương trình, con lo "sinh lệnh gì".</li>
+  <li><code>randomize() with {}</code> ràng buộc inline theo lớp lệnh.</li>
+  <li>Tham số hóa sequence (số lệnh <code>n</code>) qua field <code>rand</code>.</li>
+</ul>
+
+<h2 id="m3">4. Keyword &amp; khái niệm mới</h2>
+<div class="table-wrap"><table>
+<tr><th>Keyword</th><th>Giải thích</th><th>Ví dụ</th></tr>
+<tr><td><code>uvm_sequence#(T)</code></td><td>Sinh chuỗi item</td><td><code>class s extends uvm_sequence#(riscv_seq_item);</code></td></tr>
+<tr><td><code>body()</code></td><td>Thân sinh item</td><td><code>task body();</code></td></tr>
+<tr><td><code>start_item/finish_item</code></td><td>Gửi 1 item qua sequencer</td><td>bao quanh randomize</td></tr>
+<tr><td><code>`uvm_do_with</code></td><td>create+start+rand+finish gọn</td><td><code>`uvm_do_with(it,{op==ADD;})</code></td></tr>
+<tr><td><code>rand int n</code></td><td>Số lệnh random của chương trình</td><td><code>constraint{n inside{[4:12]};}</code></td></tr>
+<tr><td>sequence kế thừa</td><td>base khung, con nội dung</td><td><code>extends riscv_prog_base_seq</code></td></tr>
+</table></div>
+
+<h2 id="m4">5. Chuẩn bị</h2>
+<pre><code>cd ~/Study/KLtN/code/tb_uvm/uvm_riscv/tb/seq</code></pre>
+
+<h2 id="m5">6. Lý thuyết ngắn — sequence body &amp; phân tách (+ UVM bên trong)</h2>
+<ol>
+  <li><strong>start_item/finish_item:</strong> xin "khe" trên sequencer, randomize item, chốt gửi. Driver
+    phía kia <code>get_next_item</code>.</li>
+  <li><strong>Base + con:</strong> base <code>body()</code> gọi <code>gen_body()</code> (con override) rồi
+    gửi halt. Giảm lặp code.</li>
+  <li><strong>Halt terminator:</strong> đúng 1 item mang <code>last_instr=1</code> — luôn là <code>jal x0,0</code>
+    cuối để driver dừng nạp &amp; drain.</li>
+  <li><strong>Ràng buộc inline:</strong> <code>with { op inside {ADD,SUB,...}; }</code> giới hạn lớp lệnh mà
+    không sửa constraint gốc trong item.</li>
+</ol>
+
+<h3>6.5. Vòng đời của một sequence</h3>
+<pre><code>seq.start(sqr, parent_seq, priority, call_pre_post)
+   ├─ pre_start()     ← luôn chạy
+   ├─ pre_body()      ← khi call_pre_post=1 (mặc định của start())
+   ├─ body()          ← bạn viết ở đây
+   ├─ post_body()
+   └─ post_start()</code></pre>
+<p>Ba điều dễ nhầm: (1) <code>start()</code> là <strong>task block</strong> — trả về khi <code>body()</code> xong; (2) <code>pre_body/post_body</code> chạy khi <code>call_pre_post=1</code> (mặc định của <code>start()</code>) nhưng sequence con chạy bằng macro <code>`uvm_do*</code> được gọi với <code>call_pre_post=0</code> nên <em>không</em> chạy chúng — đừng đặt logic bắt buộc ở đó; (3) sequence cần <code>sequencer</code> để chạy — <code>start(null)</code> hợp lệ chỉ cho sequence không gửi item (virtual sequence, Lab 7).</p>
+
+<h3>6.6. <code>start_item</code> / <code>finish_item</code> — điều gì xảy ra</h3>
+<ol>
+  <li><code>start_item(it)</code>: gửi yêu cầu arbitration tới sequencer, <em>block</em> tới khi được <strong>grant</strong> (có thể lâu nếu nhiều sequence cạnh tranh hoặc driver chưa sẵn sàng).</li>
+  <li>Giữa hai lệnh bạn <em>randomize/gán</em> — đây là chỗ <em>đúng</em> để random hóa (late randomization: dữ liệu có thể phụ thuộc trạng thái lúc được grant).</li>
+  <li><code>finish_item(it)</code>: đẩy item xuống driver, rồi <em>block</em> tới khi driver gọi <code>item_done()</code>.</li>
+</ol>
+<div class="table-wrap"><div class="table-wrap"><table>
+<tr><th>Cách gửi</th><th>Ưu</th><th>Nhược</th></tr>
+<tr><td><code>start_item/finish_item</code> thủ công</td><td>Toàn quyền: gán cờ (<code>last_instr</code>), random muộn, xử lý lỗi</td><td>Dài dòng</td></tr>
+<tr><td><code>`uvm_do(it)</code> / <code>`uvm_do_with(it, {…})</code></td><td>Gọn: create+start+randomize+finish</td><td>Khó chèn bước giữa, ẩn lỗi randomize, khó debug; nhiều team cấm macro</td></tr>
+<tr><td><code>`uvm_create / `uvm_send / `uvm_rand_send</code></td><td>Tách từng bước</td><td>Vẫn là macro</td></tr>
+</table></div></div>
+
+<h3>6.7. Pattern thư viện sequence</h3>
+<ul>
+  <li><strong>Base + hook</strong>: base lo khung (n lệnh + halt), con override <code>gen_one()</code> — template method pattern (bản lab).</li>
+  <li><strong>Tham số qua rand field/config</strong>: <code>rand int n</code> + <code>randomize() with {n==8;}</code>; hoặc đọc <code>cfg</code> từ sequencer: <code>uvm_config_db#(riscv_agent_config)::get(m_sequencer,"","cfg",cfg)</code> (context là <em>component</em> — sequence không có hierarchy).</li>
+  <li><strong><code>uvm_sequence_library</code></strong>: đăng ký nhiều sequence rồi tự chọn (<code>UVM_SEQ_LIB_RAND</code>/<code>RANDC</code>/<code>ITEM</code>) — cách nhanh có random-sequence-selection, cần <code>`uvm_add_to_seq_lib</code>.</li>
+  <li><strong>Objection trong sequence gốc</strong>: UVM 1.2 hỗ trợ <code>set_automatic_phase_objection(1)</code> để sequence tự raise/drop theo <code>starting_phase</code>.</li>
+</ul>
+<pre><code>// Sequence cần đọc config: m_sequencer là sequencer đang chạy nó (kiểu uvm_sequencer_base)
+riscv_agent_config cfg;
+if (!uvm_config_db#(riscv_agent_config)::get(m_sequencer, "", "cfg", cfg))
+  `uvm_warning("SEQ", "khong co cfg, dung mac dinh")</code></pre>
+<div class="callout pitfall"><strong>Bẫy:</strong> <code>p_sequencer</code> (kiểu cụ thể, khai bằng <code>`uvm_declare_p_sequencer</code>) làm sequence <em>gắn cứng</em> vào một loại sequencer → khó tái dùng. Ưu tiên <code>m_sequencer</code> + <code>config_db</code>, hoặc truyền handle qua field; dùng <code>p_sequencer</code> khi bạn thật sự cần (virtual sequence, Lab 7).</div>
+
+<h2 id="m6">7. Iteration 0 — base + R-type + I-type sequence</h2>
+
+<details><summary>tb/seq/riscv_prog_base_seq.sv</summary>
+<pre><code>`ifndef RISCV_PROG_BASE_SEQ_SV
+`define RISCV_PROG_BASE_SEQ_SV
+// Khung chương trình: gen_body() (con override) + nối halt(jal x0,0, last=1)
+class riscv_prog_base_seq extends uvm_sequence #(riscv_seq_item);
+  `uvm_object_utils(riscv_prog_base_seq)
+  // seq.start() KHÔNG tự randomize: không có giá trị khởi tạo thì n=0 → chương trình chỉ còn lệnh halt.
+  // Mặc định 8 lệnh; muốn ngẫu nhiên trong c_n thì gọi seq.randomize() trước start (Iteration 1).
+  rand int unsigned n = 8;         // số lệnh thân
+  bit               append_halt = 1;   // Lab 7: vseq tắt cờ này ở sub-seq, chỉ seq cuối mới gửi halt
+  constraint c_n { n inside {[1:10]}; }   // [1:10]: Lab 7 ép n==2/3 bằng randomize() with — c_n không được loại các giá trị đó
+  function new(string name="riscv_prog_base_seq"); super.new(name); endfunction
+
+  // Con override hàm này để sinh 1 lệnh thuộc lớp của mình.
+  virtual task gen_one(output riscv_seq_item it);
+    it = riscv_seq_item::type_id::create("it");
+    start_item(it);
+    assert(it.randomize());        // random hợp lệ toàn tập (mặc định)
+    it.use_raw = 0; it.last_instr = 0;
+    finish_item(it);
+  endtask
+
+  task body();
+    riscv_seq_item it;
+    repeat (n) gen_one(it);
+    // halt
+    if (append_halt) begin
+      riscv_seq_item h = riscv_seq_item::type_id::create("halt");
+      start_item(h); void'(h.randomize());
+      h.use_raw = 1; h.raw_word = 32'h0000006f; h.last_instr = 1;   // jal x0,0
+      finish_item(h);
+    end
+  endtask
+endclass
+`endif</code></pre></details>
+
+<details><summary>tb/seq/riscv_rtype_seq.sv</summary>
+<pre><code>`ifndef RISCV_RTYPE_SEQ_SV
+`define RISCV_RTYPE_SEQ_SV
+class riscv_rtype_seq extends riscv_prog_base_seq;
+  `uvm_object_utils(riscv_rtype_seq)
+  function new(string name="riscv_rtype_seq"); super.new(name); endfunction
+  virtual task gen_one(output riscv_seq_item it);
+    it = riscv_seq_item::type_id::create("it");
+    start_item(it);
+    assert(it.randomize() with {
+      op inside {ADD,SUB,SLL,SLT,SLTU,XOR,SRL,SRA,OR,AND};
+      rd != 0;
+    });
+    it.use_raw=0; it.last_instr=0;
+    finish_item(it);
+  endtask
+endclass
+`endif</code></pre></details>
+
+<details><summary>tb/seq/riscv_itype_seq.sv</summary>
+<pre><code>`ifndef RISCV_ITYPE_SEQ_SV
+`define RISCV_ITYPE_SEQ_SV
+class riscv_itype_seq extends riscv_prog_base_seq;
+  `uvm_object_utils(riscv_itype_seq)
+  function new(string name="riscv_itype_seq"); super.new(name); endfunction
+  virtual task gen_one(output riscv_seq_item it);
+    it = riscv_seq_item::type_id::create("it");
+    start_item(it);
+    assert(it.randomize() with {
+      op inside {ADDI,SLTI,SLTIU,XORI,ORI,ANDI,SLLI,SRLI,SRAI};
+      rd != 0;
+    });
+    it.use_raw=0; it.last_instr=0;
+    finish_item(it);
+  endtask
+endclass
+`endif</code></pre></details>
+
+<details><summary>tb/seq/riscv_ls_seq.sv (Load/Store — địa chỉ hợp lệ)</summary>
+<pre><code>`ifndef RISCV_LS_SEQ_SV
+`define RISCV_LS_SEQ_SV
+// Sinh cặp SW rồi LW cùng địa chỉ để có dữ liệu đọc ra hợp lý.
+class riscv_ls_seq extends riscv_prog_base_seq;
+  `uvm_object_utils(riscv_ls_seq)
+  function new(string name="riscv_ls_seq"); super.new(name); endfunction
+  virtual task gen_one(output riscv_seq_item it);
+    it = riscv_seq_item::type_id::create("it");
+    start_item(it);
+    assert(it.randomize() with {
+      op inside {LW,SW};
+      rs1 == 0;                 // base = x0 => địa chỉ = imm
+      imm inside {[0:255]};
+      imm % 4 == 0;             // căn chỉnh word
+      if (op==LW) rd != 0;
+    });
+    it.use_raw=0; it.last_instr=0;
+    finish_item(it);
+  endtask
+endclass
+`endif</code></pre></details>
+
+<details><summary>tb/seq/riscv_branch_seq.sv</summary>
+<pre><code>`ifndef RISCV_BRANCH_SEQ_SV
+`define RISCV_BRANCH_SEQ_SV
+class riscv_branch_seq extends riscv_prog_base_seq;
+  `uvm_object_utils(riscv_branch_seq)
+  function new(string name="riscv_branch_seq"); super.new(name); endfunction
+  virtual task gen_one(output riscv_seq_item it);
+    it=riscv_seq_item::type_id::create("it"); start_item(it);
+    // branch nhảy tiến ngắn (+8) để không nhảy ra ngoài chương trình
+    assert(it.randomize() with { op inside {BEQ,BNE,BLT,BGE,BLTU,BGEU};
+                                 imm inside {8}; });
+    it.use_raw=0; it.last_instr=0; finish_item(it);
+  endtask
+endclass
+`endif</code></pre></details>
+
+<details><summary>tb/seq/riscv_jump_seq.sv</summary>
+<pre><code>`ifndef RISCV_JUMP_SEQ_SV
+`define RISCV_JUMP_SEQ_SV
+class riscv_jump_seq extends riscv_prog_base_seq;
+  `uvm_object_utils(riscv_jump_seq)
+  function new(string name="riscv_jump_seq"); super.new(name); endfunction
+  virtual task gen_one(output riscv_seq_item it);
+    it=riscv_seq_item::type_id::create("it"); start_item(it);
+    // JAL nhảy tiến +8 (bỏ 1 lệnh), rd lưu PC+4
+    assert(it.randomize() with { op inside {JAL}; imm inside {8}; rd inside {[1:5]}; });
+    it.use_raw=0; it.last_instr=0; finish_item(it);
+  endtask
+endclass
+`endif</code></pre></details>
+
+<details><summary>tb/seq/riscv_upper_seq.sv</summary>
+<pre><code>`ifndef RISCV_UPPER_SEQ_SV
+`define RISCV_UPPER_SEQ_SV
+class riscv_upper_seq extends riscv_prog_base_seq;
+  `uvm_object_utils(riscv_upper_seq)
+  function new(string name="riscv_upper_seq"); super.new(name); endfunction
+  virtual task gen_one(output riscv_seq_item it);
+    it=riscv_seq_item::type_id::create("it"); start_item(it);
+    assert(it.randomize() with { op inside {LUI,AUIPC}; rd != 0; });
+    it.use_raw=0; it.last_instr=0; finish_item(it);
+  endtask
+endclass
+`endif</code></pre></details>
+
+<details><summary>tb/test/riscv_class_tests.sv (6 test con)</summary>
+<pre><code>`ifndef RISCV_CLASS_TESTS_SV
+`define RISCV_CLASS_TESTS_SV
+class rtype_test  extends riscv_base_test; `uvm_component_utils(rtype_test)
+  function new(string n,uvm_component p); super.new(n,p); endfunction
+  virtual function uvm_sequence#(riscv_seq_item) get_seq(); return riscv_rtype_seq::type_id::create("seq"); endfunction
+endclass
+class itype_test  extends riscv_base_test; `uvm_component_utils(itype_test)
+  function new(string n,uvm_component p); super.new(n,p); endfunction
+  virtual function uvm_sequence#(riscv_seq_item) get_seq(); return riscv_itype_seq::type_id::create("seq"); endfunction
+endclass
+class ls_test     extends riscv_base_test; `uvm_component_utils(ls_test)
+  function new(string n,uvm_component p); super.new(n,p); endfunction
+  virtual function uvm_sequence#(riscv_seq_item) get_seq(); return riscv_ls_seq::type_id::create("seq"); endfunction
+endclass
+class branch_test extends riscv_base_test; `uvm_component_utils(branch_test)
+  function new(string n,uvm_component p); super.new(n,p); endfunction
+  virtual function uvm_sequence#(riscv_seq_item) get_seq(); return riscv_branch_seq::type_id::create("seq"); endfunction
+endclass
+class jump_test   extends riscv_base_test; `uvm_component_utils(jump_test)
+  function new(string n,uvm_component p); super.new(n,p); endfunction
+  virtual function uvm_sequence#(riscv_seq_item) get_seq(); return riscv_jump_seq::type_id::create("seq"); endfunction
+endclass
+class upper_test  extends riscv_base_test; `uvm_component_utils(upper_test)
+  function new(string n,uvm_component p); super.new(n,p); endfunction
+  virtual function uvm_sequence#(riscv_seq_item) get_seq(); return riscv_upper_seq::type_id::create("seq"); endfunction
+endclass
+`endif</code></pre></details>
+
+<p>Thêm các include này vào <code>riscv_pkg.sv</code>: các sequence (<code>riscv_prog_base_seq.sv</code> trước, rồi <code>riscv_rtype_seq</code>, <code>riscv_itype_seq</code>, <code>riscv_ls_seq</code>,
+<code>riscv_branch_seq</code>, <code>riscv_jump_seq</code>, <code>riscv_upper_seq</code>) đặt sau <code>prog_seq.sv</code>, trước <code>riscv_env.sv</code>/<code>riscv_base_test.sv</code>; <code>riscv_class_tests.sv</code> đặt <em>sau</em> <code>riscv_base_test.sv</code>.
+Lab 15 có <code>riscv_pkg.sv</code> hoàn chỉnh để đối chiếu.</p>
+
+<p><strong>Lệnh chạy (ví dụ R-type):</strong></p>
+<pre><code>cd ~/Study/KLtN/code/tb_uvm/uvm_riscv/sim</code></pre>
+<pre><code>xvlog -sv -L uvm -i ../tb/agent -i ../tb/seq -i ../tb/env -i ../tb/test ../tb/pkg/riscv_pkg.sv ../tb/top/riscv_tb_top.sv  # + rtl như Lab 5</code></pre>
+<pre><code>xelab -L uvm -timescale 1ns/1ps riscv_tb_top -s top_sim</code></pre>
+<pre><code>xsim top_sim -R -testplusarg UVM_TESTNAME=rtype_test</code></pre>
+
+<details><summary>Expected log</summary>
+<pre><code>UVM_INFO @ 0: reporter [RNTST] Running test rtype_test...
+UVM_INFO ... [MON] [1] pc=0x00000000 instr=0x00470e33 x28&lt;=0x00000000     (toàn R-type; giá trị random khác mỗi seed)
+...                                                                       (n=8 lệnh R-type: pc 0x00..0x1c)
+UVM_INFO ... [MON] [9] pc=0x00000020 instr=0x0000006f x0&lt;=0x00000024     (halt = jal x0,0)
+UVM_INFO ... [MON] [10]..[14] giống [9]                                  (halt tự nhảy về chính nó nên retire lặp tới khi test hạ objection)
+UVM_INFO ... [MON] Tong so lenh retire = 14
+UVM_ERROR :    0   UVM_FATAL :    0</code></pre>
+<p><em>Chạy từng test: <code>itype_test</code>, <code>ls_test</code>, <code>branch_test</code>, <code>jump_test</code>,
+<code>upper_test</code> — mỗi test chỉ sinh lệnh lớp tương ứng.</em></p>
+</details>
+
+<h2 id="m7">8. Iterations</h2>
+
+<h3>Iteration 1 — tham số hóa số lệnh qua randomize sequence</h3>
+<p>Trong test: <code>seq.randomize() with { n == 8; }</code> trước <code>seq.start</code>.</p>
+<details><summary>Khác biệt</summary><p>Chương trình đúng 8 lệnh + halt. Dạy: sequence cũng là object randomize được.</p></details>
+
+<h3>Iteration 2 — dùng macro <code>`uvm_do_with</code></h3>
+<p>Thay cụm create/start/randomize/finish bằng <code>`uvm_do_with(it,{op inside{ADD,SUB};})</code>.</p>
+<details><summary>Khác biệt</summary><p>Gọn hơn nhưng khó chèn <code>last_instr</code>/<code>use_raw</code> (phải set trước finish). Dạy: macro tiện nhưng kém linh hoạt — nhiều team tránh.</p></details>
+
+<h3>Iteration 3 — ls_seq: tách SW trước LW cùng địa chỉ</h3>
+<p>Override <code>gen_body</code>: sinh cặp <code>SW addr</code> rồi <code>LW addr</code> (cùng imm).</p>
+<details><summary>Khác biệt</summary><p>LW đọc đúng giá trị vừa SW → kiểm được đường dữ liệu bộ nhớ + load-use stall. Dạy: sequence có thể "kể chuyện" (store rồi load).</p></details>
+
+<h3>Iteration 4 — branch_seq nhảy lùi (vòng lặp ngắn, có giới hạn)</h3>
+<p>Thêm đếm để tránh lặp vô hạn; dùng <code>beq</code> với bộ đếm.</p>
+<details><summary>Khác biệt</summary><p>Tạo luồng điều khiển thực; flush xảy ra nhiều. Dạy: stimulus cho đường rẽ nhánh (coverage Lab 12).</p></details>
+
+<h3>Iteration 5 — mixed: gọi 2 sequence nối tiếp trên cùng sequencer</h3>
+<p>Trong test: <code>rtype.start(sqr); itype.start(sqr);</code> — nhưng chỉ 1 được mang halt.</p>
+<details><summary>Khác biệt</summary><p>Phải bỏ halt ở seq đầu (last_instr=0 toàn bộ) để 2 seq ghép thành 1 chương trình. Dẫn tới nhu cầu
+<strong>virtual sequence</strong> (Lab 7) điều phối nhiều seq gọn gàng.</p></details>
+
+<h2 id="m8">9. Bảng tổng hợp</h2>
+<div class="table-wrap"><table><tr><th>Iter</th><th>Đổi</th><th>Học</th></tr>
+<tr><td>0</td><td>base + 6 seq lớp lệnh</td><td>sequence kế thừa + halt</td></tr>
+<tr><td>1</td><td>randomize n</td><td>sequence là object</td></tr>
+<tr><td>2</td><td>`uvm_do_with</td><td>macro tiện/kém linh hoạt</td></tr>
+<tr><td>3</td><td>SW rồi LW</td><td>sequence kể chuyện</td></tr>
+<tr><td>4</td><td>branch lùi</td><td>luồng điều khiển</td></tr>
+<tr><td>5</td><td>ghép 2 seq</td><td>nhu cầu virtual seq</td></tr>
+</table></div>
+
+<h2 id="m9">10. BASELINE sang Lab 7</h2>
+<p><code>riscv_prog_base_seq</code> + 6 sequence lớp lệnh + 6 test con. Mỗi seq sinh lệnh hợp lệ trong vùng,
+nối halt. Lab 7 dùng virtual sequence ghép nhiều seq thành 1 chương trình hỗn hợp (chỉ 1 halt).</p>
+
+<h2 id="m10">11. Checklist nhớ code</h2>
+<ul>
+  <li>[ ] Nhớ base body = repeat(n) gen_one + append halt(last=1).</li>
+  <li>[ ] Nhớ ràng buộc địa chỉ LW/SW: căn chỉnh 4, trong 0..2047.</li>
+  <li>[ ] Nhớ branch/jal imm nhỏ để không nhảy ra ngoài chương trình.</li>
+</ul>
+
+<h2 id="m11">12. Phỏng vấn — hỏi &amp; đáp</h2>
+<p>Bấm câu hỏi để xem đáp án — nên tự trả lời miệng trước khi mở. Mỗi câu có ví dụ cụ thể như khi bị hỏi trong phỏng vấn.</p>
+<div class="qa-list">
+<details class="qa"><summary><code>start_item</code> và <code>finish_item</code> mỗi cái block ở đâu? Vì sao nên random <em>giữa</em> hai lệnh đó?</summary>
+<div class="ans">
+<p><code>start_item</code> block tới khi sequencer cấp <em>grant</em>; <code>finish_item</code> block tới khi driver <code>item_done</code>. Random giữa hai lệnh gọi là <strong>late randomization</strong>: dữ liệu được sinh <em>sau</em> khi biết chắc item sẽ được gửi, nên có thể dựa vào trạng thái mới nhất (ví dụ biết register nào vừa ghi). Nếu randomize trước <code>start_item</code> mà sequencer đang bận lâu, dữ liệu có thể đã “lỗi thời” so với mô hình trạng thái.</p>
+<pre><code>start_item(it);
+assert(it.randomize() with { op inside {LW,SW}; imm inside {[0:255]}; });   // random muộn
+it.last_instr = 0;
+finish_item(it);</code></pre>
+</div></details>
+<details class="qa"><summary>`uvm_do_with` có lợi/hại gì? Bạn dùng macro hay viết tay?</summary>
+<div class="ans">
+<p><strong>Lợi:</strong> 1 dòng thay cho create/start/randomize/finish. <strong>Hại:</strong> (1) không chèn được bước giữa start và finish (gán <code>last_instr</code>), (2) ẩn kết quả <code>randomize()</code> (nó báo warning chứ không fatal), (3) macro nhiều tầng → debug và stack trace khó đọc, (4) <code>with</code> trong macro dễ dính bẫy scope. Trả lời tốt: “Dùng viết tay cho code chạy thật, macro chỉ cho test nhanh/legacy; kiểm tra randomize và dùng <code>uvm_fatal</code>.”</p>
+</div></details>
+<details class="qa"><summary><code>pre_body</code>/<code>post_body</code> có luôn chạy không? Vì sao UVM chia 5 hàm như vậy?</summary>
+<div class="ans">
+<p>Với <code>seq.start(sqr)</code> mặc định <code>call_pre_post=1</code> nên <code>pre_body/post_body</code> <strong>có</strong> chạy. Chúng <strong>không</strong> chạy khi bạn truyền <code>call_pre_post=0</code> hoặc khi sequence con được khởi chạy bằng macro <code>`uvm_do*</code> (macro gọi <code>start(…, 0)</code>). <code>pre_start/post_start</code> thì luôn chạy.</p>
+<p>Hệ quả thực hành: logic <em>bắt buộc</em> (khởi tạo, xả hàng đợi) đặt ở đầu <code>body()</code> hoặc <code>pre_start()</code>, không phụ thuộc <code>pre_body</code>. Việc chia hàm để sequence cha “bọc” con: cha có <code>pre_do/mid_do/post_do</code> được gọi quanh mỗi item/sequence con của nó.</p>
+<pre><code>child.start(sqr, this);          // pre_start, pre_body, body, post_body, post_start
+`uvm_do(child)                   // pre_start, body, post_start  (call_pre_post = 0)</code></pre>
+</div></details>
+<details class="qa"><summary>Sequence có biết DUT, interface hay timing không? Cho ví dụ vi phạm.</summary>
+<div class="ans">
+<p>Không và không nên: sequence chỉ sinh <em>item</em> (transaction). Vi phạm điển hình: sequence gọi <code>@(posedge vif.clk)</code> hay đọc <code>vif</code> — gắn cứng sequence vào interface cụ thể, không tái dùng được, dễ race. Thứ cần timing đặt trong driver/ config (<code>cfg.delay</code>); thứ cần trạng thái DUT lấy từ <em>monitor/scoreboard</em> qua event/analysis (reactive sequence).</p>
+</div></details>
+<details class="qa"><summary><code>p_sequencer</code> vs <code>m_sequencer</code> khác nhau thế nào?</summary>
+<div class="ans">
+<p><code>m_sequencer</code> là con trỏ <code>uvm_sequencer_base</code> có sẵn (sequencer đang chạy sequence). <code>p_sequencer</code> là con trỏ <em>đã ép sang kiểu cụ thể</em> do <code>`uvm_declare_p_sequencer(T)</code> sinh ra (qua <code>$cast</code> trong <code>m_set_p_sequencer</code>). Dùng <code>p_sequencer</code> khi cần truy cập thành phần của sequencer cụ thể (handle sequencer con ở virtual sequencer); không dùng thì giữ <code>m_sequencer</code> để sequence tái dùng được trên nhiều sequencer.</p>
+</div></details>
+<details class="qa"><summary>Randomize chính sequence (<code>rand int n</code>) có ý nghĩa gì? Ví dụ.</summary>
+<div class="ans">
+<p>Sequence là <code>uvm_object</code> nên có <code>rand</code> field và constraint như item. Dùng để điều khiển “hình dạng” kịch bản từ test mà không sửa sequence: <code>seq.randomize() with { n == 8; };</code> hay để config-space random. Lưu ý: nếu <code>n</code> có constraint <code>inside {[4:10]}</code> thì <code>with { n==0; }</code> mâu thuẫn → <code>randomize()</code> trả 0; muốn <code>n=0</code> phải gán trực tiếp (<code>hseq.n = 0;</code>) như Lab 7.</p>
+</div></details>
+<details class="qa"><summary>Sequence library là gì? Khi nào dùng thay vì viết vseq tay?</summary>
+<div class="ans">
+<p><code>uvm_sequence_library</code> chứa danh sách sequence; khi <code>start</code> nó tự chọn và chạy theo chế độ (<code>UVM_SEQ_LIB_RAND</code>, <code>RANDC</code>, <code>ITEM</code>, <code>USER</code>) <code>selection_mode</code> với số lần giữa <code>min_random_count</code>..<code>max_random_count</code>. Dùng khi cần stress ngẫu nhiên “bốc” trộn nhiều sequence; vseq viết tay hợp khi <em>thứ tự có ý nghĩa</em> (ví dụ cấu hình rồi mới kích hoạt). Với CPU: ghép lớp lệnh có thể random, nhưng halt phải luôn ở cuối — nên vseq tay hợp hơn.</p>
+</div></details>
+<details class="qa"><summary>Hai sequence cùng <code>start</code> trên một sequencer thì item của chúng được ghép thế nào?</summary>
+<div class="ans">
+<p>Theo <strong>arbitration</strong> của sequencer (mặc định FIFO theo thời điểm <code>start_item</code>; có thể <code>UVM_SEQ_ARB_STRICT_FIFO/WEIGHTED/RANDOM/USER</code>). Item hai sequence có thể <em>đan xen</em>. Với chương trình CPU (thứ tự quyết định ngữ nghĩa), đan xen phá hỏng chương trình → dùng tuần tự trong virtual sequence, hoặc <code>lock()/grab()</code> để một sequence giữ sequencer (Lab 7).</p>
+</div></details>
+</div>
+
+<h2 id="m12">13. Cheat-sheet</h2>
+<pre><code>class riscv_prog_base_seq extends uvm_sequence#(riscv_seq_item);
+  rand int unsigned n;  constraint{n inside{[4:10]};}
+  virtual task gen_one(output riscv_seq_item it); /* random toàn tập */ endtask
+  task body(); repeat(n) gen_one(it); /* append halt jal x0,0 last=1 */ endtask
+// con: override gen_one với randomize() with { op inside {&lt;lớp&gt;}; }</code></pre>
+
+<h2 id="m13">14. Bài tập code &amp; câu hỏi nâng cao UVM</h2>
+<p>8 bài rèn tay, tăng dần độ khó. Làm trên baseline của lab này; đáp án chỉ là hướng tham khảo — giá trị nằm ở việc bạn tự gõ, chạy và đọc log.</p>
+<div class="ex-progress"><span class="cnt">0 / 8 bài đã làm</span><span class="bar"><i></i></span></div>
+<div class="ex-list">
+<article class="ex"><div class="ex-head"><span class="lv l1">★ Dễ</span><h4>EX1 — Late randomization chứng minh</h4></div>
+Trong <code>gen_one</code>, gán <code>it.imm</code> từ một biến cục bộ cập nhật mỗi lần (ví dụ <code>addr_cnt += 4;</code>) <em>sau</em> <code>start_item</code>. Rồi thử gán trước. Hai bản khác nhau thế nào khi hai sequence chạy đồng thời?
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p>Trước <code>start_item</code>: giá trị tính ở lúc <em>yêu cầu</em>; sau: lúc <em>được grant</em>. Nếu nhiều sequence tranh, bản sau phản ánh đúng thứ tự thực sự item đến driver.</p>
+</details>
+</article>
+<article class="ex"><div class="ex-head"><span class="lv l1">★ Dễ</span><h4>EX2 — Bỏ hẳn macro</h4></div>
+Tìm mọi chỗ dùng <code>`uvm_do*</code> trong code của bạn (nếu có) và viết lại bằng <code>start_item/finish_item</code>, kiểm tra <code>randomize()</code>. Giải thích sự khác biệt về log khi randomize thất bại.
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p><code>`uvm_do_with</code> khi randomize fail in <code>UVM_WARNING</code> rồi vẫn gửi item chưa hợp lệ; bản tay bạn quyết định <code>uvm_fatal</code>.</p>
+</details>
+</article>
+<article class="ex"><div class="ex-head"><span class="lv l2">★★ Vừa</span><h4>EX3 — Lifecycle log</h4></div>
+Override <code>pre_start, pre_body, body, post_body, post_start</code> chỉ để in tên. Chạy ba cách: <code>seq.start(sqr)</code>; <code>child.start(sqr, parent_seq)</code>; <code>`uvm_do(child)</code> trong <code>body()</code> của parent. Lập bảng hàm nào chạy ở mỗi trường hợp.
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p>Cách 1 và 2: đủ 5 hàm (call_pre_post=1). Cách 3 (macro): chỉ <code>pre_start → body → post_start</code>. Ở cách 2 và 3, parent còn nhận <code>pre_do/mid_do/post_do</code>. Bảng này là câu hỏi phỏng vấn kinh điển.</p>
+</details>
+</article>
+<article class="ex"><div class="ex-head"><span class="lv l2">★★ Vừa</span><h4>EX4 — Đọc config trong sequence</h4></div>
+Cho <code>riscv_prog_base_seq</code> đọc <code>cfg.max_prog_len</code> từ config object (qua <code>m_sequencer</code>) và <code>n = min(n, cfg.max_prog_len)</code>. Test set <code>max_prog_len=6</code>.
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p>Dùng <code>uvm_config_db#(riscv_agent_config)::get(m_sequencer, "", "cfg", cfg)</code>. Nhớ rằng agent đã <code>set</code> cfg cho <code>"drv"</code>/<code>"mon"</code> nhưng sequencer là component khác → cần set thêm cho <code>"sqr"</code>.</p>
+</details>
+</article>
+<article class="ex"><div class="ex-head"><span class="lv l2">★★ Vừa</span><h4>EX5 — Sequence library</h4></div>
+Tạo <code>riscv_seq_lib extends uvm_sequence_library#(riscv_seq_item)</code>, thêm 4 sequence lớp lệnh bằng <code>`uvm_add_to_seq_lib</code>. Đặt <code>selection_mode = UVM_SEQ_LIB_RANDC</code> và <code>min/max_random_count</code>. Chạy và in thứ tự được chọn.
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p>Mỗi sequence vẫn tự nối halt → nhiều halt! Bạn sẽ thấy driver cắt chương trình — nhắc lại vì sao Lab 7 đưa cờ <code>append_halt</code>. Cách xử lý: thư viện chạy với <code>append_halt=0</code>, vseq thêm halt cuối.</p>
+</details>
+</article>
+<article class="ex"><div class="ex-head"><span class="lv l2">★★ Vừa</span><h4>EX6 — Branch lùi có giới hạn</h4></div>
+Viết <code>riscv_loop_seq</code>: <code>addi x1,x0,N; loop: addi x1,x1,-1; bne x1,x0,loop</code>. Dùng <code>imm=-4</code> cho BNE. Kiểm tra encode (B-type immediate âm) đúng bằng cách quan sát PC lặp.
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p>Ràng buộc <code>imm inside {-4}</code> trên <code>bit [31:0]</code> cần ép sign; viết <code>imm == 32'hFFFFFFFC</code>. Retire stream sẽ lặp cùng 2 PC N lần.</p>
+</details>
+</article>
+<article class="ex"><div class="ex-head"><span class="lv l3">★★★ Khó</span><h4>EX7 — Reactive sequence</h4></div>
+Sequence nghe monitor: sau mỗi retire mà <code>stall</code>=1, chèn thêm 2 lệnh độc lập (để thấy stall giảm). Gợi ý: monitor phát event/analysis; sequence <code>wait</code> trên <code>uvm_event</code> lấy từ <code>uvm_event_pool</code>.
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<pre><code>uvm_event ev = uvm_event_pool::get_global("retire_stall");
+// monitor: ev.trigger(tr);     // sequence: ev.wait_trigger_data(data);</code></pre>
+<p>Chú ý: với driver nạp ROM theo lô (Lab 3), stimulus <em>không</em> phản ứng được với retire thật — bài tập này minh họa giới hạn của kiến trúc “nạp rồi chạy” và vì sao core có bus (Avalon) cần reactive sequence.</p>
+</details>
+</article>
+<article class="ex"><div class="ex-head"><span class="lv l3">★★★ Khó</span><h4>EX8 — So sánh bằng thống kê</h4></div>
+Chạy <code>riscv_rtype_seq</code> 50 lần với 50 seed, thu histogram <code>op</code> từ monitor. Dùng <code>uvm_report_server</code> hoặc file CSV. Kiểm chứng toàn bộ 10 lệnh R-type đều xuất hiện ≥ 1 lần; nếu không, vì sao?
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p>Nếu có op không xuất hiện ở 50 seed thì kiểm tra constraint: <code>op inside {…}</code> kết hợp <code>dist</code> trong item (Lab 2) có thể làm xác suất nhỏ — đây là bài kiểm tra “coverage mong đợi vs thực tế”, mở đường cho Lab 12.</p>
+</details>
+</article>
+</div>
+
+
+<nav class="pager" aria-label="Điều hướng lab"><a class="nav-card prev" href="lab05.html" rel="prev"><small>← Lab trước</small><span>Lab 05 — Agent, env, test, config</span></a><div class="mid"><button type="button" class="btn primary" id="mark-done" aria-pressed="false">Đánh dấu hoàn thành</button></div><a class="nav-card next" href="lab07.html" rel="next"><small>Lab tiếp →</small><span>Lab 07 — Virtual sequencer</span></a></nav>
+<p class="foot">UVM · RISC-V Pipeline Speedrun — Lab 06 / 15. Phím tắt: <kbd>[</kbd> lab trước · <kbd>]</kbd> lab sau.</p>
+</main>
+</div>
+</body>
+</html>

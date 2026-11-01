@@ -1,0 +1,453 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Lab 08 — RISC-V SVA: bất biến ISA + pipeline (bind)</title>
+<link rel="stylesheet" href="assets/lab.css">
+<script src="assets/lab.js" defer></script>
+</head>
+<body data-lab="8" data-total="15">
+<div id="readbar" aria-hidden="true"></div>
+<header class="topbar">
+  <button type="button" class="iconbtn" id="toc-toggle" aria-label="Mở mục lục">☰</button>
+  <a class="brand" href="index.html"><span class="brand-mark">UVM</span><span>RISC-V <small>Speedrun</small></span></a>
+  <nav class="labdots" aria-label="Chọn lab"><a href="lab01.html" data-n="1" title="Lab 01 — Interface & clocking">1</a><a href="lab02.html" data-n="2" title="Lab 02 — Sequence item">2</a><a href="lab03.html" data-n="3" title="Lab 03 — Driver">3</a><a href="lab04.html" data-n="4" title="Lab 04 — Monitor & analysis port">4</a><a href="lab05.html" data-n="5" title="Lab 05 — Agent, env, test, config">5</a><a href="lab06.html" data-n="6" title="Lab 06 — Sequence library">6</a><a href="lab07.html" data-n="7" title="Lab 07 — Virtual sequencer">7</a><a href="lab08.html" data-n="8" title="Lab 08 — SVA & bind trong UVM" aria-current="page">8</a><a href="lab09.html" data-n="9" title="Lab 09 — Reference model">9</a><a href="lab10.html" data-n="10" title="Lab 10 — Scoreboard in-order">10</a><a href="lab11.html" data-n="11" title="Lab 11 — Scoreboard đầy đủ">11</a><a href="lab12.html" data-n="12" title="Lab 12 — Functional coverage">12</a><a href="lab13.html" data-n="13" title="Lab 13 — RAL (uvm_reg / uvm_mem)">13</a><a href="lab14.html" data-n="14" title="Lab 14 — Factory, callback, catcher">14</a><a href="lab15.html" data-n="15" title="Lab 15 — Regression & closure">15</a></nav>
+  <button type="button" class="iconbtn" id="theme-toggle" aria-label="Đổi giao diện sáng/tối">☾</button>
+</header>
+<div class="layout">
+<aside class="side" aria-label="Mục lục">
+  <nav class="side-toc">
+    <p class="side-title">Trong bài này</p>
+    <ol>
+<li><a href="#muc-tongquan">1. Tổng quan lab</a></li>
+<li><a href="#m1">2. Vị trí trong testbench</a></li>
+<li><a href="#m2">3. Mục tiêu học</a></li>
+<li><a href="#m3">4. Keyword &amp; khái niệm mới</a></li>
+<li><a href="#m4">5. Chuẩn bị</a></li>
+<li><a href="#m5">6. Lý thuyết ngắn — property &amp; bind (+ tích hợp UVM)</a></li>
+<li><a href="#m6">7. Iteration 0 — checker pipeline + regfile</a></li>
+<li><a href="#m7">8. Iterations</a></li>
+<li><a href="#m8">9. Bảng tổng hợp</a></li>
+<li><a href="#m9">10. BASELINE sang Lab 9</a></li>
+<li><a href="#m10">11. Checklist nhớ code</a></li>
+<li><a href="#m11">12. Phỏng vấn — hỏi &amp; đáp</a></li>
+<li><a href="#m12">13. Cheat-sheet</a></li>
+<li><a href="#m13">14. Bài tập code &amp; câu hỏi nâng cao UVM</a></li>
+    </ol>
+  </nav>
+  <div class="side-tools">
+    <button type="button" class="btn" data-act="expand">Mở tất cả spoiler</button>
+    <button type="button" class="btn" data-act="collapse">Đóng tất cả spoiler</button>
+    <button type="button" class="btn" data-act="qa-close">Ẩn đáp án QA (tự test)</button>
+    <button type="button" class="btn" data-act="top">↑ Lên đầu trang</button>
+  </div>
+</aside>
+<main class="main">
+<header class="hero" data-num="08">
+  <div class="eyebrow"><span class="pill">Lab 08 / 15</span><span class="phase">Checking</span></div>
+  <h1>Lab 08 — SVA: bất biến ISA + pipeline (bind)</h1>
+  <p class="tags"><span class="tag uvm">property/sequence</span><span class="tag">|-&gt; |=&gt;</span><span class="tag">$past/$stable</span><span class="tag">disable iff</span><span class="tag uvm">bind</span><span class="tag">concurrent assertion</span></p>
+</header>
+<nav class="toc" aria-label="Mục lục bài lab"><strong>📑 Mục lục</strong><ol>
+<li><a href="#muc-tongquan">1. Tổng quan lab</a></li>
+<li><a href="#m1">2. Vị trí trong testbench</a></li>
+<li><a href="#m2">3. Mục tiêu học</a></li>
+<li><a href="#m3">4. Keyword &amp; khái niệm mới</a></li>
+<li><a href="#m4">5. Chuẩn bị</a></li>
+<li><a href="#m5">6. Lý thuyết ngắn — property &amp; bind (+ tích hợp UVM)</a></li>
+<li><a href="#m6">7. Iteration 0 — checker pipeline + regfile</a></li>
+<li><a href="#m7">8. Iterations</a></li>
+<li><a href="#m8">9. Bảng tổng hợp</a></li>
+<li><a href="#m9">10. BASELINE sang Lab 9</a></li>
+<li><a href="#m10">11. Checklist nhớ code</a></li>
+<li><a href="#m11">12. Phỏng vấn — hỏi &amp; đáp</a></li>
+<li><a href="#m12">13. Cheat-sheet</a></li>
+<li><a href="#m13">14. Bài tập code &amp; câu hỏi nâng cao UVM</a></li>
+</ol></nav>
+
+<div class="note" id="muc-tongquan">
+  <strong>Tổng quan lab</strong>
+  <ul>
+    <li><strong>Lab này làm gì:</strong> viết <strong>SVA</strong> kiểm các bất biến của core: PC tuần tự
+      (+4) trừ khi rẽ nhánh/stall, PC giữ khi <code>stall</code>, PC = đích khi <code>redirect</code>, đích
+      nhảy căn chỉnh, và bất biến ISA <code>x0 ≡ 0</code>. Gắn checker vào DUT bằng <code>bind</code> (không
+      sửa RTL).</li>
+    <li><strong>Tạo ra file nào:</strong> <code>tb/sva/riscv_protocol_checker.sv</code> (checker pipeline),
+      <code>tb/sva/riscv_regfile_checker.sv</code> (x0), và các lệnh <code>bind</code> trong
+      <code>tb/sva/riscv_bind.sv</code>.</li>
+    <li><strong>Nhận gì từ lab trước:</strong> chương trình hỗn hợp (Lab 7) làm stimulus.</li>
+    <li><strong>Lab sau dùng để làm gì:</strong> SVA bắt lỗi "cấu trúc/đồng bộ"; scoreboard (Lab 10) bắt lỗi
+      "giá trị". Hai lớp bổ trợ nhau.</li>
+  </ul>
+</div>
+
+<div class="callout uvm"><strong>Trọng tâm UVM của lab</strong>
+<ul>
+  <li><strong>SVA sống ở module-world</strong>: không phải component UVM; chạy song song và độc lập phase/objection.</li>
+  <li><strong>Cầu nối sang UVM</strong>: <code>$error</code> <em>không</em> tăng bộ đếm <code>UVM_ERROR</code> → “PASS giả”. Cách đưa lỗi assertion vào <code>uvm_report_server</code>.</li>
+  <li><strong><code>bind</code></strong> để gắn checker không sửa RTL; điều khiển bật/tắt checker từ UVM (config knob).</li>
+  <li><strong>Vacuity &amp; cover</strong>: assertion “pass” vì antecedent không bao giờ xảy ra là vô nghĩa — cần <code>cover property</code>.</li>
+  <li>Phân vai SVA ↔ scoreboard ↔ coverage: SVA = <em>thời gian/cấu trúc</em>, scoreboard = <em>giá trị</em>.</li>
+</ul></div>
+
+<div class="note warn"><strong>Pipeline-specific:</strong> khác single-cycle, PC +4 chỉ đúng khi
+<em>không</em> redirect/stall; có <code>disable iff(rst)</code> và dùng <code>$past</code> vì hiệu ứng đến ở
+chu kỳ sau (<code>|=&gt;</code>). <code>jalr</code> chỉ xóa bit0 → đích có thể lệch 4 (chỉ căn 2) — một
+điểm tinh tế ta assert bit0==0 và ghi chú.</div>
+
+
+
+<h2 id="m1">2. Vị trí trong testbench</h2>
+<pre><code> bind riscv_pipeline_top  riscv_protocol_checker  -> kiểm PC/redirect/stall/WB
+ bind register_file       riscv_regfile_checker   -> kiểm x0 ≡ 0, ghi hợp lệ
+   (checker chạy SONG SONG DUT, không cần component UVM)</code></pre>
+
+<h2 id="m2">3. Mục tiêu học</h2>
+<ul>
+  <li><code>property</code>/<code>sequence</code>, toán tử <code>|-&gt;</code> (overlap) / <code>|=&gt;</code> (next).</li>
+  <li><code>$past(x)</code>, <code>$stable(x)</code>, <code>$rose/$fell</code>, <code>disable iff</code>.</li>
+  <li><code>bind</code>: gắn module kiểm tra vào DUT từ ngoài — không đụng RTL.</li>
+  <li>Phân biệt lỗi cấu trúc (SVA) vs lỗi giá trị (scoreboard).</li>
+</ul>
+
+<h2 id="m3">4. Keyword &amp; khái niệm mới</h2>
+<div class="table-wrap"><table>
+<tr><th>Keyword</th><th>Giải thích</th><th>Ví dụ</th></tr>
+<tr><td><code>property</code></td><td>Mệnh đề thời gian để assert</td><td><code>property p; ... endproperty</code></td></tr>
+<tr><td><code>|-&gt;</code> / <code>|=&gt;</code></td><td>Hệ quả cùng chu kỳ / chu kỳ sau</td><td><code>a |=&gt; b</code></td></tr>
+<tr><td><code>$past(x)</code></td><td>Giá trị x chu kỳ trước</td><td><code>pc==$past(pc)+4</code></td></tr>
+<tr><td><code>$stable(x)</code></td><td>x không đổi so với chu kỳ trước</td><td><code>$stable(pc_if)</code></td></tr>
+<tr><td><code>disable iff</code></td><td>Tắt kiểm khi điều kiện (reset)</td><td><code>disable iff(rst)</code></td></tr>
+<tr><td><code>bind</code></td><td>Gắn instance vào module khác từ ngoài</td><td><code>bind riscv_pipeline_top chk u(...);</code></td></tr>
+</table></div>
+
+<h2 id="m4">5. Chuẩn bị</h2>
+<pre><code>cd ~/Study/KLtN/code/tb_uvm/uvm_riscv/tb/sva</code></pre>
+
+<h2 id="m5">6. Lý thuyết ngắn — property &amp; bind (+ tích hợp UVM)</h2>
+<ol>
+  <li><strong>Concurrent assertion</strong> chạy mỗi sườn clock, độc lập UVM. Fail → <code>UVM_ERROR</code>/
+    <code>$error</code> + thời điểm.</li>
+  <li><strong>|-&gt; vs |=&gt;:</strong> <code>a |-&gt; b</code> kiểm b ngay chu kỳ a đúng; <code>a |=&gt; b</code>
+    kiểm b ở chu kỳ kế tiếp — dùng cho hiệu ứng pipeline (PC cập nhật ở sườn sau).</li>
+  <li><strong>$past:</strong> nhìn lại 1 chu kỳ — so sánh PC hiện tại với PC trước +4.</li>
+  <li><strong>bind:</strong> đặt checker "bên trong" DUT nhưng viết ở TB. Port map tham chiếu net nội bộ của
+    module đích (vì instance nằm trong scope đó).</li>
+</ol>
+
+<h3>6.5. SVA và UVM report server — cái bẫy “PASS giả”</h3>
+<p><code>$error</code> in ra log nhưng <strong>không</strong> đi qua <code>uvm_report_server</code>. Dòng tổng kết <code>UVM_ERROR : 0</code> chỉ đếm báo cáo UVM. Hệ quả: một assertion fail liên tục mà regression script vẫn grep thấy “UVM_ERROR : 0” và đánh PASS.</p>
+<p>Cách 1 — gọi report API từ module (không cần class):</p>
+<pre><code>import uvm_pkg::*;                       // trong module checker
+`include "uvm_macros.svh"
+a_pc_inc: assert property (p_pc_inc)
+  else `uvm_error("SVA_PC", $sformatf("PC khong +4 @%0t", $time))</code></pre>
+<p>Macro <code>`uvm_error</code> dùng <code>uvm_report_enabled</code> + <code>uvm_report_error</code> với context toàn cục (<code>uvm_root::get()</code>), nên hợp lệ ngoài class. Cách 2 — giữ checker độc lập UVM, đếm lỗi bằng một biến (<code>sva_fail_cnt++</code> trong nhánh <code>else</code>), rồi <em>cuối test</em> đối chiếu và gọi <code>uvm_report_error</code> từ <code>check_phase</code>.</p>
+<div class="callout pitfall"><strong>Bẫy kép:</strong> regression script phải kiểm cả <code>UVM_ERROR : 0</code> <em>và</em> <code>UVM_FATAL : 0</code> <em>và</em> không có dòng <code>Error:</code>/<code>$error</code> của assertion — hoặc chuyển assertion vào UVM report như trên để một chỗ kiểm duy nhất.</div>
+
+<h3>6.6. Điều khiển checker từ UVM</h3>
+<p>Có lúc phải tắt assertion hợp lệ (negative test cố ý vi phạm bất biến, reset giữa chừng):</p>
+<ul>
+  <li><code>$assertoff(0, tb.dut)</code> / <code>$asserton</code> / <code>$assertkill</code> gọi từ <code>initial</code> hoặc từ test (<code>task</code> trong interface bọc lại).</li>
+  <li>Knob qua config: checker đọc <code>uvm_config_db#(bit)::get(null,"","en_sva",en)</code> trong <code>initial</code> (null context được phép khi đọc), mặc định bật.</li>
+  <li>Dùng <code>disable iff (rst || !en_sva)</code> trong property.</li>
+</ul>
+
+<h3>6.7. Vacuity, cover và kiểm chứng chính checker</h3>
+<ul>
+  <li><strong>Vacuous pass</strong>: <code>a |-&gt; b</code> “đúng” khi <code>a</code> sai. Nếu <code>a</code> không bao giờ xảy ra (chương trình không có branch), assertion pass mãi mãi mà chưa kiểm gì.</li>
+  <li>Luôn kèm <code>cover property (antecedent)</code> hoặc <code>cover property (a ##1 b)</code> để chứng minh property đã được “thử” — kết quả hiện trong coverage report (Lab 12/15).</li>
+  <li>“Assertion phải fail được”: Iteration 1 cố ý sai để thấy fail — mutation testing mức nhỏ cho checker.</li>
+</ul>
+
+<h3>6.8. SVA, scoreboard và coverage — phân vai</h3>
+<div class="table-wrap"><div class="table-wrap"><table>
+<tr><th>Công cụ</th><th>Trả lời câu hỏi</th><th>Ví dụ ở lab này</th></tr>
+<tr><td>SVA</td><td>Quan hệ <em>thời gian</em> có đúng không?</td><td>PC +4, PC giữ khi stall, flush sau redirect</td></tr>
+<tr><td>Scoreboard</td><td><em>Giá trị</em> có đúng không?</td><td><code>wb_data</code> khớp ISS</td></tr>
+<tr><td>Coverage</td><td>Đã <em>thử đủ</em> chưa?</td><td>Đã gặp load-use stall chưa?</td></tr>
+</table></div></div>
+
+<h2 id="m6">7. Iteration 0 — checker pipeline + regfile</h2>
+
+<details><summary>tb/sva/riscv_protocol_checker.sv</summary>
+<pre><code>// tb/sva/riscv_protocol_checker.sv — kiểm giao thức PC/redirect/stall tầng IF
+`ifndef RISCV_PROTOCOL_CHECKER_SV
+`define RISCV_PROTOCOL_CHECKER_SV
+module riscv_protocol_checker (
+  input        clk,
+  input        rst,
+  input [31:0] pc_if,
+  input        redirect,
+  input        stall,
+  input [31:0] redirect_target,
+  input        memwb_reg_write,
+  input [4:0]  memwb_rd
+);
+
+  // 1) PC +4 khi không redirect và không stall
+  //    `!rst` trong antecedent là BẮT BUỘC: driver nhả rst bằng NBA ngay tại posedge, nên ở tick cuối cùng của reset
+  //    `disable iff(rst)` (giá trị hiện tại = 0) không còn chặn, nhưng antecedent (giá trị đã sample = reset) vẫn "đúng"
+  //    -> consequent so PC lúc reset với PC +4 -> false fail đúng 1 lần @ thời điểm nhả reset (đã gặp khi chạy thật).
+  property p_pc_inc;
+    @(posedge clk) disable iff(rst) (!rst && !redirect && !stall) |=> (pc_if == $past(pc_if) + 32'd4);
+  endproperty
+  a_pc_inc: assert property(p_pc_inc)
+    else $error("[SVA] PC khong +4 khi khong redirect/stall @%0t", $time);
+
+  // 2) PC giữ khi stall (và không redirect)
+  property p_pc_stall;
+    @(posedge clk) disable iff(rst) (stall && !redirect) |=> $stable(pc_if);
+  endproperty
+  a_pc_stall: assert property(p_pc_stall)
+    else $error("[SVA] PC khong giu khi stall @%0t", $time);
+
+  // 3) Khi redirect: PC chu kỳ sau = redirect_target của chu kỳ này
+  property p_redirect_tgt;
+    @(posedge clk) disable iff(rst) redirect |=> (pc_if == $past(redirect_target));
+  endproperty
+  a_redirect_tgt: assert property(p_redirect_tgt)
+    else $error("[SVA] PC != redirect_target sau redirect @%0t", $time);
+
+  // 4) Đích nhảy căn chỉnh tối thiểu 2 byte (RV32I: branch/jal căn 4; jalr xóa bit0)
+  property p_tgt_align;
+    @(posedge clk) disable iff(rst) redirect |-> (redirect_target[0] == 1'b0);
+  endproperty
+  a_tgt_align: assert property(p_tgt_align)
+    else $error("[SVA] redirect_target le (bit0=1) @%0t", $time);
+
+  // 5) Ghi WB vào x0 là vô nghĩa — nếu reg_write ở WB thì rd nên != 0
+  //    (JAL/JALR rd=x0 vẫn hợp lệ nhưng regfile bỏ qua -> cảnh báo mức thấp)
+  property p_wb_x0_note;
+    @(posedge clk) disable iff(rst) (memwb_reg_write && (memwb_rd == 0)) |-> 1'b1; // luôn pass, chỉ cover
+  endproperty
+  c_wb_x0: cover property(p_wb_x0_note);
+
+endmodule
+`endif</code></pre></details>
+
+<div class="callout pitfall"><strong>$error không phải UVM_ERROR.</strong> Checker ở Lab này dùng <code>$error</code> nên độc lập UVM; hệ quả: dòng tổng kết <code>UVM_ERROR : 0</code> vẫn có thể <em>PASS giả</em> dù assertion đã fail. Xem §6 (UVM integration) để chuyển lỗi vào report server.</div>
+
+<details><summary>tb/sva/riscv_regfile_checker.sv (x0 ≡ 0)</summary>
+<pre><code>`ifndef RISCV_REGFILE_CHECKER_SV
+`define RISCV_REGFILE_CHECKER_SV
+module riscv_regfile_checker (
+  input        clk,
+  input        rst,
+  input        reg_write,
+  input [4:0]  write_reg,
+  input [31:0] regx0        // = registers[0]
+);
+  // x0 luôn 0 sau reset
+  a_x0_zero: assert property(@(posedge clk) disable iff(rst) (regx0 == 32'd0))
+    else $error("[SVA] x0 != 0 @%0t (= 0x%08h)", $time, regx0);
+
+  // không bao giờ xảy ra ghi thực sự vào x0 (guard reg_write && write_reg!=0)
+  // -> cover trường hợp reg_write=1 & write_reg=0 để biết nó CÓ xảy ra mà vẫn an toàn
+  c_wr_x0: cover property(@(negedge clk) disable iff(rst) (reg_write && write_reg==0));
+endmodule
+`endif</code></pre></details>
+
+<details><summary>tb/sva/riscv_bind.sv</summary>
+<pre><code>`ifndef RISCV_BIND_SV
+`define RISCV_BIND_SV
+// Gắn checker vào DUT — không sửa RTL. Port map tham chiếu net nội bộ DUT.
+bind riscv_pipeline_top riscv_protocol_checker u_proto_chk (
+  .clk             (clk),
+  .rst             (rst),
+  .pc_if           (pc_if),
+  .redirect        (redirect),
+  .stall           (stall),
+  .redirect_target (redirect_target),
+  .memwb_reg_write (memwb_reg_write_r),
+  .memwb_rd        (memwb_rd_r)
+);
+
+bind register_file riscv_regfile_checker u_rf_chk (
+  .clk       (clk),
+  .rst       (rst),
+  .reg_write (reg_write),
+  .write_reg (write_reg),
+  .regx0     (registers[0])
+);
+`endif</code></pre></details>
+
+<p><strong>Lệnh chạy (thêm 3 file SVA vào biên dịch, trước top):</strong></p>
+<pre><code>cd ~/Study/KLtN/code/tb_uvm/uvm_riscv/sim</code></pre>
+<pre><code>xvlog -sv ../tb/if/riscv_if.sv ../rtl/instruction_memory.sv ../rtl/register_file.sv ../rtl/data_memory.sv ../rtl/control_unit.sv ../rtl/imm_gen.sv ../rtl/alu_control.sv ../rtl/alu.sv ../rtl/branch_control.sv ../rtl/mux.sv ../rtl/adder.sv ../rtl/riscv_pipeline_top.sv   # (không dùng ../rtl/*.sv: thư mục rtl còn riscv_top/avalon wrapper/sha256 không thuộc pipeline)</code></pre>
+<pre><code>xvlog -sv ../tb/sva/riscv_protocol_checker.sv ../tb/sva/riscv_regfile_checker.sv ../tb/sva/riscv_bind.sv</code></pre>
+<pre><code>xvlog -sv -L uvm -i ../tb/agent -i ../tb/seq -i ../tb/env -i ../tb/test ../tb/pkg/riscv_pkg.sv ../tb/top/riscv_tb_top.sv</code></pre>
+<pre><code>xelab -L uvm -timescale 1ns/1ps riscv_tb_top -s top_sim</code></pre>
+<pre><code>xsim top_sim -R -testplusarg UVM_TESTNAME=mixed_test</code></pre>
+
+<div class="note warn">Lưu ý: không dùng <code>../rtl/*.sv</code> nếu thư mục còn
+<code>riscv_top.sv</code>/<code>riscv_avalon_wrapper.sv</code>/<code>riscv_pipeline_core.sv</code> — liệt kê
+đúng 11 file như Lab 5 để tránh trùng module / cần <code>sha256</code>.</div>
+
+<details><summary>Expected log (PASS)</summary>
+<pre><code>WARNING: [XSIM 43-4127] File "tb/sva/riscv_regfile_checker.sv" Line 16 : The "System Verilog Cover" is not supported yet for simulation. The statement will be ignored.
+WARNING: [XSIM 43-4127] File "tb/sva/riscv_protocol_checker.sv" Line 51 : The "System Verilog Cover" is not supported yet for simulation. The statement will be ignored.
+UVM_INFO @ 0: reporter [RNTST] Running test mixed_test...
+(không có dòng "Error: [SVA] ..." -> tất cả property đúng)
+UVM_INFO ../tb/agent/riscv_driver.sv(52) @ 205000: uvm_test_top.env.agent.drv [DRV] Chay xong 9 lenh (+8 drain)
+UVM_INFO ... [MON] Tong so lenh retire = 17
+UVM_ERROR :    0</code></pre>
+<p><em>Lưu ý xsim 2023.2: <code>cover property</code> bị bỏ qua khi mô phỏng (cảnh báo 43-4127 ở trên) nên <code>c_wb_x0</code>/<code>c_wr_x0</code> không có số liệu hit trong xsim;
+cần simulator khác (hoặc đếm bằng <code>always</code> thường) nếu muốn đo. Lỗi <code>$error</code> của SVA in dạng <code>Error: [SVA] ...</code> và <strong>không</strong> tăng bộ đếm <code>UVM_ERROR</code> (xem Iteration 5).</em></p></details>
+
+<h2 id="m7">8. Iterations</h2>
+
+<h3>Iteration 1 — cố ý sai property để thấy fail (sanity của checker)</h3>
+<p>Đổi <code>+32'd4</code> → <code>+32'd8</code> trong <code>p_pc_inc</code>.</p>
+<details><summary>Expected log (FAIL)</summary>
+<pre><code># $error "[SVA] PC khong +4 ..."  nhiều lần
+# UVM_ERROR : &gt;0</code></pre>
+<p>Chứng minh checker thật sự kiểm — "assert phải fail được khi sai". Sửa lại +4.</p></details>
+
+<h3>Iteration 2 — thêm property: sau redirect, IF/ID bị flush (ifid_valid=0 chu kỳ sau)</h3>
+<p>Thêm port <code>ifid_valid</code> và property <code>redirect |=&gt; !ifid_valid</code>.</p>
+<details><summary>Khác biệt</summary><p>Kiểm đúng cơ chế flush của pipeline. Dạy: SVA soi được micro-architecture, không chỉ ISA.</p></details>
+
+<h3>Iteration 3 — thêm property forwarding: khi fwdA_exmem, operand = exmem_ex_nonmem</h3>
+<p>Bind thêm các net forwarding; assert <code>fwdA_exmem |-&gt; (alu_a_ex == exmem_ex_nonmem)</code>.</p>
+<details><summary>Khác biệt</summary><p>Kiểm đường forwarding — lỗi hazard kinh điển. Dạy: property cho datapath nội bộ.</p></details>
+
+<h3>Iteration 4 — disable iff kép (rst hoặc stall) cho một property nhạy cảm</h3>
+<p>Dùng <code>disable iff(rst || stall)</code> cho property liên quan EX.</p>
+<details><summary>Khác biệt</summary><p>Tránh false-fail khi stall giữ trạng thái. Dạy: chọn điều kiện disable đúng ngữ cảnh.</p></details>
+
+<h3>Iteration 5 — chuyển <code>$error</code> → <code>`uvm_error</code></h3>
+<p>Include uvm trong checker và dùng macro UVM để lỗi vào UVM report server.</p>
+<details><summary>Khác biệt</summary><p>Lỗi gộp vào UVM_ERROR summary → thống nhất báo cáo với scoreboard. Dạy: tích hợp SVA vào UVM reporting.</p></details>
+
+<h2 id="m8">9. Bảng tổng hợp</h2>
+<div class="table-wrap"><table><tr><th>Iter</th><th>Đổi</th><th>Học</th></tr>
+<tr><td>0</td><td>checker PC/stall/redirect + x0</td><td>property + bind</td></tr>
+<tr><td>1</td><td>sai +8</td><td>assert phải fail được</td></tr>
+<tr><td>2</td><td>flush ifid_valid</td><td>SVA soi micro-arch</td></tr>
+<tr><td>3</td><td>forwarding</td><td>kiểm datapath</td></tr>
+<tr><td>4</td><td>disable iff kép</td><td>chọn disable đúng</td></tr>
+<tr><td>5</td><td>`uvm_error</td><td>tích hợp UVM report</td></tr>
+</table></div>
+
+<h2 id="m9">10. BASELINE sang Lab 9</h2>
+<p><code>riscv_protocol_checker</code> (PC+4, stall-hold, redirect target, align) + <code>riscv_regfile_checker</code>
+(x0≡0) + <code>riscv_bind.sv</code>. SVA bắt lỗi cấu trúc; Lab 9 xây ISS để bắt lỗi giá trị.</p>
+
+<h2 id="m10">11. Checklist nhớ code</h2>
+<ul>
+  <li>[ ] Nhớ <code>|=&gt;</code> + <code>$past</code> cho hiệu ứng chu kỳ sau; <code>disable iff(rst)</code>.</li>
+  <li>[ ] Nhớ bind port map tham chiếu đúng net nội bộ (<code>pc_if</code>, <code>redirect_target</code>...).</li>
+  <li>[ ] Nhớ kiểm "assert fail được" (iteration 1) trước khi tin checker.</li>
+</ul>
+
+<h2 id="m11">12. Phỏng vấn — hỏi &amp; đáp</h2>
+<p>Bấm câu hỏi để xem đáp án — nên tự trả lời miệng trước khi mở. Mỗi câu có ví dụ cụ thể như khi bị hỏi trong phỏng vấn.</p>
+<div class="qa-list">
+<details class="qa"><summary>Assertion fail nhưng báo cáo cuối vẫn “UVM_ERROR : 0”. Vì sao và xử lý ra sao?</summary>
+<div class="ans">
+<p>Vì <code>$error</code> của SVA không đi qua <code>uvm_report_server</code> — bộ đếm UVM chỉ tăng với <code>`uvm_error/uvm_report_error</code>. Cách xử lý: (1) dùng <code>`uvm_error</code> trong nhánh <code>else</code> của assertion (cần <code>import uvm_pkg::*</code> + include macros); hoặc (2) giữ <code>$error</code>, đếm lỗi bằng biến rồi cuối test đối chiếu để gọi <code>uvm_report_error</code>; (3) script regression grep cả log của simulator.</p>
+<pre><code>a_x0: assert property (@(posedge clk) disable iff (rst) regx0 == 0)
+  else `uvm_error("SVA_X0", $sformatf("x0=%08h @%0t", regx0, $time))</code></pre>
+</div></details>
+<details class="qa"><summary>Giải thích <code>|-&gt;</code> và <code>|=&gt;</code> kèm ví dụ về PC. Vì sao dùng <code>$past</code>?</summary>
+<div class="ans">
+<p><code>a |-&gt; b</code>: nếu <code>a</code> đúng ở chu kỳ t thì <code>b</code> phải đúng <em>cùng</em> t. <code>a |=&gt; b</code> ≡ <code>a |-&gt; ##1 b</code>: <code>b</code> ở chu kỳ <em>kế tiếp</em>. PC cập nhật ở sườn sau, nên “không stall/redirect ở t ⇒ PC(t+1) = PC(t)+4” viết bằng <code>|=&gt;</code> và <code>$past(pc_if)</code> (giá trị chu kỳ trước) để so với PC mới.</p>
+<pre><code>(!redirect &amp;&amp; !stall) |=&gt; (pc_if == $past(pc_if) + 32'd4)</code></pre>
+</div></details>
+<details class="qa"><summary><code>bind</code> là gì, vì sao dùng thay vì viết assertion trong RTL?</summary>
+<div class="ans">
+<p><code>bind</code> chèn một instance checker <em>vào trong phạm vi</em> của module đích từ bên ngoài, nên port map thấy được net nội bộ (<code>pc_if</code>, <code>memwb_reg_write_r</code>) mà không sửa RTL. Lợi: RTL sạch (không lẫn code verify, không ảnh hưởng tổng hợp), bật/tắt bằng cách đưa/bỏ file bind, tái dùng cho nhiều DUT (bind theo tên module). Nhược: tên net nội bộ đổi → lỗi bind; gỡ lỗi phải biết phạm vi.</p>
+</div></details>
+<details class="qa"><summary>Làm sao tắt một assertion trong một test cụ thể (negative test)?</summary>
+<div class="ans">
+<p>Ba mức: (1) <code>$assertoff(0, path)</code> từ test/interface task — nhanh; (2) knob trong <code>disable iff (!en)</code> đọc từ config — rõ ràng, có thể bật lại; (3) tách file bind theo nhóm (<code>protocol</code> vs <code>isa</code>) và chỉ biên dịch nhóm cần. Quan trọng: <em>tắt có chủ đích, có log</em> (“SVA a_tgt_align OFF for negative_test”) để review regression không nhầm.</p>
+</div></details>
+<details class="qa"><summary>Vacuous pass là gì? Cho ví dụ trong lab này và cách phát hiện.</summary>
+<div class="ans">
+<p>Assertion “pass” vì antecedent không bao giờ đúng. Ví dụ <code>redirect |=&gt; pc_if == $past(redirect_target)</code> chạy trên chương trình toàn R-type: <code>redirect</code> không xảy ra → pass vô nghĩa. Phát hiện: thêm <code>cover property (redirect)</code>, hoặc báo cáo assertion “vacuous count”; trong coverage report phải thấy antecedent đã được hit ≥1 lần.</p>
+</div></details>
+<details class="qa"><summary><code>disable iff(rst)</code> dùng để làm gì? Sai thế nào khi đặt nhầm điều kiện?</summary>
+<div class="ans">
+<p>Tắt đánh giá (và hủy attempt đang chạy) khi reset để tránh false-fail trong lúc trạng thái chưa xác định. Đặt nhầm: nếu dùng <code>disable iff (stall)</code> cho property “PC giữ khi stall” thì chính trường hợp cần kiểm bị tắt → assertion vô hiệu. Quy tắc: chỉ disable theo reset/điều kiện <em>ngoài phạm vi</em> property.</p>
+</div></details>
+<details class="qa"><summary>SVA trong interface so với trong module bind — chọn thế nào?</summary>
+<div class="ans">
+<p>Trong interface: kiểm tra <em>giao thức tại ranh giới</em> (X-check, valid/ready) — đi theo interface khi tái dùng VIP, có thể bật/tắt qua config của interface. Bind: kiểm tra <em>nội bộ</em> DUT (forwarding, flush, x0) — không sửa RTL, theo DUT cụ thể. Trong UVM hoàn chỉnh: assertion ranh giới đi cùng agent (<code>has_checker</code> trong cfg), assertion nội bộ là một lớp riêng của dự án.</p>
+</div></details>
+<details class="qa"><summary>Assertion có thay được scoreboard không?</summary>
+<div class="ans">
+<p>Không. SVA mạnh với thuộc tính theo thời gian nhưng không so được dữ liệu với một mô hình tham chiếu phức tạp (ISS). Scoreboard bắt lỗi giá trị; SVA bắt lỗi giao thức/cấu trúc <em>ngay tại chu kỳ gây lỗi</em> (định vị chính xác hơn). Hai lớp bổ trợ; coverage quyết định đã thử đủ chưa.</p>
+</div></details>
+</div>
+
+<h2 id="m12">13. Cheat-sheet</h2>
+<pre><code>property p_pc_inc; @(posedge clk) disable iff(rst)
+  (!redirect && !stall) |=> (pc_if == $past(pc_if)+4); endproperty
+a_pc_inc: assert property(p_pc_inc) else $error(...);
+bind riscv_pipeline_top riscv_protocol_checker u(.clk,.rst,.pc_if,.redirect,.stall,.redirect_target,...);
+bind register_file riscv_regfile_checker u(.clk,.rst,.reg_write,.write_reg,.regx0(registers[0]));</code></pre>
+
+<h2 id="m13">14. Bài tập code &amp; câu hỏi nâng cao UVM</h2>
+<p>8 bài rèn tay, tăng dần độ khó. Làm trên baseline của lab này; đáp án chỉ là hướng tham khảo — giá trị nằm ở việc bạn tự gõ, chạy và đọc log.</p>
+<div class="ex-progress"><span class="cnt">0 / 8 bài đã làm</span><span class="bar"><i></i></span></div>
+<div class="ex-list">
+<article class="ex"><div class="ex-head"><span class="lv l1">★ Dễ</span><h4>EX1 — Chuyển sang UVM_ERROR</h4></div>
+Sửa <code>riscv_protocol_checker</code> dùng <code>`uvm_error</code> (import <code>uvm_pkg::*</code>). Chạy bản cố ý sai <code>+8</code> và xác nhận <code>UVM_ERROR</code> tăng. So với bản <code>$error</code>.
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p>Bản <code>$error</code>: log có lỗi nhưng summary <code>UVM_ERROR : 0</code>. Bản <code>uvm_error</code>: summary &gt; 0 và có thể dùng <code>set_max_quit_count()</code>.</p>
+</details>
+</article>
+<article class="ex"><div class="ex-head"><span class="lv l1">★ Dễ</span><h4>EX2 — Thêm cover cho antecedent</h4></div>
+Thêm <code>cover property (@(posedge clk) disable iff (rst) redirect);</code> và tương tự cho <code>stall</code>. Chạy <code>rtype_test</code> rồi <code>branch_test</code>. So sánh số hit.
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p><code>rtype_test</code>: hit = 0 → các assertion về redirect đang vacuous. Bài học: assertion pass ≠ đã kiểm.</p>
+</details>
+</article>
+<article class="ex"><div class="ex-head"><span class="lv l2">★★ Vừa</span><h4>EX3 — Knob bật/tắt từ test</h4></div>
+Trong checker, thêm <code>bit en = 1; initial void'(uvm_config_db#(bit)::get(null,"","en_sva",en));</code> và dùng <code>disable iff (rst || !en)</code>. Test âm <code>set(null,"*","en_sva",0)</code>. Có chạy đúng không? (Gợi ý: thứ tự <code>initial</code> trong module so với <code>run_test</code>).
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p>Rủi ro race: <code>initial</code> của checker có thể chạy <em>trước</em> khi test <code>set</code>. Giải pháp: đọc trong <code>always @(posedge clk)</code> hoặc dùng <code>#0</code>/event; hoặc tắt bằng <code>$assertoff</code> từ test trong <code>run_phase</code>.</p>
+</details>
+</article>
+<article class="ex"><div class="ex-head"><span class="lv l2">★★ Vừa</span><h4>EX4 — Property cho flush</h4></div>
+Thêm port <code>ifid_valid</code>, <code>idex_valid</code> và property: <code>redirect |=&gt; (!ifid_valid)</code> và <code>redirect |=&gt; ##1 (!idex_valid)</code>. Cố ý hỏng flush trong RTL (copy) rồi để SVA bắt.
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p>Kiểm tra bằng mutation: SVA phải fail khi RTL sai. Nếu không fail → property quá yếu hoặc không đủ stimulus (cần cover).</p>
+</details>
+</article>
+<article class="ex"><div class="ex-head"><span class="lv l2">★★ Vừa</span><h4>EX5 — Forwarding assertion</h4></div>
+Bind các net forwarding và assert: <code>fwdA_exmem |-&gt; (alu_a_ex == exmem_ex_nonmem)</code>. Viết một chương trình có chuỗi phụ thuộc (<code>add x1; add x2,x1; add x3,x2</code>) để chắc property được “thử”. Thêm cover.
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p>Dùng <code>riscv_prog_base_seq</code> với <code>gen_one</code> chọn <code>rs1</code> = <code>rd</code> của lệnh trước (biến trạng thái trong sequence) để ép phụ thuộc — tình huống stimulus thông minh đầu tiên của bạn.</p>
+</details>
+</article>
+<article class="ex"><div class="ex-head"><span class="lv l2">★★ Vừa</span><h4>EX6 — Tắt assertion có log</h4></div>
+Viết một task trong interface <code>disable_sva(string why)</code> gọi <code>$assertoff</code> và in <code>`uvm_warning("SVA_OFF", why)</code>. Dùng trong <code>negative_opcode_test</code>.
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p>Tắt có chủ đích, có log: reviewer thấy được test nào đã nới kiểm tra. Nhớ có <code>enable_sva()</code> để bật lại ở cuối.</p>
+</details>
+</article>
+<article class="ex"><div class="ex-head"><span class="lv l3">★★★ Khó</span><h4>EX7 — Assertion-only environment</h4></div>
+Chạy DUT không có scoreboard (<code>+UVM_TESTNAME=mixed_test</code> với env đã tắt SB) để xem SVA độc lập có đủ phát hiện lỗi ALU không. Rút ra kết luận về phân vai SVA/scoreboard.
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p>SVA ở lab chỉ kiểm PC/flush/x0 → <em>không</em> thấy lỗi giá trị ALU. Kết luận: cần scoreboard; hoặc phải viết property giá trị (ví dụ <code>add</code>) — thường là overkill so với ISS.</p>
+</details>
+</article>
+<article class="ex"><div class="ex-head"><span class="lv l3">★★★ Khó</span><h4>EX8 — Mutation matrix</h4></div>
+Lập bảng 5 lỗi cố ý chèn vào RTL (sai +4, quên stall, sai target, ghi x0, sai forwarding) × 3 cơ chế bắt (SVA, scoreboard, coverage). Chạy và điền: cơ chế nào bắt được lỗi nào.
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p>Kết quả điển hình: PC/flush → SVA; giá trị → scoreboard; “chưa từng thử” → coverage. Bảng này là câu trả lời mạnh cho “vì sao cần cả ba”.</p>
+</details>
+</article>
+</div>
+
+
+<nav class="pager" aria-label="Điều hướng lab"><a class="nav-card prev" href="lab07.html" rel="prev"><small>← Lab trước</small><span>Lab 07 — Virtual sequencer</span></a><div class="mid"><button type="button" class="btn primary" id="mark-done" aria-pressed="false">Đánh dấu hoàn thành</button></div><a class="nav-card next" href="lab09.html" rel="next"><small>Lab tiếp →</small><span>Lab 09 — Reference model</span></a></nav>
+<p class="foot">UVM · RISC-V Pipeline Speedrun — Lab 08 / 15. Phím tắt: <kbd>[</kbd> lab trước · <kbd>]</kbd> lab sau.</p>
+</main>
+</div>
+</body>
+</html>

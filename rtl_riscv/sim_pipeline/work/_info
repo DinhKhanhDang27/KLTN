@@ -1,0 +1,357 @@
+m255
+K3
+13
+cModel Technology
+Z0 d/home/dinhkhanhdang/Study/KLtN/code/rtl_riscv/sim_pipeline
+valu
+Z1 DXx6 sv_std 3 std 0 22 F[19LRNL:5;XmIFh[XOPn1
+Z2 IzVl9CH20Oo_fI32kI4aod1
+Z3 VckK2PnRVFclDdfM4nLL:l3
+S1
+Z4 d/home/dinhkhanhdang/Study/KLtN/code/rtl_riscv/sim_pipeline
+Z5 w1790860287
+Z6 8/home/dinhkhanhdang/Study/KLtN/code/rtl_riscv/alu.sv
+Z7 F/home/dinhkhanhdang/Study/KLtN/code/rtl_riscv/alu.sv
+L0 1
+Z8 OV;L;10.1d;51
+r1
+31
+Z9 !s108 1791744023.249488
+Z10 !s107 tb.sv|test_imem.sv|/home/dinhkhanhdang/Study/KLtN/code/rtl_riscv/riscv_pipeline_top.sv|/home/dinhkhanhdang/Study/KLtN/code/rtl_riscv/mux.sv|/home/dinhkhanhdang/Study/KLtN/code/rtl_riscv/data_memory.sv|/home/dinhkhanhdang/Study/KLtN/code/rtl_riscv/register_file.sv|/home/dinhkhanhdang/Study/KLtN/code/rtl_riscv/imm_gen.sv|/home/dinhkhanhdang/Study/KLtN/code/rtl_riscv/control_unit.sv|/home/dinhkhanhdang/Study/KLtN/code/rtl_riscv/branch_control.sv|/home/dinhkhanhdang/Study/KLtN/code/rtl_riscv/alu_control.sv|/home/dinhkhanhdang/Study/KLtN/code/rtl_riscv/alu.sv|
+Z11 !s90 -sv|-quiet|/home/dinhkhanhdang/Study/KLtN/code/rtl_riscv/alu.sv|/home/dinhkhanhdang/Study/KLtN/code/rtl_riscv/alu_control.sv|/home/dinhkhanhdang/Study/KLtN/code/rtl_riscv/branch_control.sv|/home/dinhkhanhdang/Study/KLtN/code/rtl_riscv/control_unit.sv|/home/dinhkhanhdang/Study/KLtN/code/rtl_riscv/imm_gen.sv|/home/dinhkhanhdang/Study/KLtN/code/rtl_riscv/register_file.sv|/home/dinhkhanhdang/Study/KLtN/code/rtl_riscv/data_memory.sv|/home/dinhkhanhdang/Study/KLtN/code/rtl_riscv/mux.sv|/home/dinhkhanhdang/Study/KLtN/code/rtl_riscv/riscv_pipeline_top.sv|test_imem.sv|tb.sv|
+Z12 o-sv -quiet -O0
+!i10b 1
+Z13 !s100 bi<0b3CDCFmjG7VOf8Q3V0
+Z14 !s105 alu_sv_unit
+!s85 0
+!s101 -O0
+valu_control
+R1
+Z15 IMDh_K:eZQBBNgI97jO9mF0
+Z16 Voi3b1XeEHdKS>CkTlk9Mo1
+S1
+R4
+R5
+Z17 8/home/dinhkhanhdang/Study/KLtN/code/rtl_riscv/alu_control.sv
+Z18 F/home/dinhkhanhdang/Study/KLtN/code/rtl_riscv/alu_control.sv
+L0 5
+R8
+r1
+31
+R9
+R10
+R11
+R12
+!i10b 1
+Z19 !s100 >TXB>^]1281ZE5m]lzET72
+Z20 !s105 alu_control_sv_unit
+!s85 0
+!s101 -O0
+vavalon_mem
+R1
+!i10b 1
+!s100 `66S_[cXlF6>`T?gD]mlU3
+IRIPT8W0Va@;I4<U;`ghF;3
+VmhdK_=Gzc]gKTdF^hifja1
+!s105 avalon_mem_sv_unit
+S1
+R4
+w1791744004
+8avalon_mem.sv
+Favalon_mem.sv
+L0 2
+R8
+r1
+!s85 0
+31
+Z21 !s108 1791744023.944897
+Z22 !s107 tb_bridge.sv|avalon_mem.sv|/home/dinhkhanhdang/Study/KLtN/code/rtl_riscv/riscv_avalon_wrapper.sv|/home/dinhkhanhdang/Study/KLtN/code/rtl_riscv/riscv_pipeline_core.sv|
+Z23 !s90 -sv|-quiet|/home/dinhkhanhdang/Study/KLtN/code/rtl_riscv/riscv_pipeline_core.sv|/home/dinhkhanhdang/Study/KLtN/code/rtl_riscv/riscv_avalon_wrapper.sv|avalon_mem.sv|tb_bridge.sv|
+!s101 -O0
+R12
+vbranch_control
+R1
+Z24 IRm;azC_k=_f:hkQPBnbhe0
+Z25 VNlY;L?kzZAFgOlTKPJN:C1
+S1
+R4
+R5
+Z26 8/home/dinhkhanhdang/Study/KLtN/code/rtl_riscv/branch_control.sv
+Z27 F/home/dinhkhanhdang/Study/KLtN/code/rtl_riscv/branch_control.sv
+L0 5
+R8
+r1
+31
+R9
+R10
+R11
+R12
+!i10b 1
+Z28 !s100 ]YC9RR`4lBOe:H_eN^z7m0
+Z29 !s105 branch_control_sv_unit
+!s85 0
+!s101 -O0
+vcontrol_unit
+R1
+Z30 IODSk7N8H2=2?;cc[RjB^Z0
+Z31 ViN61LefgkN9TnoD:iCfAk2
+S1
+R4
+R5
+Z32 8/home/dinhkhanhdang/Study/KLtN/code/rtl_riscv/control_unit.sv
+Z33 F/home/dinhkhanhdang/Study/KLtN/code/rtl_riscv/control_unit.sv
+L0 1
+R8
+r1
+31
+R9
+R10
+R11
+R12
+!i10b 1
+Z34 !s100 3CCGo5=V^o5;:3a0_UY8U3
+Z35 !s105 control_unit_sv_unit
+!s85 0
+!s101 -O0
+vdata_memory
+R1
+Z36 Il^@InVdGio?<:2diNJbB@3
+Z37 V1QdYgI_3:2=_S^BZ96lPK0
+S1
+R4
+Z38 w1790860300
+Z39 8/home/dinhkhanhdang/Study/KLtN/code/rtl_riscv/data_memory.sv
+Z40 F/home/dinhkhanhdang/Study/KLtN/code/rtl_riscv/data_memory.sv
+L0 6
+R8
+r1
+31
+R9
+R10
+R11
+R12
+!i10b 1
+Z41 !s100 4e1IbWGD8iX4:X2>B46So1
+Z42 !s105 data_memory_sv_unit
+!s85 0
+!s101 -O0
+vimm_gen
+R1
+Z43 I15:ULX_]G1<Z[iT6FlKhC3
+Z44 V7l7Q0o2J8:=U;8Z[JYN[E1
+S1
+R4
+Z45 w1790860318
+Z46 8/home/dinhkhanhdang/Study/KLtN/code/rtl_riscv/imm_gen.sv
+Z47 F/home/dinhkhanhdang/Study/KLtN/code/rtl_riscv/imm_gen.sv
+L0 6
+R8
+r1
+31
+R9
+R10
+R11
+R12
+!i10b 1
+Z48 !s100 k9aRcf9>gNoDTdI^XR5Kz1
+Z49 !s105 imm_gen_sv_unit
+!s85 0
+!s101 -O0
+vinstruction_memory
+R1
+Z50 I0SK=i<PV275e]b?Rik8ho0
+Z51 V[:DQMJjmmLRL[g8K;LcoE1
+S1
+R4
+Z52 w1791742865
+Z53 8test_imem.sv
+Z54 Ftest_imem.sv
+L0 2
+R8
+r1
+31
+R9
+R10
+R11
+R12
+!i10b 1
+Z55 !s100 Z9Q_7Uhg`?J8i;MFHgK520
+Z56 !s105 test_imem_sv_unit
+!s85 0
+!s101 -O0
+vmux2to1
+R1
+Z57 IInaSPHmLE^4VJLkQdQTKW1
+Z58 VIh<9X5VXEa33cmf;fXS?[1
+Z59 !s105 mux_sv_unit
+S1
+R4
+R5
+Z60 8/home/dinhkhanhdang/Study/KLtN/code/rtl_riscv/mux.sv
+Z61 F/home/dinhkhanhdang/Study/KLtN/code/rtl_riscv/mux.sv
+L0 4
+R8
+r1
+31
+R9
+R10
+R11
+R12
+!i10b 1
+Z62 !s100 zLN5T[EI7RK@=leiiLMme0
+!s85 0
+!s101 -O0
+vmux4to1
+R1
+Z63 I<BU<35`L:m;<niSB5XfO=2
+Z64 V^3kWVgo5DV`<K^<hBCOgN3
+R59
+S1
+R4
+R5
+R60
+R61
+L0 18
+R8
+r1
+31
+R9
+R10
+R11
+R12
+!i10b 1
+Z65 !s100 KjF]W1lN@FPmFjH0;F[421
+!s85 0
+!s101 -O0
+vregister_file
+R1
+Z66 IQbP^LG0V[oZe::7g]9HUj1
+Z67 Ve;jXW?>CSi2[?a_b2j2d33
+S1
+R4
+Z68 w1790860344
+Z69 8/home/dinhkhanhdang/Study/KLtN/code/rtl_riscv/register_file.sv
+Z70 F/home/dinhkhanhdang/Study/KLtN/code/rtl_riscv/register_file.sv
+L0 6
+R8
+r1
+31
+R9
+R10
+R11
+R12
+!i10b 1
+Z71 !s100 fECj59]mfiA0mL2<Uh3;n0
+Z72 !s105 register_file_sv_unit
+!s85 0
+!s101 -O0
+vriscv_avalon_wrapper
+R1
+!i10b 1
+!s100 9C3SB^@X3A@j6ZgBZhiER0
+IbzKJBGNF<EH0c4WWC:Xil1
+V>N3QB[P3gB_<S]jU^Be]A0
+!s105 riscv_avalon_wrapper_sv_unit
+S1
+R4
+w1791743970
+8/home/dinhkhanhdang/Study/KLtN/code/rtl_riscv/riscv_avalon_wrapper.sv
+F/home/dinhkhanhdang/Study/KLtN/code/rtl_riscv/riscv_avalon_wrapper.sv
+L0 16
+R8
+r1
+!s85 0
+31
+R21
+R22
+R23
+!s101 -O0
+R12
+vriscv_pipeline_core
+R1
+!i10b 1
+!s100 jTG_9f2``m=RZdEn5ZPMO2
+IC_2hSWbjW44X^^=ceecE@1
+VT:2iVbX:SWYcjTW:JzAmL3
+!s105 riscv_pipeline_core_sv_unit
+S1
+R4
+w1791743954
+8/home/dinhkhanhdang/Study/KLtN/code/rtl_riscv/riscv_pipeline_core.sv
+F/home/dinhkhanhdang/Study/KLtN/code/rtl_riscv/riscv_pipeline_core.sv
+L0 21
+R8
+r1
+!s85 0
+31
+R21
+R22
+R23
+!s101 -O0
+R12
+vriscv_pipeline_top
+R1
+Z73 ImmeGYk2_CReIE0@8iZNne0
+Z74 VUeCWl^O[LTBMLSQ83Z^FN1
+S1
+R4
+Z75 w1791742648
+Z76 8/home/dinhkhanhdang/Study/KLtN/code/rtl_riscv/riscv_pipeline_top.sv
+Z77 F/home/dinhkhanhdang/Study/KLtN/code/rtl_riscv/riscv_pipeline_top.sv
+L0 13
+R8
+r1
+31
+R9
+R10
+R11
+R12
+!i10b 1
+Z78 !s100 ]F`zL5HAd3lWRCXg[ViER0
+Z79 !s105 riscv_pipeline_top_sv_unit
+!s85 0
+!s101 -O0
+vtb
+R1
+Z80 IULVJ2Ymm3_CaOG4Uiao`T3
+Z81 VV@Xn<HnSRM[I5c1?BH]3a3
+S1
+R4
+R52
+Z82 8tb.sv
+Z83 Ftb.sv
+L0 2
+R8
+r1
+31
+R9
+R10
+R11
+R12
+!i10b 1
+Z84 !s100 Zd:8URG]>3hJF]CMPO=Q90
+Z85 !s105 tb_sv_unit
+!s85 0
+!s101 -O0
+vtb_bridge
+R1
+!i10b 1
+!s100 UiFzeA32lHzTU2HQeZoM31
+IM=AUiiBFHJh0Ng02^C7Z80
+VMdLIn8IeW`FcIfgCF8m@<0
+!s105 tb_bridge_sv_unit
+S1
+R4
+w1791743988
+8tb_bridge.sv
+Ftb_bridge.sv
+L0 2
+R8
+r1
+!s85 0
+31
+R21
+R22
+R23
+!s101 -O0
+R12

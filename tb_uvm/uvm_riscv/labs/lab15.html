@@ -1,0 +1,555 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Lab 15 — RISC-V Regression + Coverage Merge + Firmware + Avalon</title>
+<link rel="stylesheet" href="assets/lab.css">
+<script src="assets/lab.js" defer></script>
+</head>
+<body data-lab="15" data-total="15">
+<div id="readbar" aria-hidden="true"></div>
+<header class="topbar">
+  <button type="button" class="iconbtn" id="toc-toggle" aria-label="Mở mục lục">☰</button>
+  <a class="brand" href="index.html"><span class="brand-mark">UVM</span><span>RISC-V <small>Speedrun</small></span></a>
+  <nav class="labdots" aria-label="Chọn lab"><a href="lab01.html" data-n="1" title="Lab 01 — Interface & clocking">1</a><a href="lab02.html" data-n="2" title="Lab 02 — Sequence item">2</a><a href="lab03.html" data-n="3" title="Lab 03 — Driver">3</a><a href="lab04.html" data-n="4" title="Lab 04 — Monitor & analysis port">4</a><a href="lab05.html" data-n="5" title="Lab 05 — Agent, env, test, config">5</a><a href="lab06.html" data-n="6" title="Lab 06 — Sequence library">6</a><a href="lab07.html" data-n="7" title="Lab 07 — Virtual sequencer">7</a><a href="lab08.html" data-n="8" title="Lab 08 — SVA & bind trong UVM">8</a><a href="lab09.html" data-n="9" title="Lab 09 — Reference model">9</a><a href="lab10.html" data-n="10" title="Lab 10 — Scoreboard in-order">10</a><a href="lab11.html" data-n="11" title="Lab 11 — Scoreboard đầy đủ">11</a><a href="lab12.html" data-n="12" title="Lab 12 — Functional coverage">12</a><a href="lab13.html" data-n="13" title="Lab 13 — RAL (uvm_reg / uvm_mem)">13</a><a href="lab14.html" data-n="14" title="Lab 14 — Factory, callback, catcher">14</a><a href="lab15.html" data-n="15" title="Lab 15 — Regression & closure" aria-current="page">15</a></nav>
+  <button type="button" class="iconbtn" id="theme-toggle" aria-label="Đổi giao diện sáng/tối">☾</button>
+</header>
+<div class="layout">
+<aside class="side" aria-label="Mục lục">
+  <nav class="side-toc">
+    <p class="side-title">Trong bài này</p>
+    <ol>
+<li><a href="#muc-tongquan">1. Tổng quan lab</a></li>
+<li><a href="#m1">2. Vị trí trong testbench</a></li>
+<li><a href="#m2">3. Mục tiêu học</a></li>
+<li><a href="#m3">4. Keyword &amp; khái niệm mới</a></li>
+<li><a href="#m4">5. Chuẩn bị</a></li>
+<li><a href="#m5">6. Lý thuyết ngắn — đóng vòng verify (+ UVM trong regression)</a></li>
+<li><a href="#m6">7. Iteration 0 — Makefile + run.tcl + regression</a></li>
+<li><a href="#m7">8. Iterations</a></li>
+<li><a href="#m8">9. Verification Plan (vPlan)</a></li>
+<li><a href="#m9">10. Nâng cao — đổi DUT sang riscv_avalon_wrapper + uvm_reg</a></li>
+<li><a href="#m10">11. Checklist nhớ code</a></li>
+<li><a href="#m11">12. Phỏng vấn — hỏi &amp; đáp</a></li>
+<li><a href="#m12">13. Cheat-sheet</a></li>
+<li><a href="#m13">14. Bài tập code &amp; câu hỏi nâng cao UVM</a></li>
+<li><a href="#m14">15. Tái dùng khung UVM cho UART / I2C / SPI</a></li>
+    </ol>
+  </nav>
+  <div class="side-tools">
+    <button type="button" class="btn" data-act="expand">Mở tất cả spoiler</button>
+    <button type="button" class="btn" data-act="collapse">Đóng tất cả spoiler</button>
+    <button type="button" class="btn" data-act="qa-close">Ẩn đáp án QA (tự test)</button>
+    <button type="button" class="btn" data-act="top">↑ Lên đầu trang</button>
+  </div>
+</aside>
+<main class="main">
+<header class="hero" data-num="15">
+  <div class="eyebrow"><span class="pill">Lab 15 / 15</span><span class="phase">Đóng vòng</span></div>
+  <h1>Lab 15 — Regression + Coverage Merge + Firmware + Avalon</h1>
+  <p class="tags"><span class="tag">Makefile/run.tcl</span><span class="tag uvm">regression nhiều seed</span><span class="tag uvm">xcrg coverage merge</span><span class="tag">firmware thật</span><span class="tag">verification plan</span><span class="tag uvm">Avalon + uvm_reg</span></p>
+</header>
+<nav class="toc" aria-label="Mục lục bài lab"><strong>📑 Mục lục</strong><ol>
+<li><a href="#muc-tongquan">1. Tổng quan lab</a></li>
+<li><a href="#m1">2. Vị trí trong testbench</a></li>
+<li><a href="#m2">3. Mục tiêu học</a></li>
+<li><a href="#m3">4. Keyword &amp; khái niệm mới</a></li>
+<li><a href="#m4">5. Chuẩn bị</a></li>
+<li><a href="#m5">6. Lý thuyết ngắn — đóng vòng verify (+ UVM trong regression)</a></li>
+<li><a href="#m6">7. Iteration 0 — Makefile + run.tcl + regression</a></li>
+<li><a href="#m7">8. Iterations</a></li>
+<li><a href="#m8">9. Verification Plan (vPlan)</a></li>
+<li><a href="#m9">10. Nâng cao — đổi DUT sang riscv_avalon_wrapper + uvm_reg</a></li>
+<li><a href="#m10">11. Checklist nhớ code</a></li>
+<li><a href="#m11">12. Phỏng vấn — hỏi &amp; đáp</a></li>
+<li><a href="#m12">13. Cheat-sheet</a></li>
+<li><a href="#m13">14. Bài tập code &amp; câu hỏi nâng cao UVM</a></li>
+<li><a href="#m14">15. Tái dùng khung UVM cho UART / I2C / SPI</a></li>
+</ol></nav>
+
+<div class="note" id="muc-tongquan">
+  <strong>Tổng quan lab (capstone)</strong>
+  <ul>
+    <li><strong>Lab này làm gì:</strong> ráp mọi thứ thành một môi trường "portfolio": (1) Makefile/run.tcl
+      biên dịch + chạy; (2) <strong>regression</strong> nhiều test × nhiều seed; (3) lưu + <strong>hợp nhất
+      coverage</strong> (xsim <code>-cov</code> + <code>xcrg</code>); (4) chạy <strong>firmware thật</strong>
+      (<code>load_hex</code>) end-to-end self-check; (5) <strong>verification plan</strong> ánh xạ tính năng
+      ↔ test ↔ coverage; (6) nâng cao: <strong>đổi DUT sang <code>riscv_avalon_wrapper</code></strong> với
+      agent Avalon-MM bên bộ nhớ + uvm_reg thật.</li>
+    <li><strong>Tạo ra file nào:</strong> <code>scripts/Makefile</code>, <code>scripts/run.tcl</code>,
+      <code>scripts/regress.sh</code>, firmware <code>firmware/*.hex</code>, tài liệu plan.</li>
+    <li><strong>Nhận gì từ lab trước:</strong> toàn bộ Lab 1–14.</li>
+    <li><strong>Sản phẩm:</strong> testbench UVM hoàn chỉnh verify RV32I pipeline, chạy regression + coverage.</li>
+  </ul>
+</div>
+
+<div class="callout uvm"><strong>Trọng tâm UVM của lab</strong>
+<ul>
+  <li><strong>Vòng đời một lần chạy UVM</strong> từ command line: <code>+UVM_TESTNAME</code>, <code>+UVM_VERBOSITY</code>, <code>+UVM_TIMEOUT</code>, <code>+UVM_MAX_QUIT_COUNT</code>, plusarg tự định nghĩa qua <code>uvm_cmdline_processor</code>.</li>
+  <li><strong>Tiêu chí pass/fail</strong> bền vững: severity count + “đã làm việc thật”; không dựa vào một dòng log mong manh.</li>
+  <li><strong>Random stability &amp; tái lập</strong>: seed, vì sao thêm một component có thể đổi stimulus.</li>
+  <li><strong>Coverage closure</strong> (merge, đọc báo cáo, nhắm bin trống) và <strong>vPlan</strong> như hợp đồng verify.</li>
+  <li><strong>Tái dùng</strong>: agent PASSIVE/ACTIVE, đóng gói UVC, mang khung sang UART/I2C (mục 15).</li>
+  <li>Đã sửa <code>regress.sh</code>: log summary của UVM là <code>UVM_ERROR :    0</code> (nhiều dấu cách), kiểm cả <code>UVM_FATAL</code>, có <code>timeout</code>, lưu seed lỗi.</li>
+</ul></div>
+
+
+
+<h2 id="m1">2. Vị trí trong testbench</h2>
+<pre><code> scripts/regress.sh --> for test in {...} for seed in {...}
+      xsim -R -cov_db_name &lt;test&gt;_&lt;seed&gt; -sv_seed &lt;seed&gt; -testplusarg UVM_TESTNAME=&lt;test&gt;
+   --> xcrg -dir xsim.covdb -report_dir cov_report   (gộp mọi DB trong xsim.covdb thành 1 báo cáo)
+ firmware/*.hex --> vif.load_hex --> chạy thật --> scoreboard self-check</code></pre>
+
+<h2 id="m2">3. Mục tiêu học</h2>
+<ul>
+  <li>Dựng flow lặp lại: Makefile/tcl + regression script nhiều seed/test.</li>
+  <li>Thu + hợp nhất coverage (code + functional) và đọc báo cáo.</li>
+  <li>Chạy firmware thật (chương trình đã dịch) qua <code>load_hex</code>, self-check end-to-end.</li>
+  <li>Viết verification plan: tính năng → test → coverage → trạng thái.</li>
+  <li>Hiểu cách mở rộng sang DUT có bus (Avalon) + uvm_reg chuẩn.</li>
+</ul>
+
+<h2 id="m3">4. Keyword &amp; khái niệm mới</h2>
+<div class="table-wrap"><table>
+<tr><th>Keyword</th><th>Giải thích</th><th>Ví dụ</th></tr>
+<tr><td><code>xsim -cov_db_name</code></td><td>Đặt tên DB functional coverage của lần chạy (mặc định = tên snapshot ⇒ các lần chạy ghi đè nhau!)</td><td><code>-cov_db_name rtype_test_3</code> → <code>xsim.covdb/rtype_test_3</code></td></tr>
+<tr><td><code>xcrg</code></td><td>Công cụ hợp nhất/báo cáo coverage</td><td><code>xcrg -dir xsim.covdb -report_dir cov_report</code></td></tr>
+<tr><td><code>-sv_seed</code></td><td>Seed random cho 1 lần chạy</td><td><code>-sv_seed 5</code></td></tr>
+<tr><td>regression</td><td>Chạy nhiều test×seed tự động</td><td><code>regress.sh</code></td></tr>
+<tr><td>verification plan</td><td>Bảng tính năng↔test↔coverage</td><td>vPlan</td></tr>
+<tr><td>Avalon-MM</td><td>Giao thức bus địa chỉ/đọc/ghi</td><td>wrapper DUT</td></tr>
+</table></div>
+
+<h2 id="m4">5. Chuẩn bị</h2>
+<pre><code>cd ~/Study/KLtN/code/tb_uvm/uvm_riscv/scripts</code></pre>
+
+<div class="note"><strong>Chốt thứ tự include <code>riscv_pkg.sv</code> (bản HỢP NHẤT cuối cùng của 15 lab):</strong>
+qua các lab ta thêm include dần; dưới đây là thứ tự đầy đủ, đúng phụ thuộc (định nghĩa trước, dùng sau).</div>
+<details><summary>tb/pkg/riscv_pkg.sv — bản đầy đủ sau Lab 14</summary>
+<pre><code>`ifndef RISCV_PKG_SV
+`define RISCV_PKG_SV
+package riscv_pkg;
+  import uvm_pkg::*;
+  `include "uvm_macros.svh"
+  // --- transaction ---
+  `include "riscv_seq_item.sv"        // Lab2 (+ last_instr/raw_word/use_raw ở Lab3)
+  `include "riscv_illegal_item.sv"    // Lab14 (extends riscv_seq_item)
+  `include "riscv_retire_item.sv"     // Lab4
+  `include "riscv_cbs.sv"             // Lab14 (tùy chọn: callback monitor; phải đứng TRƯỚC driver/monitor)
+  // --- agent ---
+  `include "riscv_driver.sv"          // Lab3
+  `include "riscv_monitor.sv"         // Lab4
+  `include "riscv_agent_config.sv"    // Lab5
+  `include "riscv_sequencer.sv"       // Lab5 (typedef)
+  `include "riscv_agent.sv"           // Lab5
+  // --- reference + checker thu thập ---
+  `include "riscv_ref_model.sv"       // Lab9 (+ exec() ở Lab10)
+  `include "riscv_scoreboard.sv"      // Lab10 (+ final_check/vif ở Lab11)
+  `include "riscv_coverage.sv"        // Lab12
+  `include "riscv_hazard_cov.sv"      // Lab12
+  `include "riscv_mem_regmodel.sv"    // Lab13
+  // --- sequences (base trước, lớp lệnh sau, vseq sau cùng) ---
+  `include "prog_seq.sv"              // Lab5 (sequence cứng)
+  `include "riscv_prog_base_seq.sv"   // Lab6 (+ append_halt ở Lab7)
+  `include "riscv_rtype_seq.sv"
+  `include "riscv_itype_seq.sv"
+  `include "riscv_ls_seq.sv"
+  `include "riscv_branch_seq.sv"
+  `include "riscv_jump_seq.sv"
+  `include "riscv_upper_seq.sv"
+  `include "riscv_mem_access_seq.sv"  // Lab13
+  // --- virtual sequencer + env ---
+  `include "riscv_virtual_sequencer.sv" // Lab7
+  `include "riscv_vseq.sv"               // Lab7
+  `include "riscv_env.sv"                // Lab5 (+ sb/cov/hz/vsqr + set vif cho sb)
+  // --- tests (base trước, con sau) ---
+  `include "riscv_base_test.sv"       // Lab5
+  `include "riscv_class_tests.sv"     // Lab6 (rtype/itype/.../upper_test)
+  `include "riscv_mixed_test.sv"      // Lab7
+  `include "self_check_test.sv"       // Lab11
+  `include "ral_test.sv"              // Lab13
+  `include "riscv_neg_tests.sv"       // Lab14 (negative_opcode_test, ...)
+  `include "firmware_test.sv"         // Lab15 (Iteration 1)
+endpackage
+`endif</code></pre></details>
+<div class="note warn">SVA (<code>riscv_protocol_checker/regfile_checker/riscv_bind.sv</code>) <strong>KHÔNG</strong>
+nằm trong package — chúng là module + lệnh <code>bind</code>, biên dịch riêng sau RTL (xem Makefile §7).
+Tương tự, mọi <code>riscv_*_tb.sv</code> ở các lab 2–4/9 chỉ là harness standalone để học từng mảnh —
+bản chính thức dùng <code>riscv_tb_top.sv</code> (Lab 5) import <code>riscv_pkg</code>.</div>
+
+<h2 id="m5">6. Lý thuyết ngắn — đóng vòng verify (+ UVM trong regression)</h2>
+<ol>
+  <li><strong>Đóng vòng:</strong> stimulus (seq/vseq) → DUT → monitor retire → scoreboard (ISS) +
+    assertion + coverage. Regression chạy nhiều seed để coverage hội tụ &amp; lộ lỗi hiếm.</li>
+  <li><strong>Coverage merge:</strong> mỗi lần chạy sinh 1 DB; <code>xcrg</code> gộp lại → bức tranh tổng.
+    Mục tiêu: 100% functional (ISA+hazard) + code coverage cao, 0 lỗi.</li>
+  <li><strong>Firmware thật:</strong> chương trình đã dịch (counter, tổng mảng…) nạp qua
+    <code>load_hex</code>; self-check so DUT↔ISS trên chính firmware đó.</li>
+  <li><strong>vPlan:</strong> tài liệu sống nối yêu cầu ↔ bằng chứng (test + coverage) — đóng dự án khi mọi
+    dòng "Done".</li>
+</ol>
+
+<h3>6.5. Lệnh chạy UVM: những plusarg đáng nhớ</h3>
+<div class="table-wrap"><div class="table-wrap"><table>
+<tr><th>Plusarg</th><th>Tác dụng</th><th>Ghi chú</th></tr>
+<tr><td><code>+UVM_TESTNAME=&lt;t&gt;</code></td><td>Chọn test cho <code>run_test()</code></td><td>Sai tên → <code>UVM_FATAL INVTST</code></td></tr>
+<tr><td><code>+UVM_VERBOSITY=UVM_LOW</code></td><td>Mức log mặc định</td><td>Regression: LOW/MEDIUM; debug: HIGH</td></tr>
+<tr><td><code>+UVM_TIMEOUT=&lt;n&gt;,&lt;YES|NO&gt;</code></td><td>Watchdog toàn cục (thời gian mô phỏng)</td><td><em>Luôn</em> bật trong regression</td></tr>
+<tr><td><code>+UVM_MAX_QUIT_COUNT=&lt;n&gt;,&lt;YES|NO&gt;</code></td><td>Dừng sau n <code>UVM_ERROR</code></td><td>Tránh log hàng GB</td></tr>
+<tr><td><code>+uvm_set_verbosity=…</code></td><td>Verbosity theo component/ID/phase</td><td>Lab 4</td></tr>
+<tr><td><code>+uvm_set_config_int/string=…</code></td><td>Đặt config_db từ command line</td><td>Đổi cấu hình không biên dịch lại</td></tr>
+<tr><td><code>+uvm_set_type_override=A,B</code></td><td>Factory override từ command line</td><td>Chạy negative/mutation không sửa test</td></tr>
+<tr><td><code>+UVM_CONFIG_DB_TRACE</code> · <code>+UVM_OBJECTION_TRACE</code> · <code>+UVM_PHASE_TRACE</code></td><td>Trace nội bộ</td><td>Chỉ để debug</td></tr>
+</table></div></div>
+<p>Plusarg riêng (ví dụ số lệnh) đọc bằng <code>uvm_cmdline_processor</code>:</p>
+<pre><code>uvm_cmdline_processor clp = uvm_cmdline_processor::get_inst();
+string v[$];
+if (clp.get_arg_values("+N_INSTR=", v) &gt; 0)  n = v[0].atoi();      // +N_INSTR=40</code></pre>
+
+<h3>6.6. Pass/fail — cách kết luận đáng tin</h3>
+<ol>
+  <li><code>UVM_ERROR = 0</code> <strong>và</strong> <code>UVM_FATAL = 0</code> (đọc từ <code>uvm_report_server</code> hoặc grep log).</li>
+  <li><strong>Đã làm việc thật</strong>: số lệnh so &gt; 0, coverage tối thiểu, sự kiện “halt” đã thấy.</li>
+  <li>Assertion SVA đã chuyển vào UVM report (Lab 8) hoặc grep thêm log simulator.</li>
+  <li>Exit code của tiến trình + timeout bao ngoài (<code>timeout 600</code>) để một test treo không làm treo cả regression.</li>
+</ol>
+<div class="callout pitfall"><strong>“Xanh giả” hay gặp:</strong> (a) chỉ grep <code>UVM_ERROR : 0</code> bỏ sót <code>UVM_FATAL</code>; (b) regex không khớp định dạng thật nên <em>luôn</em> ra FAIL hoặc luôn ra PASS; (c) test kết thúc ở time 0 (quên objection) nhưng 0 lỗi; (d) assertion dùng <code>$error</code>.</div>
+
+<h3>6.7. Random stability — tái lập lỗi</h3>
+<p>UVM gieo seed cho từng object dựa trên <em>đường dẫn hierarchy + tên + thứ tự tạo</em> (random stability). Cùng seed + cùng cấu trúc ⇒ cùng stimulus. Nhưng thêm/bớt một component hoặc một lời gọi <code>randomize()</code> trong thread khác có thể đổi dòng random của các thành phần khác. Quy tắc thực hành: (1) log seed và tên test ở đầu mỗi run; (2) lưu <code>failed_seeds.txt</code>; (3) khi sửa TB, chạy lại để thấy bug có còn tái hiện hay không (có thể “biến mất” vì đổi random — không có nghĩa là đã sửa).</p>
+
+<h3>6.8. Coverage closure — vòng lặp</h3>
+<pre><code>chạy N seed ──► merge (xcrg) ──► đọc bin thiếu ──► (1) test directed nhắm bin
+      ▲                                         (2) nới/đổi constraint (dist)
+      └─────────────────── lặp ◄────────────────  (3) bin không thể chạm → ignore/loại + ghi lý do vào vPlan</code></pre>
+<p>Kết thúc khi: functional = mục tiêu, bin còn trống đều có <em>lý do được duyệt</em>, 0 lỗi, và vPlan mọi dòng “Done” (hoặc “Known limitation” có chữ ký).</p>
+
+<h3>6.9. Tái dùng khung UVM</h3>
+<ul>
+  <li><strong>UVC đóng gói</strong>: agent + config + sequences + interface + coverage trong package riêng; không phụ thuộc env cụ thể.</li>
+  <li><strong>Vertical reuse</strong>: block-level ACTIVE → system-level PASSIVE (Lab 5).</li>
+  <li><strong>Horizontal reuse</strong>: cùng khung cho UART/I2C/SPI (mục 15): chỉ thay interface, item, driver/monitor, ref model.</li>
+</ul>
+
+<h2 id="m6">7. Iteration 0 — Makefile + run.tcl + regression</h2>
+
+<details><summary>scripts/Makefile</summary>
+<pre><code># scripts/Makefile  (chạy từ sim/: make -f ../scripts/Makefile TEST=mixed_test)
+UVM      = -L uvm
+RTL      = ../rtl/instruction_memory.sv ../rtl/register_file.sv ../rtl/data_memory.sv \
+           ../rtl/control_unit.sv ../rtl/imm_gen.sv ../rtl/alu_control.sv ../rtl/alu.sv \
+           ../rtl/branch_control.sv ../rtl/mux.sv ../rtl/adder.sv ../rtl/riscv_pipeline_top.sv
+IF       = ../tb/if/riscv_if.sv
+SVA      = ../tb/sva/riscv_protocol_checker.sv ../tb/sva/riscv_regfile_checker.sv ../tb/sva/riscv_bind.sv
+PKG      = ../tb/pkg/riscv_pkg.sv
+TOP      = ../tb/top/riscv_tb_top.sv
+INCS     = -i ../tb/agent -i ../tb/seq -i ../tb/ref -i ../tb/sb -i ../tb/cov -i ../tb/ral -i ../tb/env -i ../tb/test
+TEST    ?= mixed_test
+SEED    ?= 1
+
+comp:
+	xvlog -sv $(IF) $(RTL)
+	xvlog -sv $(SVA)
+	xvlog -sv $(UVM) $(INCS) $(PKG)
+	xvlog -sv $(UVM) $(TOP)
+	xelab $(UVM) -timescale 1ns/1ps riscv_tb_top -s top_sim      # functional coverage (covergroup) mặc định bật; code coverage: thêm -cc_type sbct
+
+run: comp
+	xsim top_sim -R -cov_db_name $(TEST)_$(SEED) -sv_seed $(SEED) -testplusarg UVM_TESTNAME=$(TEST)
+
+clean:
+	rm -rf xsim.dir xsim.covdb xsim.codeCov *.jou *.log *.pb cov_report .Xil</code></pre></details>
+
+<details><summary>scripts/run.tcl (chạy có waveform tùy chọn)</summary>
+<pre><code># scripts/run.tcl :  xsim top_sim -t ../scripts/run.tcl
+# log_wave -recursive *      ;# bật nếu cần sóng
+run all
+quit</code></pre></details>
+
+<details><summary>scripts/regress.sh (nhiều test × seed + merge coverage)</summary>
+<pre><code>#!/usr/bin/env bash
+# scripts/regress.sh  — chạy từ sim/
+set -u
+TESTS="rtype_test itype_test ls_test branch_test jump_test upper_test \
+       mixed_test self_check_test negative_opcode_test ral_test"
+SEEDS="${SEEDS:-1 2 3 4 5}"
+make -f ../scripts/Makefile comp || exit 1
+pass=0; fail=0; : &gt; failed_seeds.txt
+for t in $TESTS; do
+  for s in $SEEDS; do
+    log=run_${t}_${s}.log
+    echo "== $t seed=$s =="
+    # ghi log ra file rồi grep (không dùng grep -q trong pipe với tee: SIGPIPE có thể cắt log)
+    timeout 600 xsim top_sim -R -cov_db_name ${t}_${s} -sv_seed $s \
+      -testplusarg "UVM_TESTNAME=$t" -testplusarg "UVM_TIMEOUT=2000000,NO" &gt; "$log" 2&gt;&amp;1
+    rc=$?
+    # Summary của UVM in dạng  "UVM_ERROR :    0"  (nhiều dấu cách) → dùng regex, kiểm cả FATAL,
+    # và yêu cầu scoreboard đã so ít nhất 1 lệnh (chống "xanh giả" khi test chạy rỗng).
+    if [ $rc -eq 0 ] &amp;&amp; grep -Eq "UVM_ERROR *: *0$" "$log" &amp;&amp; grep -Eq "UVM_FATAL *: *0$" "$log" \
+       &amp;&amp; grep -Eq "\[SB\] PASS" "$log"; then
+      pass=$((pass+1))
+    else
+      fail=$((fail+1)); echo "$t $s" &gt;&gt; failed_seeds.txt; echo "FAIL: $t seed=$s (log: $log)"
+    fi
+  done
+done
+echo "PASS=$pass FAIL=$fail   (xem failed_seeds.txt để tái lập: lặp lại đúng test + seed)"
+# hợp nhất coverage
+xcrg -dir xsim.covdb -report_format html -report_dir cov_report || true     # gộp mọi DB &lt;test&gt;_&lt;seed&gt;
+echo "Coverage report: cov_report/dashboard.html"</code></pre></details>
+
+<p><strong>Lệnh chạy:</strong></p>
+<pre><code>cd ~/Study/KLtN/code/tb_uvm/uvm_riscv/sim</code></pre>
+<pre><code>bash ../scripts/regress.sh</code></pre>
+
+<details><summary>Expected log (tóm tắt)</summary>
+<pre><code># == rtype_test seed=1 ==  ... UVM_ERROR : 0
+# == self_check_test seed=5 == ... UVM_ERROR : 0
+# PASS=50 FAIL=0
+# Coverage report: cov_report/dashboard.html   (xcrg tạo dashboard.html, groups.html, grpN.html — không có index.html)</code></pre>
+<p><em>50 lần chạy (10 test × 5 seed) đều PASS; coverage hợp nhất đạt mục tiêu.</em></p>
+</details>
+
+<h2 id="m7">8. Iterations</h2>
+
+<h3>Iteration 1 — chạy firmware thật (counter 1..10)</h3>
+<p>Tạo <code>sim/firmware/counter.hex</code> (chương trình đếm, lưu tổng vào mem). <code>firmware_test</code> dùng agent <strong>PASSIVE</strong>
+(không driver/sequencer): test tự giữ reset, <code>vif.load_hex</code> nạp ROM, nhả reset, chạy, self-check. ISS không cần nạp hex vì scoreboard <code>exec</code> đúng lệnh DUT retire.
+(<code>$readmemh</code> chỉ chấp nhận chú thích <code>//</code> — chú thích <code>#</code> làm hỏng file hex.)</p>
+<details><summary>sim/firmware/counter.hex</summary>
+<pre><code>// counter.hex: addi x1,x0,0; addi x2,x0,10; loop: addi x1,x1,1; blt x1,x2,loop; sw x1,0(x0); jal x0,0
+00000093
+00a00113
+00108093
+fe20cee3
+00102023
+0000006f</code></pre></details>
+<details><summary>tb/test/firmware_test.sv</summary>
+<pre><code>`ifndef FIRMWARE_TEST_SV
+`define FIRMWARE_TEST_SV
+// Chạy firmware thật: agent PASSIVE (không driver/sequencer), test tự giữ reset, nạp hex bằng backdoor, nhả reset.
+// Monitor + scoreboard (ISS exec theo instr retire) + coverage vẫn chạy như bình thường.
+class firmware_test extends riscv_base_test;
+  `uvm_component_utils(firmware_test)
+  string fw = "firmware/counter.hex";
+  function new(string n, uvm_component p); super.new(n,p); endfunction
+
+  function void build_phase(uvm_phase phase);
+    super.build_phase(phase);                 // base_test tạo cfg + env (agent chưa build)
+    cfg.is_active = UVM_PASSIVE;              // agent đọc cfg ở build_phase của chính nó (sau test) nên đổi được ở đây
+    void'($value$plusargs("FW=%s", fw));
+  endfunction
+
+  task run_phase(uvm_phase phase);
+    phase.raise_objection(this);
+    cfg.vif.rst &lt;= 1'b1;
+    cfg.vif.clear_imem();
+    cfg.vif.load_hex(fw);                     // $readmemh vào ROM
+    repeat (3) @(posedge cfg.vif.clk);
+    cfg.vif.rst &lt;= 1'b0;
+    repeat (150) @(posedge cfg.vif.clk);      // 10 vòng lặp x ~3-4 chu kỳ + pipeline + sw
+    `uvm_info("FW", $sformatf("x1=%0d mem[0]=%0d (mong 10, 10)", cfg.vif.peek_reg(1), cfg.vif.peek_mem(0)), UVM_LOW)
+    if (cfg.vif.peek_reg(1) !== 32'd10 || cfg.vif.peek_mem(0) !== 32'd10)
+      `uvm_error("FW", "firmware counter sai ket qua")
+    env.sb.final_check();
+    phase.drop_objection(this);
+  endtask
+endclass
+`endif</code></pre></details>
+<p><code>firmware_test.sv</code> đã nằm trong <code>riscv_pkg.sv</code> ở trên. Chạy: <code>xsim top_sim -R -testplusarg UVM_TESTNAME=firmware_test</code>.
+Kết quả đã chạy: <code>[FW] x1=10 mem[0]=10 (mong 10, 10)</code>, <code>[SB] SWEEP PASS ... (retire=58)</code>, <code>UVM_ERROR : 0</code>.</p>
+<details><summary>Khác biệt</summary><p>End-to-end trên chương trình thật có vòng lặp (nhiều branch taken). Dạy: TB chạy được firmware, không chỉ lệnh random. ISS cũng nạp cùng hex để so.</p></details>
+
+<h3>Iteration 2 — thêm test ISA suite nhỏ (directed mỗi lệnh 1 lần)</h3>
+<p><code>isa_smoke_test</code>: directed 19 lệnh để chốt coverage 100% ổn định.</p>
+<details><summary>Khác biệt</summary><p>Không phụ thuộc may rủi random. Dạy: directed + random bổ trợ.</p></details>
+
+<h3>Iteration 3 — đọc báo cáo coverage, bổ lỗ hổng</h3>
+<p>Mở <code>cov_report/index.html</code>; nếu còn bin trống → thêm seq.</p>
+<details><summary>Khác biệt</summary><p>Vòng lặp coverage-driven tới khi đủ. Dạy: coverage closure.</p></details>
+
+<h3>Iteration 4 — fail-fast: dừng regression khi gặp lỗi đầu tiên</h3>
+<p>Thêm cờ <code>STOP_ON_FAIL</code> vào regress.sh.</p>
+<details><summary>Khác biệt</summary><p>Tiết kiệm thời gian debug. Dạy: chiến lược regression (fail-fast vs chạy hết để thống kê).</p></details>
+
+<h3>Iteration 5 — lưu/tải seed tái lập lỗi</h3>
+<p>Ghi lại seed của lần fail; chạy lại đúng seed để debug tất định.</p>
+<details><summary>Khác biệt</summary><p>Lỗi random tái lập được. Dạy: reproducibility — kỹ năng debug quan trọng.</p></details>
+
+<h2 id="m8">9. Verification Plan (vPlan)</h2>
+<div class="table-wrap"><table>
+<tr><th>Tính năng</th><th>Kiểm bằng</th><th>Coverage</th><th>Trạng thái</th></tr>
+<tr><td>R-type (10 lệnh)</td><td>rtype_test, mixed, ISS scoreboard</td><td>cp_op bins R</td><td>Done</td></tr>
+<tr><td>I-ALU (9 lệnh)</td><td>itype_test, SRA/SRL directed</td><td>cp_op bins I</td><td>Done</td></tr>
+<tr><td>LW/SW + data path</td><td>ls_test, ral_test, mem sweep</td><td>cp_op LW/SW</td><td>Done</td></tr>
+<tr><td>Branch 6 loại</td><td>branch_test, firmware loop</td><td>cp_f3 branch, hazard flush</td><td>Done</td></tr>
+<tr><td>JAL/JALR/LUI/AUIPC</td><td>jump_test, upper_test</td><td>cp_op bins</td><td>Done</td></tr>
+<tr><td>Forwarding (EX/MEM, MEM/WB)</td><td>chuỗi phụ thuộc + SVA fwd</td><td>cp rs=rd corner</td><td>Done</td></tr>
+<tr><td>Load-use stall</td><td>SW/LW+use, SVA stall-hold</td><td>hazard cp_stall</td><td>Done</td></tr>
+<tr><td>Branch flush</td><td>branch taken, SVA flush</td><td>hazard cp_flush</td><td>Done</td></tr>
+<tr><td>x0 bất biến</td><td>SVA x0, negative x0 test</td><td>cp_rd0.x0</td><td>Done</td></tr>
+<tr><td>PC+4 / redirect target</td><td>SVA p_pc_inc / p_redirect_tgt</td><td>—</td><td>Done</td></tr>
+<tr><td>Opcode không hỗ trợ → NOP</td><td>negative_opcode_test</td><td>illegal_bins (0 hit = ok)</td><td>Done</td></tr>
+<tr><td>Misalign LW/SW/JALR</td><td>negative directed</td><td>—</td><td>Known-limit (căn chỉnh, không trap)</td></tr>
+<tr><td>Firmware thật</td><td>firmware_test (counter)</td><td>—</td><td>Done</td></tr>
+</table></div>
+
+<h2 id="m9">10. Nâng cao — đổi DUT sang riscv_avalon_wrapper + uvm_reg</h2>
+<p><code>riscv_avalon_wrapper</code> bọc <code>riscv_pipeline_core</code> và phơi data memory qua
+<strong>Avalon-MM</strong> (<code>avm_address/read/readdata/readdatavalid/write/writedata/byteenable/
+waitrequest</code>). Đây là bước nâng DUT từ "busless" lên "có bus":</p>
+<ol>
+  <li><strong>Cần memory model + Avalon agent:</strong> core giờ đọc/ghi qua bus → TB phải cấp một
+    <em>Avalon slave</em> (RAM model) đáp <code>readdatavalid</code>/<code>waitrequest</code>. Thêm
+    <code>avalon_if</code> + <code>avalon_agent</code> (driver đáp bus, monitor sample giao dịch).</li>
+  <li><strong>uvm_reg thật:</strong> map các word RAM thành <code>uvm_reg</code> trong
+    <code>uvm_reg_block</code>; viết <code>uvm_reg_adapter</code> (reg↔Avalon) + <code>uvm_reg_predictor</code>.
+    Khi đó frontdoor = truy cập bus qua adapter, backdoor = hierarchical — <em>RAL chuẩn</em> thay cho
+    "RAL-like" Lab 13.</li>
+  <li><strong>Top đổi:</strong> <code>riscv_avalon_wrapper dut(.clk,.reset_n(~rst),...)</code> nối
+    <code>avalon_if</code>; instruction fetch vẫn nội bộ (u_core.u_imem) nên backdoor nạp ROM giữ nguyên
+    (<code>...dut.u_core.u_imem.mem</code>). Shadow retire bám tín hiệu của <code>u_core</code>
+    (có thêm <code>exmem_valid</code>, <code>mem_stall</code>).</li>
+  <li><strong>Vì sao để sau cùng:</strong> thêm 1 lớp giao thức bus (handshake 2 pha) — lớn hơn hẳn; nên làm
+    khi đã vững khung UVM. Đây cũng là nơi bộ lab AXI4 gốc (handshake VALID/READY) nối lại với RISC-V.</li>
+</ol>
+<div class="note warn">Lưu ý path backdoor đổi tiền tố khi dùng wrapper:
+<code>dut.u_core.u_imem.mem</code> / <code>dut.u_core.u_regfile.registers</code> /
+<code>dut.u_core.u_dmem...</code> (nhưng với Avalon, data memory là <em>RAM model của TB</em> trên bus, không
+còn <code>u_dmem</code> trong core — core chỉ phát bus). Điều chỉnh <code>riscv_if</code> peek cho phù hợp.</div>
+
+<h2 id="m10">11. Checklist nhớ code</h2>
+<ul>
+  <li>[ ] Nhớ <code>xsim -cov_db_name &lt;test&gt;_&lt;seed&gt;</code> + <code>xcrg -dir xsim.covdb</code> (xelab/xsim của Vivado không có <code>-cov all</code>/<code>-cov</code>).</li>
+  <li>[ ] Nhớ regression lặp test×seed, grep <code>UVM_ERROR : 0</code>.</li>
+  <li>[ ] Nhớ firmware nạp cả DUT (load_hex) lẫn ISS (cùng hex) để self-check.</li>
+  <li>[ ] Nhớ vPlan: mỗi tính năng có test + coverage + trạng thái.</li>
+</ul>
+
+<h2 id="m11">12. Phỏng vấn — hỏi &amp; đáp</h2>
+<p>Bấm câu hỏi để xem đáp án — nên tự trả lời miệng trước khi mở. Mỗi câu có ví dụ cụ thể như khi bị hỏi trong phỏng vấn.</p>
+<div class="qa-list">
+<details class="qa"><summary>Một regression gồm những thành phần nào? Bạn đảm bảo nó “đáng tin” thế nào?</summary>
+<div class="ans">
+<p>Test list × seed list, script chạy song song (hoặc tuần tự) có <em>timeout</em>, lưu log/seed lỗi, gom pass/fail, merge coverage, báo cáo tóm tắt. Đáng tin khi: (1) tiêu chí pass/fail chặt (ERROR=0, FATAL=0, đã so &gt; 0); (2) mọi test có watchdog; (3) kiểm chứng regression bằng một lỗi RTL cố ý — phải ra FAIL; (4) tái lập được: seed + lệnh được ghi lại.</p>
+</div></details>
+<details class="qa"><summary>Vì sao regress.sh cũ grep <code>UVM_ERROR : 0</code> có thể sai? Sửa thế nào?</summary>
+<div class="ans">
+<p>Report server in dạng <code>UVM_ERROR :    0</code> (căn lề nhiều dấu cách), nên pattern một dấu cách <em>không khớp</em> ⇒ mọi test bị coi FAIL (hoặc, đảo lại, nếu grep ngược thì luôn PASS). Ngoài ra bỏ qua <code>UVM_FATAL</code>. Sửa: <code>grep -Eq "UVM_ERROR *: *0$"</code> và <code>"UVM_FATAL *: *0$"</code>, ghi log ra file rồi grep (không <code>grep -q</code> trong pipe với <code>tee</code> — SIGPIPE có thể cắt log).</p>
+</div></details>
+<details class="qa"><summary>Giải thích random stability của UVM. Một bug biến mất khi bạn thêm một dòng log — nghĩa là gì?</summary>
+<div class="ans">
+<p>Seed của object được suy ra từ đường dẫn hierarchy và thứ tự tạo, nên cùng seed + cùng cấu trúc ⇒ cùng stimulus. Thêm dòng log thuần <em>không</em> ảnh hưởng random; nhưng thêm <code>randomize()</code>, component hoặc <code>$urandom</code> vào thread khác có thể dịch chuyển chuỗi random ⇒ stimulus khác ⇒ bug “biến mất” vì <em>không còn được kích thích</em>, chưa phải đã sửa. Cách xử lý: tái hiện bằng test directed hoặc bằng cách khóa stimulus (ghi lại chương trình dạng hex).</p>
+</div></details>
+<details class="qa"><summary><code>+UVM_TIMEOUT</code> khác <code>set_drain_time</code> khác <code>phase_ready_to_end</code> thế nào?</summary>
+<div class="ans">
+<p><code>+UVM_TIMEOUT</code>: watchdog tuyệt đối — hết giờ là <code>UVM_FATAL</code> (test treo). <code>set_drain_time</code>: thời gian chờ cố định sau khi objection về 0 để DUT/monitor xả nốt. <code>phase_ready_to_end</code>: callback cho phép component <em>trì hoãn</em> kết thúc có điều kiện (còn pending). Ba lớp khác mục đích: an toàn, chờ cố định, chờ thông minh.</p>
+</div></details>
+<details class="qa"><summary>Bạn đưa coverage closure vào quy trình thế nào? Bin không thể chạm được xử lý ra sao?</summary>
+<div class="ans">
+<p>Chạy nhiều seed → merge → phân loại bin trống: (1) <em>thiếu stimulus</em> ⇒ viết directed/chỉnh <code>dist</code>; (2) <em>không thể xảy ra</em> (tổ hợp cấm theo ISA) ⇒ <code>ignore_bins</code> + ghi lý do + review; (3) <em>coverage model sai</em> ⇒ sửa model. Không bao giờ xóa bin chỉ để đạt 100%. Mọi ngoại lệ ghi vào vPlan.</p>
+</div></details>
+<details class="qa"><summary>Vì sao firmware thật chạy qua agent PASSIVE thay vì ACTIVE?</summary>
+<div class="ans">
+<p>Stimulus là firmware đã dịch nạp bằng <code>load_hex</code>; không cần driver/sequencer. PASSIVE chỉ giữ monitor + scoreboard + coverage (và ISS nạp cùng hex). Lợi: môi trường kiểm tra <em>giữ nguyên</em> (cùng checker như test random), tách biệt “ai nạp chương trình” (test) khỏi “ai chấm điểm” (env). Test phải tự quản reset và objection.</p>
+</div></details>
+<details class="qa"><summary>Đổi sang DUT Avalon ảnh hưởng những lớp UVM nào?</summary>
+<div class="ans">
+<p>Thêm: <code>avalon_if</code> + agent (driver đáp bus như slave RAM, monitor bus), <code>uvm_reg</code> adapter/predictor (Lab 13). Đổi: <code>riscv_if</code> (đường dẫn backdoor <code>u_core</code>), shadow retire (thêm <code>mem_stall</code>). Giữ nguyên: sequences, ISS, scoreboard so in-order, coverage ISA. Câu trả lời mạnh nhấn mạnh <em>ranh giới ổn định</em> (interface + retire item) giúp phần lớn TB không đổi.</p>
+</div></details>
+<details class="qa"><summary>Chỉ cho tôi cách bạn chứng minh TB này “thật sự bắt được lỗi”?</summary>
+<div class="ans">
+<p>Mutation: danh sách lỗi cố ý (ALU +1, sai target branch, quên stall, forwarding sai, ghi lạ) × cơ chế bắt (SVA/SB/coverage); chạy regression và xác nhận mỗi lỗi bị ít nhất một cơ chế bắt. Cộng thêm factory-mutation của <em>model</em> (Lab 9). Nếu một lỗi không bị bắt → thiếu stimulus/checker → bổ sung. Bảng mutation là bằng chứng chất lượng TB ở cấp portfolio.</p>
+</div></details>
+</div>
+
+<h2 id="m12">13. Cheat-sheet</h2>
+<pre><code>xelab -L uvm -timescale 1ns/1ps riscv_tb_top -s top_sim
+xsim top_sim -R -cov_db_name ${T}_${S} -sv_seed $S -testplusarg UVM_TESTNAME=$T
+xcrg -dir xsim.covdb -report_format html -report_dir cov_report
+# firmware: vif.load_hex("firmware/counter.hex"); iss.load từ cùng hex; self-check
+# Avalon: dut=riscv_avalon_wrapper(.reset_n(~rst)); + avalon_if/agent + uvm_reg adapter/predictor
+#   backdoor imem: dut.u_core.u_imem.mem   (viết trong riscv_if, upward reference)</code></pre>
+
+<h2 id="m13">14. Bài tập code &amp; câu hỏi nâng cao UVM</h2>
+<p>8 bài rèn tay, tăng dần độ khó. Làm trên baseline của lab này; đáp án chỉ là hướng tham khảo — giá trị nằm ở việc bạn tự gõ, chạy và đọc log.</p>
+<div class="ex-progress"><span class="cnt">0 / 8 bài đã làm</span><span class="bar"><i></i></span></div>
+<div class="ex-list">
+<article class="ex"><div class="ex-head"><span class="lv l1">★ Dễ</span><h4>EX1 — Sửa và kiểm chứng regress.sh</h4></div>
+Áp dụng bản <code>regress.sh</code> mới. Cố ý đưa một lỗi ALU vào RTL và chạy: regression phải FAIL và ghi seed lỗi vào <code>failed_seeds.txt</code>. Khôi phục RTL, chạy lại: PASS.
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p>Nếu cả hai lần đều PASS thì tiêu chí pass/fail của bạn vô nghĩa — bước kiểm chứng quan trọng nhất của regression.</p>
+</details>
+</article>
+<article class="ex"><div class="ex-head"><span class="lv l1">★ Dễ</span><h4>EX2 — Plusarg riêng</h4></div>
+Thêm <code>+N_INSTR=&lt;n&gt;</code> điều khiển <code>n</code> của vseq qua <code>uvm_cmdline_processor</code>. Chạy với 5, 20, 80 lệnh; so thời gian mô phỏng.
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p>Ưu tiên: command line &gt; config_db &gt; default. Ghi chú thứ tự ưu tiên vào README dự án.</p>
+</details>
+</article>
+<article class="ex"><div class="ex-head"><span class="lv l2">★★ Vừa</span><h4>EX3 — Tái lập từ seed</h4></div>
+Chạy 20 seed, tìm 1 seed có hiện tượng bạn chọn (ví dụ có ≥ 2 load-use liên tiếp). Chạy lại seed đó 3 lần — kết quả có giống nhau không? Thêm một component rỗng vào env rồi chạy lại. Có đổi không?
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p>Lần chạy lại: giống nhau (tái lập). Thêm component: stimulus có thể đổi — minh họa random stability và vì sao cần lưu chương trình hex khi báo lỗi.</p>
+</details>
+</article>
+<article class="ex"><div class="ex-head"><span class="lv l2">★★ Vừa</span><h4>EX4 — Factory override từ command line</h4></div>
+Chạy <code>negative_opcode_test</code> mà <em>không</em> sửa code, chỉ truyền <code>+uvm_set_type_override=riscv_seq_item,riscv_illegal_item</code> vào <code>rtype_test</code>. So kết quả.
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p>Cùng hiệu ứng như override trong code — dùng để chạy mutation/negative mà không biên dịch lại.</p>
+</details>
+</article>
+<article class="ex"><div class="ex-head"><span class="lv l2">★★ Vừa</span><h4>EX5 — Coverage-driven vòng lặp</h4></div>
+Từ báo cáo hợp nhất của 20 seed, liệt kê 3 bin thiếu. Với từng bin: viết directed sequence hoặc chỉnh <code>dist</code>; chạy lại và chứng minh bin đã lấp. Ghi lại thay đổi trong vPlan.
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p>Bin điển hình hay thiếu: <code>SLTU</code> với số bằng nhau, <code>BGEU</code> taken khi hai toán hạng bằng nhau, <code>AUIPC</code> với <code>rd=x0</code>. Đây là “closure thật”, không phải số liệu đẹp.</p>
+</details>
+</article>
+<article class="ex"><div class="ex-head"><span class="lv l3">★★★ Khó</span><h4>EX6 — Mutation matrix tự động</h4></div>
+Viết script áp từng patch RTL (5 lỗi) → build → chạy 10 seed → ghi <em>seed đầu tiên fail</em> và cơ chế bắt (REG/MEM/CF/SVA). Xuất bảng markdown.
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p>Dùng <code>patch -p0</code> và <code>git checkout --</code> (hoặc copy file gốc) để hoàn tác; tránh để RTL bị hỏng sau khi script thoát (trap EXIT).</p>
+</details>
+</article>
+<article class="ex"><div class="ex-head"><span class="lv l3">★★★ Khó</span><h4>EX7 — Firmware thật end-to-end</h4></div>
+Với <code>counter.hex</code>: agent PASSIVE, test nạp ROM bằng <code>load_hex</code>, ISS nạp cùng hex, scoreboard so, sweep cuối. Điều kiện kết thúc test là gì khi firmware lặp vô hạn ở halt?
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p>Dùng sự kiện “halt đã retire 2 lần liên tiếp” (<code>uvm_event</code>) hoặc giới hạn số lệnh retire. Đây là bài toán “khi nào chương trình kết thúc” mà vseq lab không gặp.</p>
+</details>
+</article>
+<article class="ex"><div class="ex-head"><span class="lv l3">★★★ Khó</span><h4>EX8 — Báo cáo portfolio</h4></div>
+Viết <code>README.md</code> dự án: sơ đồ kiến trúc, bảng kết quả regression (50 run), coverage hợp nhất, bảng mutation, hạn chế đã biết. Mỗi mục có lệnh tái lập một dòng.
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p>Người tuyển dụng đọc README trước code: nhấn mạnh <em>quyết định kiến trúc</em> (vì sao ISS observation-driven + kiểm fetch, vì sao RAL-like) hơn là liệt kê file.</p>
+</details>
+</article>
+</div>
+
+<h2 id="m14">15. Tái dùng khung UVM cho UART / I2C / SPI</h2>
+<p>Khung 15 lab không phụ thuộc RISC-V: chỉ cần thay “lõi giao thức”. Bảng dưới đây cho thấy bạn sẽ <em>giữ nguyên</em> gì và <em>viết mới</em> gì khi verify một UART.</p>
+<div class="table-wrap"><div class="table-wrap"><table>
+<tr><th>Thành phần</th><th>RISC-V (bộ lab)</th><th>UART</th><th>Giữ / đổi</th></tr>
+<tr><td>Interface</td><td>retire port + backdoor</td><td><code>tx/rx/baud</code> + clocking</td><td>Đổi tín hiệu, giữ cấu trúc</td></tr>
+<tr><td>Sequence item</td><td>1 lệnh</td><td>1 byte + parity/stop error</td><td>Đổi field, giữ cách thiết kế rand</td></tr>
+<tr><td>Driver</td><td>nạp ROM + reset + drain</td><td>serialize bit theo baud</td><td>Viết mới; giữ <code>get_next_item/item_done</code></td></tr>
+<tr><td>Monitor</td><td>retire stream</td><td>deserialize <code>tx</code>/<code>rx</code></td><td>Viết mới; giữ analysis port</td></tr>
+<tr><td>Agent/env/test/config</td><td>Lab 5</td><td>giống hệt</td><td><strong>Giữ nguyên</strong></td></tr>
+<tr><td>Sequences</td><td>lớp lệnh</td><td>chuỗi byte, lỗi parity, break</td><td>Giữ mẫu base+derived, vseq</td></tr>
+<tr><td>Ref model</td><td>ISS</td><td>FIFO byte + mô hình trạng thái</td><td>Giữ vị trí & cách nối</td></tr>
+<tr><td>Scoreboard</td><td>in-order retire</td><td>in-order byte (TX/RX)</td><td><strong>Giữ nguyên</strong> logic so</td></tr>
+<tr><td>Coverage</td><td>19 lệnh + hazard</td><td>baud × parity × data bits × lỗi</td><td>Giữ subscriber + closure</td></tr>
+<tr><td>RAL</td><td>dmem RAL-like</td><td><code>uvm_reg</code> thật (CTRL/STATUS/DATA) + adapter bus</td><td>Dùng đúng RAL chuẩn</td></tr>
+<tr><td>Regression/vPlan</td><td>Lab 15</td><td>giống hệt</td><td><strong>Giữ nguyên</strong></td></tr>
+</table></div></div>
+<div class="callout ok"><strong>Gợi ý portfolio:</strong> sau Lab 15, làm UART VIP mini (1 tuần) bằng cách copy khung này — bạn chứng minh được <em>tư duy kiến trúc UVM tái dùng</em>, thứ nhà tuyển dụng muốn thấy hơn là “đã verify một CPU”.</div>
+
+
+<nav class="pager" aria-label="Điều hướng lab"><a class="nav-card prev" href="lab14.html" rel="prev"><small>← Lab trước</small><span>Lab 14 — Factory, callback, catcher</span></a><div class="mid"><button type="button" class="btn primary" id="mark-done" aria-pressed="false">Đánh dấu hoàn thành</button></div><a class="nav-card next" href="index.html"><small>Hoàn tất</small><span>Về trang lộ trình ↗</span></a></nav>
+<p class="foot">UVM · RISC-V Pipeline Speedrun — Lab 15 / 15. Phím tắt: <kbd>[</kbd> lab trước · <kbd>]</kbd> lab sau.</p>
+</main>
+</div>
+</body>
+</html>

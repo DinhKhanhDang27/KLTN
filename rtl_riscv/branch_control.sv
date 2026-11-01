@@ -5,7 +5,7 @@
 module branch_control (
     input        branch,
     input  [2:0] funct3,
-    input  [63:0] alu_result,
+    input  [31:0] alu_result,
     input        zero,
     output reg   branch_taken
 );

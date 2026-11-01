@@ -1,0 +1,499 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Lab 09 — RISC-V Reference Model (ISS golden RV32I)</title>
+<link rel="stylesheet" href="assets/lab.css">
+<script src="assets/lab.js" defer></script>
+</head>
+<body data-lab="9" data-total="15">
+<div id="readbar" aria-hidden="true"></div>
+<header class="topbar">
+  <button type="button" class="iconbtn" id="toc-toggle" aria-label="Mở mục lục">☰</button>
+  <a class="brand" href="index.html"><span class="brand-mark">UVM</span><span>RISC-V <small>Speedrun</small></span></a>
+  <nav class="labdots" aria-label="Chọn lab"><a href="lab01.html" data-n="1" title="Lab 01 — Interface & clocking">1</a><a href="lab02.html" data-n="2" title="Lab 02 — Sequence item">2</a><a href="lab03.html" data-n="3" title="Lab 03 — Driver">3</a><a href="lab04.html" data-n="4" title="Lab 04 — Monitor & analysis port">4</a><a href="lab05.html" data-n="5" title="Lab 05 — Agent, env, test, config">5</a><a href="lab06.html" data-n="6" title="Lab 06 — Sequence library">6</a><a href="lab07.html" data-n="7" title="Lab 07 — Virtual sequencer">7</a><a href="lab08.html" data-n="8" title="Lab 08 — SVA & bind trong UVM">8</a><a href="lab09.html" data-n="9" title="Lab 09 — Reference model" aria-current="page">9</a><a href="lab10.html" data-n="10" title="Lab 10 — Scoreboard in-order">10</a><a href="lab11.html" data-n="11" title="Lab 11 — Scoreboard đầy đủ">11</a><a href="lab12.html" data-n="12" title="Lab 12 — Functional coverage">12</a><a href="lab13.html" data-n="13" title="Lab 13 — RAL (uvm_reg / uvm_mem)">13</a><a href="lab14.html" data-n="14" title="Lab 14 — Factory, callback, catcher">14</a><a href="lab15.html" data-n="15" title="Lab 15 — Regression & closure">15</a></nav>
+  <button type="button" class="iconbtn" id="theme-toggle" aria-label="Đổi giao diện sáng/tối">☾</button>
+</header>
+<div class="layout">
+<aside class="side" aria-label="Mục lục">
+  <nav class="side-toc">
+    <p class="side-title">Trong bài này</p>
+    <ol>
+<li><a href="#muc-tongquan">1. Tổng quan lab</a></li>
+<li><a href="#m1">2. Vị trí trong testbench</a></li>
+<li><a href="#m2">3. Mục tiêu học</a></li>
+<li><a href="#m3">4. Keyword &amp; khái niệm mới</a></li>
+<li><a href="#m4">5. Chuẩn bị</a></li>
+<li><a href="#m5">6. Lý thuyết UVM — reference model &amp; predictor</a></li>
+<li><a href="#m6">7. Iteration 0 — ISS đủ 19 lệnh</a></li>
+<li><a href="#m7">8. Iterations</a></li>
+<li><a href="#m8">9. Bảng tổng hợp</a></li>
+<li><a href="#m9">10. BASELINE sang Lab 10</a></li>
+<li><a href="#m10">11. Checklist nhớ code</a></li>
+<li><a href="#m11">12. Phỏng vấn — hỏi &amp; đáp</a></li>
+<li><a href="#m12">13. Cheat-sheet</a></li>
+<li><a href="#m13">14. Bài tập code &amp; câu hỏi nâng cao UVM</a></li>
+    </ol>
+  </nav>
+  <div class="side-tools">
+    <button type="button" class="btn" data-act="expand">Mở tất cả spoiler</button>
+    <button type="button" class="btn" data-act="collapse">Đóng tất cả spoiler</button>
+    <button type="button" class="btn" data-act="qa-close">Ẩn đáp án QA (tự test)</button>
+    <button type="button" class="btn" data-act="top">↑ Lên đầu trang</button>
+  </div>
+</aside>
+<main class="main">
+<header class="hero" data-num="09">
+  <div class="eyebrow"><span class="pill">Lab 09 / 15</span><span class="phase">Checking</span></div>
+  <h1>Lab 09 — Reference Model (ISS golden RV32I)</h1>
+  <p class="tags"><span class="tag">reference model</span><span class="tag">associative array</span><span class="tag">pure function</span><span class="tag">decode/execute</span><span class="tag">predicted retire</span><span class="tag">sign-extend</span></p>
+</header>
+<nav class="toc" aria-label="Mục lục bài lab"><strong>📑 Mục lục</strong><ol>
+<li><a href="#muc-tongquan">1. Tổng quan lab</a></li>
+<li><a href="#m1">2. Vị trí trong testbench</a></li>
+<li><a href="#m2">3. Mục tiêu học</a></li>
+<li><a href="#m3">4. Keyword &amp; khái niệm mới</a></li>
+<li><a href="#m4">5. Chuẩn bị</a></li>
+<li><a href="#m5">6. Lý thuyết UVM — reference model &amp; predictor</a></li>
+<li><a href="#m6">7. Iteration 0 — ISS đủ 19 lệnh</a></li>
+<li><a href="#m7">8. Iterations</a></li>
+<li><a href="#m8">9. Bảng tổng hợp</a></li>
+<li><a href="#m9">10. BASELINE sang Lab 10</a></li>
+<li><a href="#m10">11. Checklist nhớ code</a></li>
+<li><a href="#m11">12. Phỏng vấn — hỏi &amp; đáp</a></li>
+<li><a href="#m12">13. Cheat-sheet</a></li>
+<li><a href="#m13">14. Bài tập code &amp; câu hỏi nâng cao UVM</a></li>
+</ol></nav>
+
+<div class="note" id="muc-tongquan">
+  <strong>Tổng quan lab</strong>
+  <ul>
+    <li><strong>Lab này làm gì:</strong> xây <code>riscv_ref_model</code> — một ISS (Instruction Set
+      Simulator) mô phỏng RV32I <em>theo đặc tả</em>: giữ regfile + data memory + PC riêng, hàm
+      <code>step()</code> giải mã + thực thi <strong>1 lệnh</strong> và trả về một <strong>retire kỳ vọng</strong>
+      (giống hệt <code>riscv_retire_item</code>). Đây là "golden" để scoreboard (Lab 10) đối chiếu.</li>
+    <li><strong>Tạo ra file nào:</strong> <code>tb/ref/riscv_ref_model.sv</code> + top kiểm chứng
+      <code>riscv_iss_tb.sv</code> (chạy standalone, so với tính tay).</li>
+    <li><strong>Nhận gì từ lab trước:</strong> <code>riscv_retire_item</code> (Lab 4), seq_item (Lab 2).</li>
+    <li><strong>Lab sau dùng để làm gì:</strong> Lab 10 nối ISS vào scoreboard so với DUT; Lab 11 so cả
+      regfile/mem; Lab 13 ISS dự đoán truy cập bộ nhớ.</li>
+  </ul>
+</div>
+
+<div class="callout uvm"><strong>Trọng tâm UVM của lab</strong>
+<ul>
+  <li><strong>Reference model trong kiến trúc UVM</strong>: object trong scoreboard, component predictor, hay DPI-C — và đánh đổi từng cách.</li>
+  <li><strong>Predictor pattern</strong>: model nhận gì (stimulus hay observed?) → độc lập golden và khả năng bắt lỗi.</li>
+  <li><strong>Model là <code>uvm_object</code> + factory</strong>: override model bằng bản “có lỗi” để kiểm chứng scoreboard (mutation).</li>
+  <li><strong>Đồng bộ trạng thái</strong>: reset, checkpoint, <code>copy/clone</code>.</li>
+  <li>Decode/execute RV32I là phần bạn đã biết — gấp vào mục recap; trọng tâm là <em>nơi đặt</em> và <em>cách nối</em> model.</li>
+</ul></div>
+
+<div class="note warn"><strong>Golden phải khớp ĐẶC TẢ, không copy RTL:</strong> ISS mô phỏng ý nghĩa ISA
+(theo tài liệu RV32I + tập lệnh core hỗ trợ), không sao chép logic RTL. Nếu RTL sai mà ISS cũng sao chép cái
+sai thì scoreboard "mù". Ở đây ISS viết độc lập từ semantics; nó không cần biết pipeline/hazard — chỉ chạy
+tuần tự từng lệnh.</div>
+
+
+
+<h2 id="m1">2. Vị trí trong testbench</h2>
+<pre><code> chương trình (words) --> [ riscv_ref_model.step() ] --> riscv_retire_item kỳ vọng
+   state riêng: xreg[32], dmem[assoc], pc    (tuần tự, không pipeline)</code></pre>
+
+<h2 id="m2">3. Mục tiêu học</h2>
+<ul>
+  <li>Mô hình tham chiếu: state kiến trúc + <code>step()</code> giải mã/thực thi.</li>
+  <li>Sign-extend immediate đúng 6 format; ALU/branch theo semantics.</li>
+  <li>Associative/dynamic array cho bộ nhớ thưa.</li>
+  <li>Tách golden khỏi RTL để phát hiện lỗi thật.</li>
+</ul>
+
+<h2 id="m3">4. Keyword &amp; khái niệm mới</h2>
+<div class="table-wrap"><table>
+<tr><th>Keyword</th><th>Giải thích</th><th>Ví dụ</th></tr>
+<tr><td>reference model</td><td>Golden dự đoán state</td><td><code>class riscv_ref_model;</code></td></tr>
+<tr><td>assoc array</td><td>Bộ nhớ thưa theo địa chỉ</td><td><code>byte dmem[int];</code></td></tr>
+<tr><td><code>$signed</code></td><td>Diễn dịch có dấu</td><td><code>$signed(a) &lt; $signed(b)</code></td></tr>
+<tr><td>sign-extend</td><td>Mở rộng dấu immediate</td><td><code>{{20{w[31]}}, w[31:20]}</code></td></tr>
+<tr><td><code>step()</code></td><td>Thực thi 1 lệnh, trả retire</td><td><code>rt = iss.step();</code></td></tr>
+<tr><td>pure function</td><td>Không side-effect (ALU)</td><td><code>function [31:0] alu(...)</code></td></tr>
+</table></div>
+
+<h2 id="m4">5. Chuẩn bị</h2>
+<pre><code>cd ~/Study/KLtN/code/tb_uvm/uvm_riscv/tb/ref</code></pre>
+
+<h2 id="m5">6. Lý thuyết UVM — reference model &amp; predictor</h2>
+<h3>6.1. Bốn cách hiện thực reference model</h3>
+<div class="table-wrap"><div class="table-wrap"><table>
+<tr><th>Cách</th><th>Ưu</th><th>Nhược</th><th>Khi nào</th></tr>
+<tr><td><code>uvm_object</code> trong scoreboard (lab này)</td><td>Nhẹ, không cần phase/port, dễ unit-test, override bằng factory</td><td>Không có TLM port riêng</td><td>Model hàm thuần: <code>step()</code>/<code>exec()</code></td></tr>
+<tr><td><code>uvm_component</code> “predictor”</td><td>Có <code>analysis_imp</code> + <code>analysis_port</code> (vào: stimulus; ra: expected) — tách rõ</td><td>Thêm 1 component, thêm kết nối</td><td>Model có state/timing, nhiều SB dùng chung expected</td></tr>
+<tr><td>DPI-C (Spike/QEMU/C model)</td><td>Độc lập nhất, tái dùng ISS công ty/mã nguồn mở</td><td>Build phức tạp, debug 2 ngôn ngữ</td><td>Dự án CPU thật (cosim bằng Spike/RVFI)</td></tr>
+<tr><td>Dựng lại từ RTL</td><td>Dễ</td><td><strong>Không độc lập</strong> → scoreboard “mù”</td><td>Không dùng làm golden</td></tr>
+</table></div></div>
+
+<h3>6.2. Model nhận gì làm đầu vào? — câu hỏi kiến trúc quan trọng nhất</h3>
+<p>Có hai hướng, đánh đổi trái ngược:</p>
+<ul>
+  <li><strong>Stimulus-driven</strong>: model nạp <em>chương trình đã gửi</em> (từ driver/sequence) và tự chạy; scoreboard so retire DUT ↔ dự đoán. Ưu: <em>độc lập</em> — bắt cả lỗi “DUT fetch sai lệnh”. Nhược: model phải tự quản control flow/timing.</li>
+  <li><strong>Observation-driven</strong> (lab này): model được “lái” bằng chính retire của DUT (<code>exec(act.pc, act.instr)</code>). Ưu: đơn giản, không cần ảnh chương trình. Nhược: <strong>tin DUT về pc/instr</strong> — nếu DUT fetch nhầm lệnh, model thực thi đúng lệnh <em>nhầm đó</em> và scoreboard vẫn khớp.</li>
+</ul>
+<div class="callout pitfall"><strong>Lỗ hổng cần biết:</strong> kiểm tra <code>act.instr</code> ↔ lệnh <em>đã nạp</em> (từ stimulus) ở scoreboard để vá lỗ hổng này. Đây là bài tập EX5. Thực tế dự án: dùng cả hai (stimulus-driven cho chương trình + observation cho từng retire).</div>
+
+<h3>6.3. Model như <code>uvm_object</code>: lợi ích của factory</h3>
+<p>Vì <code>riscv_ref_model</code> kế thừa <code>uvm_object</code> và tạo bằng <code>type_id::create</code>, bạn có thể <em>override</em> bằng một bản có lỗi cố ý (<code>riscv_ref_model_buggy</code> — SRA thành SRL) để <strong>kiểm chứng scoreboard thật sự bắt được lỗi</strong> — mutation testing cho chính môi trường verify:</p>
+<pre><code>// test negative: model bị hỏng → scoreboard PHẢI fail
+set_type_override_by_type(riscv_ref_model::get_type(), riscv_ref_model_buggy::get_type());</code></pre>
+
+<h3>6.4. Quản lý state: reset, checkpoint, copy</h3>
+<ul>
+  <li><strong>Reset</strong>: <code>reset()</code> khi DUT reset; quên reset → model mang state chương trình trước (lỗi ngầm khi chạy nhiều chương trình).</li>
+  <li><strong>Checkpoint</strong>: <code>clone()</code>/<code>copy()</code> để lưu trạng thái trước nhánh dự đoán — hữu ích khi so khoảng retire không theo thứ tự (core OoO).</li>
+  <li><strong>Associative array cho memory</strong>: <code>byte dmem[int]</code> thưa, đọc địa chỉ chưa ghi trả 0 (và cảnh báo nếu dùng <code>exists</code>) — quyết định rõ: coi “chưa ghi” là 0 hay <em>không xác định</em>?</li>
+</ul>
+
+<details class="recap"><summary>RISC-V recap: fetch/decode/execute/writeback, little-endian (bạn đã biết — mở nếu cần)</summary>
+<ol>
+  <li><strong>Fetch:</strong> <code>instr = imem[pc&gt;&gt;2]</code>. <strong>Decode:</strong> tách opcode/rd/
+    funct3/rs1/rs2/funct7 + sinh immediate theo format.</li>
+  <li><strong>Execute:</strong> tính kết quả ALU / địa chỉ / điều kiện rẽ nhánh / địa chỉ nhảy.</li>
+  <li><strong>Writeback &amp; next PC:</strong> ghi xreg (bỏ x0), cập nhật pc (tuần tự hoặc nhảy), trả retire.</li>
+  <li><strong>Little-endian word:</strong> LW/SW đọc/ghi 4 byte; dmem lưu theo byte.</li>
+</ol>
+</details>
+
+<h2 id="m6">7. Iteration 0 — ISS đủ 19 lệnh</h2>
+
+<details><summary>tb/ref/riscv_ref_model.sv</summary>
+<pre><code>// tb/ref/riscv_ref_model.sv — ISS RV32I golden (subset core hỗ trợ)
+`ifndef RISCV_REF_MODEL_SV
+`define RISCV_REF_MODEL_SV
+class riscv_ref_model extends uvm_object;
+  `uvm_object_utils(riscv_ref_model)
+
+  bit [31:0] xreg [0:31];
+  bit [31:0] imem [int];       // word-indexed (addr&gt;&gt;2)
+  byte       dmem [int];       // byte-addressed
+  bit [31:0] pc;
+
+  function new(string name="riscv_ref_model"); super.new(name); reset(); endfunction
+
+  function void reset();
+    foreach (xreg[i]) xreg[i] = 0;
+    pc = 0;
+  endfunction
+
+  function void load_word(int widx, bit [31:0] data); imem[widx] = data; endfunction
+
+  // ---- helper đọc/ghi reg (x0 bất biến) ----
+  function bit [31:0] rf(int r);  return (r==0) ? 32'd0 : xreg[r]; endfunction
+  function void wf(int r, bit [31:0] v); if (r!=0) xreg[r] = v; endfunction
+
+  // ---- ALU theo semantics (khớp alu.sv) ----
+  function bit [31:0] alu(bit [3:0] op, bit [31:0] a, bit [31:0] b);
+    case (op)
+      4'b0000: return a & b;
+      4'b0001: return a | b;
+      4'b0010: return a + b;
+      4'b0110: return a - b;
+      4'b0011: return a ^ b;
+      4'b0100: return a &lt;&lt; b[4:0];
+      4'b0101: return a &gt;&gt; b[4:0];
+      4'b0111: return $signed(a) &gt;&gt;&gt; b[4:0];
+      4'b1000: return ($signed(a) &lt; $signed(b)) ? 32'd1 : 32'd0;
+      4'b1001: return (a &lt; b) ? 32'd1 : 32'd0;
+      default: return 32'd0;
+    endcase
+  endfunction
+
+  function bit [31:0] ld_w(int addr);
+    int b = addr & ~3;
+    return {dmem[b+3], dmem[b+2], dmem[b+1], dmem[b]};
+  endfunction
+  function void st_w(int addr, bit [31:0] v);
+    int b = addr & ~3;
+    dmem[b]=v[7:0]; dmem[b+1]=v[15:8]; dmem[b+2]=v[23:16]; dmem[b+3]=v[31:24];
+  endfunction
+
+  // ---- step: thực thi 1 lệnh tại pc, trả retire kỳ vọng ----
+  function riscv_retire_item step();
+    riscv_retire_item rt = riscv_retire_item::type_id::create("exp");
+    bit [31:0] w   = imem.exists(pc&gt;&gt;2) ? imem[pc&gt;&gt;2] : 32'h00000013; // NOP nếu trống
+    bit [6:0]  opc = w[6:0];
+    bit [4:0]  rd  = w[11:7], rs1 = w[19:15], rs2 = w[24:20];
+    bit [2:0]  f3  = w[14:12];
+    bit [6:0]  f7  = w[31:25];
+    bit [31:0] immI = {{20{w[31]}}, w[31:20]};
+    bit [31:0] immS = {{20{w[31]}}, w[31:25], w[11:7]};
+    bit [31:0] immB = {{19{w[31]}}, w[31], w[7], w[30:25], w[11:8], 1'b0};
+    bit [31:0] immU = {w[31:12], 12'b0};
+    bit [31:0] immJ = {{11{w[31]}}, w[31], w[19:12], w[20], w[30:21], 1'b0};
+    bit [31:0] a = rf(rs1), b = rf(rs2);
+    bit [31:0] res, addr, nextpc;
+    bit        taken;
+
+    rt.pc = pc; rt.instr = w;
+    rt.reg_write = 0; rt.rd = rd; rt.wb_data = 0;
+    rt.mem_write = 0; rt.mem_addr = 0; rt.mem_wdata = 0;
+    nextpc = pc + 4;
+
+    case (opc)
+      7'b0110011: begin // R-type
+        bit [3:0] aop;
+        case (f3)
+          3'b000: aop = f7[5] ? 4'b0110 : 4'b0010; // sub/add
+          3'b001: aop = 4'b0100; 3'b010: aop = 4'b1000; 3'b011: aop = 4'b1001;
+          3'b100: aop = 4'b0011; 3'b101: aop = f7[5] ? 4'b0111 : 4'b0101;
+          3'b110: aop = 4'b0001; 3'b111: aop = 4'b0000; default: aop=4'b0010;
+        endcase
+        res = alu(aop, a, b); rt.reg_write=1; rt.wb_data=res; wf(rd,res);
+      end
+      7'b0010011: begin // I-ALU
+        bit [3:0] aop; bit [31:0] bop;
+        case (f3)
+          3'b000: begin aop=4'b0010; bop=immI; end // addi
+          3'b010: begin aop=4'b1000; bop=immI; end // slti
+          3'b011: begin aop=4'b1001; bop=immI; end // sltiu
+          3'b100: begin aop=4'b0011; bop=immI; end // xori
+          3'b110: begin aop=4'b0001; bop=immI; end // ori
+          3'b111: begin aop=4'b0000; bop=immI; end // andi
+          3'b001: begin aop=4'b0100; bop={27'd0,w[24:20]}; end // slli shamt
+          3'b101: begin aop=f7[5]?4'b0111:4'b0101; bop={27'd0,w[24:20]}; end // srai/srli
+          default:begin aop=4'b0010; bop=immI; end
+        endcase
+        res = alu(aop, a, bop); rt.reg_write=1; rt.wb_data=res; wf(rd,res);
+      end
+      7'b0000011: begin // LW
+        addr = a + immI; res = ld_w(addr);
+        rt.reg_write=1; rt.wb_data=res; wf(rd,res);
+      end
+      7'b0100011: begin // SW
+        addr = a + immS; st_w(addr, b);
+        rt.mem_write=1; rt.mem_addr=addr; rt.mem_wdata=b;
+      end
+      7'b1100011: begin // Branch
+        case (f3)
+          3'b000: taken = (a==b);                         // beq
+          3'b001: taken = (a!=b);                         // bne
+          3'b100: taken = ($signed(a) &lt; $signed(b));      // blt
+          3'b101: taken = ($signed(a) &gt;= $signed(b));     // bge
+          3'b110: taken = (a &lt; b);                        // bltu
+          3'b111: taken = (a &gt;= b);                       // bgeu
+          default: taken = 0;
+        endcase
+        if (taken) nextpc = pc + immB;
+      end
+      7'b1101111: begin // JAL
+        rt.reg_write=1; rt.wb_data=pc+4; wf(rd, pc+4); nextpc = pc + immJ;
+      end
+      7'b1100111: begin // JALR
+        rt.reg_write=1; rt.wb_data=pc+4; wf(rd, pc+4);
+        nextpc = (a + immI) & ~32'd1;
+      end
+      7'b0110111: begin // LUI
+        rt.reg_write=1; rt.wb_data=immU; wf(rd, immU);
+      end
+      7'b0010111: begin // AUIPC
+        rt.reg_write=1; rt.wb_data=pc+immU; wf(rd, pc+immU);
+      end
+      default: ; // NOP / không hỗ trợ
+    endcase
+
+    pc = nextpc;
+    return rt;
+  endfunction
+endclass
+`endif</code></pre></details>
+
+<details><summary>tb/top/riscv_iss_tb.sv (kiểm chứng standalone)</summary>
+<pre><code>`timescale 1ns/1ps
+module riscv_iss_tb;
+  import uvm_pkg::*; `include "uvm_macros.svh"
+  `include "riscv_seq_item.sv"
+  `include "riscv_retire_item.sv"
+  `include "riscv_ref_model.sv"
+  riscv_ref_model   iss;
+  riscv_retire_item rt;
+  bit [31:0]        prog[];
+  initial begin
+    iss = riscv_ref_model::type_id::create("iss");
+    // addi x1,x0,5; addi x2,x1,3; add x3,x1,x2; sw x3,0(x0); lw x4,0(x0); jal x0,0
+    prog = '{32'h00500093,32'h00308113,32'h002081b3,
+             32'h00302023,32'h00002203,32'h0000006f};
+    foreach (prog[i]) iss.load_word(i, prog[i]);
+    repeat (6) begin rt = iss.step(); `uvm_info("ISS", rt.convert2str(), UVM_LOW) end
+    `uvm_info("ISS", $sformatf("x1=%0d x2=%0d x3=%0d x4=%0d mem[0]=%0d (mong 5,8,13,13,13)",
+              iss.rf(1), iss.rf(2), iss.rf(3), iss.rf(4), iss.ld_w(0)), UVM_LOW)
+    $finish;
+  end
+endmodule</code></pre></details>
+
+<p><strong>Lệnh chạy:</strong></p>
+<pre><code>cd ~/Study/KLtN/code/tb_uvm/uvm_riscv/sim</code></pre>
+<pre><code>xvlog -sv -L uvm -i ../tb/agent -i ../tb/ref ../tb/top/riscv_iss_tb.sv</code></pre>
+<pre><code>xelab -L uvm -timescale 1ns/1ps riscv_iss_tb -s iss_sim</code></pre>
+<pre><code>xsim iss_sim -R</code></pre>
+
+<details><summary>Expected log</summary>
+<pre><code># UVM_INFO [ISS] pc=0x00000000 instr=0x00500093 x1&lt;=0x00000005
+# UVM_INFO [ISS] pc=0x00000004 instr=0x00308113 x2&lt;=0x00000008
+# UVM_INFO [ISS] pc=0x00000008 instr=0x002081b3 x3&lt;=0x0000000d
+# UVM_INFO [ISS] pc=0x0000000c instr=0x00302023 (no-regwr) MEM[0x00000000]&lt;=0x0000000d
+# UVM_INFO [ISS] pc=0x00000010 instr=0x00002203 x4&lt;=0x0000000d
+# UVM_INFO [ISS] pc=0x00000014 instr=0x0000006f x0&lt;=0x00000018
+# UVM_INFO [ISS] x1=5 x2=8 x3=13 x4=13 mem[0]=13 (mong 5,8,13,13,13)</code></pre>
+<p><em>ISS khớp tính tay → golden sẵn sàng cho scoreboard. Lưu ý jal x0 ghi rd=x0 (reg_write=1 nhưng bỏ ghi).</em></p>
+</details>
+
+<h2 id="m7">8. Iterations</h2>
+
+<h3>Iteration 1 — thêm kiểm SRA vs SRL (dấu)</h3>
+<p>Thêm <code>lui x5,0xFFFFF; srai x6,x5,4</code> và so kết quả có dấu.</p>
+<details><summary>Khác biệt</summary><p>SRAI giữ dấu (<code>&gt;&gt;&gt;</code>), SRLI không. Dạy: điểm sai kinh điển — nhầm toán tử dịch.</p></details>
+
+<h3>Iteration 2 — branch taken/not: beq bằng và khác</h3>
+<p>Chương trình có <code>beq x1,x1,+8</code> (taken) và <code>beq x1,x2,+8</code> (not taken).</p>
+<details><summary>Khác biệt</summary><p>PC ISS nhảy/không đúng như semantics. Dạy: ISS tự quyết luồng điều khiển (độc lập DUT).</p></details>
+
+<h3>Iteration 3 — JALR xóa bit0</h3>
+<p><code>addi x1,x0,7; jalr x0,x1,0</code> → đích = 7 &amp; ~1 = 6.</p>
+<details><summary>Khác biệt</summary><p>ISS <code>(a+imm)&amp;~1</code> khớp RTL. Dạy: bẫy LSB của JALR.</p></details>
+
+<h3>Iteration 4 — AUIPC phụ thuộc PC</h3>
+<p><code>auipc x5,0</code> tại pc=8 → x5=8.</p>
+<details><summary>Khác biệt</summary><p>AUIPC = pc+immU; ISS phải dùng pc hiện tại. Dạy: lệnh phụ thuộc PC.</p></details>
+
+<h3>Iteration 5 — cố ý sai: dùng immI cho SW</h3>
+<p>Đổi <code>addr = a + immS</code> → <code>a + immI</code> cho SW.</p>
+<details><summary>Khác biệt</summary><p>Địa chỉ store sai khi imm có bit[11:5]≠0. Dạy: immediate đúng format là sống còn; Lab 10 sẽ lộ ngay qua mismatch.</p></details>
+
+<h2 id="m8">9. Bảng tổng hợp</h2>
+<div class="table-wrap"><table><tr><th>Iter</th><th>Đổi</th><th>Học</th></tr>
+<tr><td>0</td><td>ISS 19 lệnh</td><td>decode/execute + retire kỳ vọng</td></tr>
+<tr><td>1</td><td>SRA vs SRL</td><td>dịch có/không dấu</td></tr>
+<tr><td>2</td><td>branch taken/not</td><td>luồng điều khiển độc lập</td></tr>
+<tr><td>3</td><td>JALR &amp;~1</td><td>bẫy LSB</td></tr>
+<tr><td>4</td><td>AUIPC</td><td>phụ thuộc PC</td></tr>
+<tr><td>5</td><td>SW dùng immI</td><td>immediate đúng format</td></tr>
+</table></div>
+
+<h2 id="m9">10. BASELINE sang Lab 10</h2>
+<p><code>riscv_ref_model</code> (xreg/dmem/pc + <code>step()</code> đủ 19 lệnh, retire kỳ vọng khớp định dạng
+<code>riscv_retire_item</code>). Lab 10 nối ISS vào scoreboard so với DUT in-order.</p>
+
+<h2 id="m10">11. Checklist nhớ code</h2>
+<ul>
+  <li>[ ] Nhớ sign-extend đúng immI/immS/immB/immU/immJ.</li>
+  <li>[ ] Nhớ x0 bất biến (rf/wf).</li>
+  <li>[ ] Nhớ JALR <code>&amp;~1</code>, shift dùng <code>b[4:0]</code>, SRA <code>&gt;&gt;&gt;</code>.</li>
+</ul>
+
+<h2 id="m11">12. Phỏng vấn — hỏi &amp; đáp</h2>
+<p>Bấm câu hỏi để xem đáp án — nên tự trả lời miệng trước khi mở. Mỗi câu có ví dụ cụ thể như khi bị hỏi trong phỏng vấn.</p>
+<div class="qa-list">
+<details class="qa"><summary>Reference model đặt ở đâu trong UVM: trong scoreboard hay component riêng? Quyết định thế nào?</summary>
+<div class="ans">
+<p>Model hàm thuần (không state theo thời gian, gọi đồng bộ) ⇒ <code>uvm_object</code> trong scoreboard, gọi <code>step()</code>/<code>exec()</code> trong <code>write()</code>. Model có state/timing hoặc cần chia sẻ expected cho nhiều checker (SB, coverage) ⇒ <code>uvm_component</code> predictor: nhận stimulus qua <code>analysis_imp</code>, phát expected qua <code>analysis_port</code>. Tiêu chí: <em>ai cần expected?</em> một nơi → object; nhiều nơi → component.</p>
+</div></details>
+<details class="qa"><summary>Vì sao golden model không được sao chép logic RTL? Cho ví dụ cụ thể của lab.</summary>
+<div class="ans">
+<p>Nếu cùng một hiểu lầm đặc tả được đưa vào cả RTL và model, hai bên khớp nhau và scoreboard <em>không bao giờ</em> fail — verify vô nghĩa. Ví dụ: <code>JALR</code> chỉ xóa bit0 trong RTL; model viết độc lập theo spec <code>(rs1+imm)&amp;~1</code> khớp cả hai — nhưng nếu RTL sai (quên xóa bit0) thì model độc lập sẽ khác và lộ ra. Nguyên tắc: viết model từ <em>spec/ISA manual</em>, không đọc RTL; review bởi người khác.</p>
+</div></details>
+<details class="qa"><summary>Model “observation-driven” có điểm yếu gì? Khắc phục ra sao?</summary>
+<div class="ans">
+<p>Model thực thi đúng lệnh DUT báo đã retire nên <strong>tin tưởng</strong> <code>act.pc/act.instr</code>. Nếu DUT fetch nhầm lệnh (ROM đọc sai địa chỉ), model chạy đúng lệnh nhầm và scoreboard khớp — lỗi bị che. Khắc phục: nạp <em>chương trình thật</em> (từ driver) vào model và kiểm <code>act.instr == model.imem[act.pc]</code> trước khi <code>exec</code>; hoặc stimulus-driven hoàn toàn.</p>
+<pre><code>if (iss.imem.exists(act.pc&gt;&gt;2) &amp;&amp; iss.imem[act.pc&gt;&gt;2] !== act.instr)
+  `uvm_error("SB", $sformatf("FETCH mismatch pc=%08h dut=%08h exp=%08h", act.pc, act.instr, iss.imem[act.pc&gt;&gt;2]))</code></pre>
+</div></details>
+<details class="qa"><summary>Model là <code>uvm_object</code> hay component — hệ quả đối với factory/config?</summary>
+<div class="ans">
+<p>Object: tạo bằng <code>create(name)</code> (không parent), không có phase, không nằm trong cây ⇒ <em>không</em> nhận config theo hierarchy (phải truyền handle/ cfg tường minh), nhưng override bằng factory vẫn hoạt động. Component: có phase, nhận config theo scope, hiện trong <code>print_topology</code>. Với model nhỏ, chọn object là hợp lý; nếu cần <code>run_phase</code> (mô phỏng timing) thì component.</p>
+</div></details>
+<details class="qa"><summary>Làm sao chứng minh scoreboard + model “thực sự bắt được lỗi” chứ không phải luôn pass?</summary>
+<div class="ans">
+<p><strong>Mutation</strong>: (1) bơm lỗi vào RTL (sửa ALU +1) và xác nhận FAIL; (2) hoặc override model bằng bản lỗi qua factory — nhanh hơn vì không sửa RTL; (3) kiểm tra từng nhóm so sánh có “tay” nào im lặng không (REG, MEM, CF). Quy tắc: <em>một checker chưa từng thấy fail là một checker chưa được tin</em>.</p>
+</div></details>
+<details class="qa"><summary>Xử lý reset giữa các chương trình với model như thế nào?</summary>
+<div class="ans">
+<p>Model có hàm <code>reset()</code> (xóa xreg, pc=0; tùy trường hợp xóa dmem/imem). Scoreboard gọi <code>reset()</code> khi nhận sự kiện reset (analysis riêng/ <code>uvm_event</code> / cờ từ monitor). Không đồng bộ ⇒ model mang <code>xreg</code> chương trình trước ⇒ mismatch giả ở chương trình sau — nhận dạng bằng việc lỗi chỉ xuất hiện từ <em>chương trình thứ hai</em> trở đi.</p>
+</div></details>
+<details class="qa"><summary>Bộ nhớ model dùng <code>byte dmem[int]</code>: đọc địa chỉ chưa ghi trả gì? Có vấn đề không?</summary>
+<div class="ans">
+<p>Associative array: đọc khóa không tồn tại trả giá trị mặc định (0) <em>và</em> bản thân xsim/VCS có thể cảnh báo. Rủi ro: DUT dmem mặc định khác (ví dụ X hoặc 0). Cần quyết định “bộ nhớ chưa ghi” = 0 hay X, và đồng bộ hai phía (hoặc coi đọc ô chưa ghi là lỗi stimulus). Mẹo: dùng <code>exists()</code> khi đọc và <code>uvm_warning</code> nếu chưa ghi.</p>
+</div></details>
+<details class="qa"><summary>Khi nào dùng DPI-C ISS (Spike) thay vì viết SV?</summary>
+<div class="ans">
+<p>Khi cần độ tin cậy/độ phủ ISA lớn (RV32IMC, CSR, trap) mà viết lại tốn công và dễ sai; ISS có sẵn đã được cộng đồng kiểm chứng. Đánh đổi: tích hợp DPI-C (import/export), đồng bộ trạng thái, chi phí debug. Với 19 lệnh ở lab này, SV thuần là hợp lý và dễ học; để ngỏ giao diện (<code>step()</code> → retire item) để sau này thay bằng DPI mà scoreboard không đổi.</p>
+</div></details>
+</div>
+
+<h2 id="m12">13. Cheat-sheet</h2>
+<pre><code>class riscv_ref_model extends uvm_object;
+  bit[31:0] xreg[0:31]; byte dmem[int]; bit[31:0] imem[int], pc;
+  function riscv_retire_item step();  // fetch imem[pc&gt;&gt;2]; decode; execute; pc=next; return exp
+  // immI={{20{w31}},w[31:20]}  immS={{20{w31}},w[31:25],w[11:7]}
+  // immB={{19{w31}},w31,w7,w[30:25],w[11:8],0}  immJ={{11{w31}},w31,w[19:12],w20,w[30:21],0}</code></pre>
+
+<h2 id="m13">14. Bài tập code &amp; câu hỏi nâng cao UVM</h2>
+<p>8 bài rèn tay, tăng dần độ khó. Làm trên baseline của lab này; đáp án chỉ là hướng tham khảo — giá trị nằm ở việc bạn tự gõ, chạy và đọc log.</p>
+<div class="ex-progress"><span class="cnt">0 / 8 bài đã làm</span><span class="bar"><i></i></span></div>
+<div class="ex-list">
+<article class="ex"><div class="ex-head"><span class="lv l1">★ Dễ</span><h4>EX1 — Bản model lỗi qua factory</h4></div>
+Viết <code>riscv_ref_model_buggy extends riscv_ref_model</code> override <code>alu()</code> sao cho SRA dùng <code>&gt;&gt;</code> thay vì <code>&gt;&gt;&gt;</code> (để <code>alu</code> override được, khai <code>virtual function</code>). Override bằng <code>set_type_override_by_type</code> và chạy một test có SRAI. Scoreboard phải fail.
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p>Nhớ <code>virtual</code> cho <code>alu</code> và constructor, và đặt override <em>trước</em> khi scoreboard tạo model (trong <code>build_phase</code> test, trước <code>super.build_phase</code>).</p>
+</details>
+</article>
+<article class="ex"><div class="ex-head"><span class="lv l1">★ Dễ</span><h4>EX2 — Unit test model độc lập</h4></div>
+Viết <code>riscv_iss_tb</code> mở rộng: 10 vector tính tay (bao gồm SRA số âm, SLTU, LUI bit31, AUIPC). Dùng <code>assert</code> và in PASS/FAIL cho từng vector.
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p>Đây là bài unit-test cho “golden” — thường bị bỏ qua nhưng quan trọng: nếu model sai, mọi thứ sau sai theo.</p>
+</details>
+</article>
+<article class="ex"><div class="ex-head"><span class="lv l2">★★ Vừa</span><h4>EX3 — Predictor component</h4></div>
+Chuyển model thành <code>riscv_predictor extends uvm_component</code> với <code>analysis_imp</code> nhận retire thực và <code>analysis_port</code> phát expected retire. Scoreboard chỉ so hai luồng.
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p>Scoreboard cần hai analysis imp (act/exp) hoặc dùng <code>uvm_in_order_comparator</code>. Lợi: coverage có thể subscribe vào luồng expected.</p>
+</details>
+</article>
+<article class="ex"><div class="ex-head"><span class="lv l2">★★ Vừa</span><h4>EX4 — Reset đồng bộ</h4></div>
+Thêm hàm <code>reset()</code> vào model và gọi nó khi scoreboard nhận cờ reset. Chạy hai chương trình liên tiếp. Chứng minh bằng log lỗi xuất hiện khi quên gọi reset.
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p>Lỗi điển hình: <code>REG mismatch</code> ở lệnh đầu chương trình 2 vì <code>xreg</code> còn giá trị cũ (DUT đã reset về 0).</p>
+</details>
+</article>
+<article class="ex"><div class="ex-head"><span class="lv l2">★★ Vừa</span><h4>EX5 — Vá lỗ hổng observation-driven</h4></div>
+Nạp chương trình thật vào model qua một analysis port từ driver (<code>program_ap</code>), rồi trong scoreboard kiểm <code>act.instr == iss.imem[act.pc&gt;&gt;2]</code>. Cố ý làm DUT fetch nhầm (bơm lỗi vào PC) và xác nhận lỗi bị bắt.
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p>Cần driver phát <code>(index, word)</code> ra analysis port trước khi nạp backdoor. Đó là một monitor “phía stimulus”. Bài này mở ra vì sao UVM agent hay có <em>hai</em> analysis port: input và output.</p>
+</details>
+</article>
+<article class="ex"><div class="ex-head"><span class="lv l3">★★★ Khó</span><h4>EX6 — Tích hợp DPI-C (giả lập)</h4></div>
+Viết một hàm C <code>int iss_step(unsigned pc, unsigned instr, unsigned *rd, unsigned *val)</code> (chỉ 3 lệnh) và <code>import "DPI-C"</code> vào model, thay <code>step_core</code>. So khác biệt về build và debug.
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p>Với xsim: <code>xsc iss.c</code> biên dịch C rồi <code>xelab -sv_lib dpi</code>. Bạn sẽ thấy lợi ích (tái dùng) và cái giá (toolchain, debug đa ngôn ngữ).</p>
+</details>
+</article>
+<article class="ex"><div class="ex-head"><span class="lv l3">★★★ Khó</span><h4>EX7 — Model OoO-ready</h4></div>
+Thêm khả năng nhận retire <em>đảo thứ tự cục bộ</em> bằng cách dùng một queue sắp xếp theo <code>pc</code>/số thứ tự. Thảo luận khi nào cần (core superscalar OoO) và vì sao pipeline in-order này không cần.
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p>Đây là cầu nối sang Lab 11 của bộ AXI (OoO scoreboard theo ID): cùng ý tưởng “khớp theo khóa thay vì theo thứ tự”.</p>
+</details>
+</article>
+<article class="ex"><div class="ex-head"><span class="lv l3">★★★ Khó</span><h4>EX8 — Hiệu năng model</h4></div>
+Đo thời gian mô phỏng với <code>step()</code> dùng associative array vs mảng cố định <code>bit [7:0] dmem [2048]</code>. Chương trình 100k lệnh. Thảo luận khi nào assoc đáng giá.
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p>Mảng cố định nhanh hơn rõ rệt cho bộ nhớ nhỏ dày; assoc thắng khi không gian địa chỉ lớn và thưa (ví dụ 4GB). Chọn cấu trúc dữ liệu theo mật độ truy cập.</p>
+</details>
+</article>
+</div>
+
+
+<nav class="pager" aria-label="Điều hướng lab"><a class="nav-card prev" href="lab08.html" rel="prev"><small>← Lab trước</small><span>Lab 08 — SVA & bind trong UVM</span></a><div class="mid"><button type="button" class="btn primary" id="mark-done" aria-pressed="false">Đánh dấu hoàn thành</button></div><a class="nav-card next" href="lab10.html" rel="next"><small>Lab tiếp →</small><span>Lab 10 — Scoreboard in-order</span></a></nav>
+<p class="foot">UVM · RISC-V Pipeline Speedrun — Lab 09 / 15. Phím tắt: <kbd>[</kbd> lab trước · <kbd>]</kbd> lab sau.</p>
+</main>
+</div>
+</body>
+</html>

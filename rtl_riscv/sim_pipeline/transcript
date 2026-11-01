@@ -1,0 +1,29 @@
+# vsim -do {run -all; quit -f} -c work.tb_bridge 
+# Loading sv_std.std
+# Loading work.tb_bridge
+# Loading work.riscv_avalon_wrapper
+# Loading work.riscv_pipeline_core
+# Loading work.instruction_memory
+# Loading work.control_unit
+# Loading work.register_file
+# Loading work.imm_gen
+# Loading work.alu_control
+# Loading work.alu
+# Loading work.branch_control
+# Loading work.avalon_mem
+# run -all 
+# PASS       x1 = 5
+# PASS       x2 = 8
+# PASS       x3 = 13
+# PASS       x4 = 13
+# PASS       x5 = 18
+# PASS       x6 = 99
+# PASS       x7 = 7
+# PASS       x8 = 48
+# PASS       x9 = 0
+# PASS      x10 = 42
+# PASS   avmem0 = 13
+# 
+# *** ALL TESTS PASSED (thin bridge + core) ***
+# ** Note: $finish    : tb_bridge.sv(41)
+#    Time: 1425 ns  Iteration: 1  Instance: /tb_bridge

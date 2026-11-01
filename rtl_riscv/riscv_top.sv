@@ -1,14 +1,14 @@
 // ============================================================================
-// RISC-V 64-bit Single-Cycle Datapath (Top-level)
-// Supports: R-type, I-type ALU, Load(LD), Store(SD), Branch, JAL, JALR,
+// RISC-V 32-bit Single-Cycle Datapath (Top-level)
+// Supports: R-type, I-type ALU, Load(LW), Store(SW), Branch, JAL, JALR,
 //           LUI, AUIPC
 // Compatible with Quartus II / Cyclone II and ModelSim
 // ============================================================================
 module riscv_top (
     input  clk,
     input  rst,
-    output [63:0] out_pc,
-    output [63:0] out_alu_result
+    output [31:0] out_pc,
+    output [31:0] out_alu_result
 );
 
     // ========================================================================
@@ -16,8 +16,8 @@ module riscv_top (
     // ========================================================================
     
     // PC signals
-    wire [63:0] pc_current, pc_plus4, pc_next;
-    wire [63:0] pc_branch_target, pc_jump_target;
+    wire [31:0] pc_current, pc_plus4, pc_next;
+    wire [31:0] pc_branch_target, pc_jump_target;
     
     // Instruction
     wire [31:0] instruction;
@@ -31,28 +31,26 @@ module riscv_top (
     wire [1:0]  ctrl_alu_op;
     wire        ctrl_mem_write, ctrl_alu_src, ctrl_reg_write;
     wire        ctrl_jump, ctrl_jalr;
-    wire        ctrl_sha2rst, ctrl_sha2push, ctrl_sha2start;
-    wire        ctrl_sha2perform, ctrl_sha2finish, ctrl_sha2read;
     
     // ALU signals
     wire [3:0]  alu_ctrl;
-    wire [63:0] alu_input_a, alu_input_b, alu_result;
+    wire [31:0] alu_input_a, alu_input_b, alu_result;
     wire        alu_zero;
     
     // Register file signals
-    wire [63:0] reg_read_data1, reg_read_data2;
-    wire [63:0] reg_write_data;
+    wire [31:0] reg_read_data1, reg_read_data2;
+    wire [31:0] reg_write_data;
     
     // Immediate
-    wire [63:0] imm;
+    wire [31:0] imm;
     
     // Memory signals
-    wire [63:0] mem_read_data;
-    wire [63:0] dmem_read_data;
+    wire [31:0] mem_read_data;
+    wire [31:0] dmem_read_data;
 
     // SHA-256 accelerator signals
-    wire [63:0] sha_read_data;
-    wire [63:0] sha_mem_read_data;
+
+    wire [31:0] sha_mem_read_data;
     wire        sha_select;
     
     // Branch
@@ -81,7 +79,7 @@ module riscv_top (
     // PC + 4
     adder u_pc_adder (
         .a      (pc_current),
-        .b      (64'd4),
+        .b      (32'd4),
         .result (pc_plus4)
     );
     
@@ -93,23 +91,23 @@ module riscv_top (
     );
     
     // JALR target = rs1 + imm (with LSB cleared)
-    wire [63:0] jalr_target_raw;
+    wire [31:0] jalr_target_raw;
     adder u_jalr_adder (
         .a      (reg_read_data1),
         .b      (imm),
         .result (jalr_target_raw)
     );
-    wire [63:0] jalr_target;
-    assign jalr_target = {jalr_target_raw[63:1], 1'b0};
+    wire [31:0] jalr_target;
+    assign jalr_target = {jalr_target_raw[31:1], 1'b0};
     
     // JAL target = PC + imm (same as branch target)
     assign pc_jump_target = pc_branch_target;
     
     // PC Next selection:
-    wire [63:0] pc_branch_or_seq;
+    wire [31:0] pc_branch_or_seq;
     assign pc_branch_or_seq = branch_taken ? pc_branch_target : pc_plus4;
     
-    wire [63:0] pc_after_jal;
+    wire [31:0] pc_after_jal;
     assign pc_after_jal = ctrl_jump ? pc_jump_target : pc_branch_or_seq;
     
     assign pc_next = ctrl_jalr ? jalr_target : pc_after_jal;
@@ -137,13 +135,7 @@ module riscv_top (
         .alu_src    (ctrl_alu_src),
         .reg_write  (ctrl_reg_write),
         .jump       (ctrl_jump),
-        .jalr       (ctrl_jalr),
-        .sha2rst    (ctrl_sha2rst),
-        .sha2push   (ctrl_sha2push),
-        .sha2start  (ctrl_sha2start),
-        .sha2perform(ctrl_sha2perform),
-        .sha2finish (ctrl_sha2finish),
-        .sha2read   (ctrl_sha2read)
+        .jalr       (ctrl_jalr)
     );
     
     // ========================================================================
@@ -236,15 +228,7 @@ module riscv_top (
         .addr            (alu_result),
         .write_data      (reg_read_data2),
         .read_data       (sha_mem_read_data),
-        .sha_select      (sha_select),
-        .sha_rst         (ctrl_sha2rst),
-        .sha_push        (ctrl_sha2push),
-        .sha_start       (ctrl_sha2start),
-        .sha_perform     (ctrl_sha2perform),
-        .sha_finish      (ctrl_sha2finish),
-        .sha_write_data  (reg_read_data1),
-        .sha_read_offset (reg_read_data1),
-        .sha_read_data   (sha_read_data)
+        .sha_select      (sha_select)
     );
 
     // Memory read data mux: select between data memory and SHA-256.
@@ -259,7 +243,7 @@ module riscv_top (
     //   - Load: memory data
     //   - ALU ops: ALU result
     // ========================================================================
-    wire [63:0] alu_or_mem;
+    wire [31:0] alu_or_mem;
     mux2to1 u_wb_alu_mem (
         .in0 (alu_result),
         .in1 (mem_read_data),
@@ -268,11 +252,11 @@ module riscv_top (
     );
     
     // LUI result
-    wire [63:0] lui_result;
+    wire [31:0] lui_result;
     assign lui_result = imm;
     
     // AUIPC result
-    wire [63:0] auipc_result;
+    wire [31:0] auipc_result;
     adder u_auipc_adder (
         .a      (pc_current),
         .b      (imm),
@@ -290,7 +274,7 @@ module riscv_top (
                     is_auipc    ? 2'b10 :
                     is_jal_jalr ? 2'b11 : 2'b00;
     
-    wire [63:0] core_write_data;
+    wire [31:0] core_write_data;
     mux4to1 u_wb_mux (
         .in0 (alu_or_mem),      // Normal ALU result or memory load
         .in1 (lui_result),       // LUI
@@ -300,7 +284,7 @@ module riscv_top (
         .out (core_write_data)
     );
 
-    assign reg_write_data = ctrl_sha2read ? sha_read_data : core_write_data;
+    assign reg_write_data = core_write_data;
 
     // Debug outputs — expose key signals to pins so Quartus retains all logic
     assign out_pc         = pc_current;

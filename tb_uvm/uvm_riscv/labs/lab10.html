@@ -1,0 +1,448 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Lab 10 — RISC-V Scoreboard in-order (DUT retire vs ISS)</title>
+<link rel="stylesheet" href="assets/lab.css">
+<script src="assets/lab.js" defer></script>
+</head>
+<body data-lab="10" data-total="15">
+<div id="readbar" aria-hidden="true"></div>
+<header class="topbar">
+  <button type="button" class="iconbtn" id="toc-toggle" aria-label="Mở mục lục">☰</button>
+  <a class="brand" href="index.html"><span class="brand-mark">UVM</span><span>RISC-V <small>Speedrun</small></span></a>
+  <nav class="labdots" aria-label="Chọn lab"><a href="lab01.html" data-n="1" title="Lab 01 — Interface & clocking">1</a><a href="lab02.html" data-n="2" title="Lab 02 — Sequence item">2</a><a href="lab03.html" data-n="3" title="Lab 03 — Driver">3</a><a href="lab04.html" data-n="4" title="Lab 04 — Monitor & analysis port">4</a><a href="lab05.html" data-n="5" title="Lab 05 — Agent, env, test, config">5</a><a href="lab06.html" data-n="6" title="Lab 06 — Sequence library">6</a><a href="lab07.html" data-n="7" title="Lab 07 — Virtual sequencer">7</a><a href="lab08.html" data-n="8" title="Lab 08 — SVA & bind trong UVM">8</a><a href="lab09.html" data-n="9" title="Lab 09 — Reference model">9</a><a href="lab10.html" data-n="10" title="Lab 10 — Scoreboard in-order" aria-current="page">10</a><a href="lab11.html" data-n="11" title="Lab 11 — Scoreboard đầy đủ">11</a><a href="lab12.html" data-n="12" title="Lab 12 — Functional coverage">12</a><a href="lab13.html" data-n="13" title="Lab 13 — RAL (uvm_reg / uvm_mem)">13</a><a href="lab14.html" data-n="14" title="Lab 14 — Factory, callback, catcher">14</a><a href="lab15.html" data-n="15" title="Lab 15 — Regression & closure">15</a></nav>
+  <button type="button" class="iconbtn" id="theme-toggle" aria-label="Đổi giao diện sáng/tối">☾</button>
+</header>
+<div class="layout">
+<aside class="side" aria-label="Mục lục">
+  <nav class="side-toc">
+    <p class="side-title">Trong bài này</p>
+    <ol>
+<li><a href="#muc-tongquan">1. Tổng quan lab</a></li>
+<li><a href="#m1">2. Vị trí trong testbench</a></li>
+<li><a href="#m2">3. Mục tiêu học</a></li>
+<li><a href="#m3">4. Keyword &amp; khái niệm mới</a></li>
+<li><a href="#m4">5. Chuẩn bị</a></li>
+<li><a href="#m5">6. Lý thuyết ngắn — so in-order + control flow (+ UVM bên trong)</a></li>
+<li><a href="#m6">7. Iteration 0 — scoreboard so reg/mem + pc</a></li>
+<li><a href="#m7">8. Iterations</a></li>
+<li><a href="#m8">9. Bảng tổng hợp</a></li>
+<li><a href="#m9">10. BASELINE sang Lab 11</a></li>
+<li><a href="#m10">11. Checklist nhớ code</a></li>
+<li><a href="#m11">12. Phỏng vấn — hỏi &amp; đáp</a></li>
+<li><a href="#m12">13. Cheat-sheet</a></li>
+<li><a href="#m13">14. Bài tập code &amp; câu hỏi nâng cao UVM</a></li>
+    </ol>
+  </nav>
+  <div class="side-tools">
+    <button type="button" class="btn" data-act="expand">Mở tất cả spoiler</button>
+    <button type="button" class="btn" data-act="collapse">Đóng tất cả spoiler</button>
+    <button type="button" class="btn" data-act="qa-close">Ẩn đáp án QA (tự test)</button>
+    <button type="button" class="btn" data-act="top">↑ Lên đầu trang</button>
+  </div>
+</aside>
+<main class="main">
+<header class="hero" data-num="10">
+  <div class="eyebrow"><span class="pill">Lab 10 / 15</span><span class="phase">Checking</span></div>
+  <h1>Lab 10 — Scoreboard in-order (DUT retire vs ISS)</h1>
+  <p class="tags"><span class="tag uvm">uvm_scoreboard</span><span class="tag uvm">uvm_analysis_imp</span><span class="tag">write()</span><span class="tag">compare field</span><span class="tag">control-flow check</span><span class="tag uvm">UVM_ERROR</span></p>
+</header>
+<nav class="toc" aria-label="Mục lục bài lab"><strong>📑 Mục lục</strong><ol>
+<li><a href="#muc-tongquan">1. Tổng quan lab</a></li>
+<li><a href="#m1">2. Vị trí trong testbench</a></li>
+<li><a href="#m2">3. Mục tiêu học</a></li>
+<li><a href="#m3">4. Keyword &amp; khái niệm mới</a></li>
+<li><a href="#m4">5. Chuẩn bị</a></li>
+<li><a href="#m5">6. Lý thuyết ngắn — so in-order + control flow (+ UVM bên trong)</a></li>
+<li><a href="#m6">7. Iteration 0 — scoreboard so reg/mem + pc</a></li>
+<li><a href="#m7">8. Iterations</a></li>
+<li><a href="#m8">9. Bảng tổng hợp</a></li>
+<li><a href="#m9">10. BASELINE sang Lab 11</a></li>
+<li><a href="#m10">11. Checklist nhớ code</a></li>
+<li><a href="#m11">12. Phỏng vấn — hỏi &amp; đáp</a></li>
+<li><a href="#m12">13. Cheat-sheet</a></li>
+<li><a href="#m13">14. Bài tập code &amp; câu hỏi nâng cao UVM</a></li>
+</ol></nav>
+
+<div class="note" id="muc-tongquan">
+  <strong>Tổng quan lab</strong>
+  <ul>
+    <li><strong>Lab này làm gì:</strong> xây <code>riscv_scoreboard</code> — nhận dòng retire từ monitor
+      (analysis port), với <em>mỗi</em> retire gọi ISS thực thi đúng lệnh đó và <strong>so sánh</strong>
+      (reg_write/rd/wb_data, mem_write/addr/wdata) + kiểm <strong>luồng điều khiển</strong> (PC retire kế
+      tiếp = PC kỳ vọng của ISS). Khớp → im lặng; lệch → <code>UVM_ERROR</code> chi tiết.</li>
+    <li><strong>Tạo ra file nào:</strong> <code>tb/sb/riscv_scoreboard.sv</code>; thêm method
+      <code>exec(pc,instr)</code> vào ISS (tách phần execute khỏi fetch); nối trong env.</li>
+    <li><strong>Nhận gì từ lab trước:</strong> monitor + ap (Lab 4/5), ISS (Lab 9), chương trình hỗn hợp (Lab 7).</li>
+    <li><strong>Lab sau dùng để làm gì:</strong> Lab 11 mở rộng so <em>toàn kiến trúc</em> (quét regfile+mem+pc
+      cuối); Lab 12 cộng coverage trên cùng dòng retire.</li>
+  </ul>
+</div>
+
+<div class="callout uvm"><strong>Trọng tâm UVM của lab</strong>
+<ul>
+  <li><strong>Scoreboard</strong> là <code>uvm_scoreboard</code> (component) nhận transaction qua <code>uvm_analysis_imp</code>; vì sao cần <code>`uvm_analysis_imp_decl</code> khi có nhiều đầu vào.</li>
+  <li><strong>imp vs <code>uvm_tlm_analysis_fifo</code></strong>: đồng bộ (<code>write</code>) vs bất đồng bộ (<code>get</code> trong <code>run_phase</code>).</li>
+  <li><strong>So sánh</strong>: <code>compare()</code>/<code>do_compare</code>, so có điều kiện, in mismatch dễ debug, ngân sách lỗi (<code>set_max_quit_count()</code>).</li>
+  <li><strong>Kết luận PASS/FAIL</strong>: <code>check_phase</code>/<code>report_phase</code> và <code>uvm_report_server</code>.</li>
+  <li><strong>Reset</strong>: flush queue/model; pending expected còn sót cuối test.</li>
+</ul></div>
+
+<div class="note ok"><strong>Mẹo tách ghép:</strong> ISS được "lái" bởi chính dòng retire — mỗi lần nhận
+<code>act</code>, scoreboard gọi <code>exec(act.pc, act.instr)</code>. Nhờ vậy ISS KHÔNG cần ảnh chương
+trình; nó chỉ giữ state kiến trúc và thực thi đúng lệnh DUT đã commit. PC kỳ vọng tiếp theo dùng để bắt lỗi
+rẽ nhánh/nhảy.</div>
+
+
+
+<h2 id="m1">2. Vị trí trong testbench</h2>
+<pre><code> monitor.ap --> [ riscv_scoreboard.write(act) ]
+                   exp = iss.exec(act.pc, act.instr)
+                   compare(exp, act) + check pc kỳ vọng kế tiếp</code></pre>
+
+<h2 id="m2">3. Mục tiêu học</h2>
+<ul>
+  <li><code>uvm_scoreboard</code> + <code>uvm_analysis_imp</code> + hàm <code>write()</code>.</li>
+  <li>So sánh từng trường có điều kiện (bỏ qua wb khi rd=0; chỉ so mem khi mem_write).</li>
+  <li>Kiểm luồng điều khiển: PC retire kế tiếp = PC ISS kỳ vọng.</li>
+  <li>Đếm match/mismatch, kết luận PASS/FAIL ở <code>report_phase</code>.</li>
+</ul>
+
+<h2 id="m3">4. Keyword &amp; khái niệm mới</h2>
+<div class="table-wrap"><table>
+<tr><th>Keyword</th><th>Giải thích</th><th>Ví dụ</th></tr>
+<tr><td><code>uvm_scoreboard</code></td><td>Component so sánh</td><td><code>class riscv_scoreboard extends uvm_scoreboard;</code></td></tr>
+<tr><td><code>uvm_analysis_imp#(T,C)</code></td><td>Cổng nhận, gọi write của C</td><td><code>uvm_analysis_imp#(riscv_retire_item,riscv_scoreboard)</code></td></tr>
+<tr><td><code>`uvm_error</code></td><td>Báo lỗi vào report server</td><td><code>`uvm_error("SB",msg)</code></td></tr>
+<tr><td>in-order compare</td><td>So theo thứ tự commit</td><td>exp vs act lần lượt</td></tr>
+<tr><td>control-flow check</td><td>PC kế tiếp đúng kỳ vọng</td><td><code>act.pc==exp_next_pc</code></td></tr>
+<tr><td><code>report_phase</code></td><td>Tổng kết cuối sim</td><td>PASS/FAIL</td></tr>
+</table></div>
+
+<h2 id="m4">5. Chuẩn bị</h2>
+<p>Tách execute khỏi fetch trong ISS (thêm <code>exec</code>, <code>step</code> gọi lại):</p>
+<pre><code>// trong riscv_ref_model (Lab 9): tách fetch khỏi decode/execute
+// (1) hàm step() cũ ĐỔI TÊN thành step_core và nhận lệnh qua tham số — bỏ dòng tự fetch 'bit [31:0] w = imem.exists(...)' trong thân:
+  function riscv_retire_item step_core(bit [31:0] w);
+    riscv_retire_item rt = riscv_retire_item::type_id::create("exp");
+    bit [6:0]  opc = w[6:0];
+    ... (phần còn lại của thân giữ nguyên) ...
+  endfunction
+// (2) thêm hai hàm bao ngoài:
+  function riscv_retire_item step();                 // fetch từ imem của ISS (dùng ở Lab 9)
+    return step_core(imem.exists(pc>>2) ? imem[pc>>2] : 32'h00000013);
+  endfunction
+  function riscv_retire_item exec(bit [31:0] ppc, bit [31:0] w);
+    pc = ppc;               // đặt PC theo lệnh DUT đang commit
+    return step_core(w);    // dùng chính từ lệnh DUT retire, không fetch
+  endfunction</code></pre>
+
+<h2 id="m5">6. Lý thuyết ngắn — so in-order + control flow (+ UVM bên trong)</h2>
+<ol>
+  <li><strong>In-order:</strong> pipeline commit theo thứ tự chương trình; ISS cũng tuần tự → so 1-1 theo
+    từng retire.</li>
+  <li><strong>So có điều kiện:</strong> chỉ so <code>wb_data</code> khi <code>reg_write &amp;&amp; rd!=0</code>
+    (x0 không đổi); chỉ so địa chỉ/dữ liệu store khi <code>mem_write</code>.</li>
+  <li><strong>Control flow:</strong> sau khi exec, ISS biết PC kỳ vọng kế. Retire kế tiếp phải có
+    <code>pc == exp_next</code> → bắt lỗi branch/jal/jalr sai đích.</li>
+  <li><strong>Objection:</strong> scoreboard không cần raise; test giữ sim tới khi drain xong rồi
+    <code>report_phase</code> kết luận.</li>
+</ol>
+
+<h3>6.5. Nhiều đầu vào: <code>`uvm_analysis_imp_decl</code></h3>
+<p>Một class chỉ có <em>một</em> hàm <code>write(T)</code>. Nếu scoreboard nhận từ hai nguồn (actual từ monitor DUT, expected từ predictor) thì <code>uvm_analysis_imp#(T,SB)</code> thứ hai sẽ cũng gọi <code>write</code> → xung đột. Macro <code>`uvm_analysis_imp_decl(_act)</code> sinh lớp <code>uvm_analysis_imp_act</code> gọi <code>write_act(T)</code>.</p>
+<pre><code>`uvm_analysis_imp_decl(_act)     // đặt ở file scope (ngoài class), trong package
+`uvm_analysis_imp_decl(_exp)
+class riscv_sb extends uvm_scoreboard;
+  uvm_analysis_imp_act #(riscv_retire_item, riscv_sb) act_imp;
+  uvm_analysis_imp_exp #(riscv_retire_item, riscv_sb) exp_imp;
+  function void write_act(riscv_retire_item t); … endfunction
+  function void write_exp(riscv_retire_item t); … endfunction
+endclass</code></pre>
+<p>Lab này chỉ có một đầu vào (actual) vì expected sinh ngay trong <code>write_ret</code> bằng ISS — nhưng tên <code>_ret</code> vẫn cần macro vì sau này thêm nguồn thứ hai (Lab 13).</p>
+
+<h3>6.6. <code>analysis_imp</code> vs <code>uvm_tlm_analysis_fifo</code></h3>
+<div class="table-wrap"><div class="table-wrap"><table>
+<tr><th></th><th>analysis_imp (<code>write</code>)</th><th>tlm_analysis_fifo (<code>get</code>)</th></tr>
+<tr><td>Chạy ở</td><td>Ngữ cảnh của monitor (đồng bộ, zero-time)</td><td>Ngữ cảnh của <code>run_phase</code> scoreboard</td></tr>
+<tr><td>Có thể chờ?</td><td>Không</td><td>Có (<code>get</code> block, <code>#delay</code> OK)</td></tr>
+<tr><td>Hai luồng cần khớp</td><td>Phải tự quản queue</td><td><code>act_fifo.get(a); exp_fifo.get(e);</code> — tự đồng bộ theo thứ tự</td></tr>
+<tr><td>Rủi ro</td><td>Mất khả năng chờ</td><td>Fifo phình nếu consumer chậm; còn phần tử cuối test</td></tr>
+</table></div></div>
+
+<h3>6.7. So sánh và báo lỗi tốt</h3>
+<ul>
+  <li><strong>So có điều kiện</strong> (bỏ <code>wb_data</code> khi <code>rd==0</code>; so mem khi <code>mem_write</code>): đặt trong <code>do_compare</code> của item hoặc hàm so riêng — tránh false-fail.</li>
+  <li><strong>Một thông báo lỗi = đủ để debug</strong>: PC, instr, giá trị actual/expected, số thứ tự retire. Dùng <code>`uvm_error</code> với ID riêng cho từng loại (REG/MEM/CF) để lọc log.</li>
+  <li><strong>Lỗi dây chuyền</strong>: một lỗi đầu có thể sinh hàng trăm mismatch sau → dùng <code>uvm_report_server::get_server().set_max_quit_count(10)</code> hoặc dừng ở lỗi đầu tiên (<code>+UVM_MAX_QUIT_COUNT=10</code>).</li>
+  <li><strong>Counter + trạng thái cuối</strong>: <code>report_phase</code> in <code>PASS/FAIL</code>; thử thêm <code>check_phase</code> kiểm <em>không còn pending</em> (tránh “PASS vì không so gì cả”).</li>
+</ul>
+<div class="callout pitfall"><strong>Bẫy “PASS rỗng”:</strong> nếu monitor không phát retire nào (vif sai, reset kẹt) thì <code>n_err == 0</code> và scoreboard báo <em>PASS</em>. Luôn thêm điều kiện <code>n_cmp &gt; 0</code> (hoặc ≥ số lệnh mong đợi) trong <code>check_phase</code>.</div>
+
+<h3>6.8. Thư viện có sẵn</h3>
+<p>UVM có <code>uvm_in_order_comparator#(T)</code> (so hai luồng in-order dùng <code>compare()</code>) và <code>uvm_algorithmic_comparator</code> (biến đổi luồng trước khi so). Hữu ích cho bài toán đơn giản; thực tế công ty thường viết scoreboard riêng vì cần so có điều kiện, báo lỗi giàu ngữ cảnh và hỗ trợ reset.</p>
+<div class="callout debug"><strong>Debug:</strong> <code>+UVM_VERBOSITY=UVM_HIGH</code> để thấy từng “OK [n]”; thêm <code>uvm_info</code> theo ID <code>SB_CMP</code> để bật riêng; <code>uvm_report_server::get_server().get_severity_count(UVM_ERROR)</code> để đọc số lỗi trong <code>report_phase</code>.</div>
+
+<h2 id="m6">7. Iteration 0 — scoreboard so reg/mem + pc</h2>
+
+<details><summary>tb/sb/riscv_scoreboard.sv</summary>
+<pre><code>// tb/sb/riscv_scoreboard.sv
+`ifndef RISCV_SCOREBOARD_SV
+`define RISCV_SCOREBOARD_SV
+`uvm_analysis_imp_decl(_ret)
+
+class riscv_scoreboard extends uvm_scoreboard;
+  `uvm_component_utils(riscv_scoreboard)
+
+  uvm_analysis_imp_ret #(riscv_retire_item, riscv_scoreboard) ap_imp;
+  riscv_ref_model iss;
+
+  int unsigned n_cmp, n_err;
+  bit          have_prev;
+  bit [31:0]   exp_next_pc;
+
+  function new(string name, uvm_component parent);
+    super.new(name, parent);
+    ap_imp = new("ap_imp", this);
+  endfunction
+
+  function void build_phase(uvm_phase phase);
+    super.build_phase(phase);
+    iss = riscv_ref_model::type_id::create("iss");
+  endfunction
+
+  // nhận 1 retire thực tế từ monitor
+  function void write_ret(riscv_retire_item act);
+    riscv_retire_item exp;
+
+    // 1) control-flow: PC retire này phải khớp PC kỳ vọng từ lần trước
+    if (have_prev && act.pc !== exp_next_pc)
+      `uvm_error("SB", $sformatf("CF mismatch: act.pc=0x%08h exp=0x%08h (instr=0x%08h)",
+                 act.pc, exp_next_pc, act.instr))
+
+    // 2) thực thi golden đúng lệnh DUT vừa commit
+    exp = iss.exec(act.pc, act.instr);
+
+    n_cmp++;
+    // 3) so register writeback (bỏ x0)
+    if (exp.reg_write && exp.rd != 0) begin
+      if (act.wb_data !== exp.wb_data || act.rd !== exp.rd || !act.reg_write) begin
+        n_err++;
+        `uvm_error("SB", $sformatf("REG mismatch pc=0x%08h instr=0x%08h: act x%0d&lt;=0x%08h exp x%0d&lt;=0x%08h",
+                   act.pc, act.instr, act.rd, act.wb_data, exp.rd, exp.wb_data))
+      end
+    end
+    // 4) so store
+    if (exp.mem_write) begin
+      if (!act.mem_write || act.mem_addr !== exp.mem_addr || act.mem_wdata !== exp.mem_wdata) begin
+        n_err++;
+        `uvm_error("SB", $sformatf("MEM mismatch pc=0x%08h: act[0x%08h]&lt;=0x%08h exp[0x%08h]&lt;=0x%08h",
+                   act.pc, act.mem_addr, act.mem_wdata, exp.mem_addr, exp.mem_wdata))
+      end
+    end
+
+    exp_next_pc = iss.pc;   // ISS đã cập nhật pc trong exec
+    have_prev   = 1;
+    `uvm_info("SB", $sformatf("OK [%0d] %s", n_cmp, act.convert2str()), UVM_HIGH)
+  endfunction
+
+  function void report_phase(uvm_phase phase);
+    if (n_err == 0)
+      `uvm_info("SB", $sformatf("PASS: %0d lenh so khop, 0 loi", n_cmp), UVM_LOW)
+    else
+      `uvm_error("SB", $sformatf("FAIL: %0d/%0d lenh sai", n_err, n_cmp))
+  endfunction
+endclass
+`endif</code></pre></details>
+
+<details><summary>Nối scoreboard trong env (Lab 5)</summary>
+<pre><code>// riscv_env: thêm
+  riscv_scoreboard sb;
+  // build_phase:
+  sb = riscv_scoreboard::type_id::create("sb", this);
+  // connect_phase:
+  agent.mon.ap.connect(sb.ap_imp);</code></pre></details>
+
+<p>Thêm include <code>riscv_ref_model.sv</code> và <code>riscv_scoreboard.sv</code> vào pkg (trước env).</p>
+
+<p><strong>Lệnh chạy:</strong></p>
+<pre><code>cd ~/Study/KLtN/code/tb_uvm/uvm_riscv/sim</code></pre>
+<pre><code>xvlog -sv -L uvm -i ../tb/agent -i ../tb/ref -i ../tb/sb -i ../tb/seq -i ../tb/env -i ../tb/test ../tb/pkg/riscv_pkg.sv ../tb/top/riscv_tb_top.sv  # + rtl như Lab 5 (muốn giữ SVA Lab 8: thêm xvlog -sv ../tb/sva/*.sv trước lệnh này)</code></pre>
+<pre><code>xelab -L uvm -timescale 1ns/1ps riscv_tb_top -s top_sim</code></pre>
+<pre><code>xsim top_sim -R -testplusarg UVM_TESTNAME=mixed_test</code></pre>
+
+<details><summary>Expected log (PASS)</summary>
+<pre><code># UVM_INFO [RNTST] Running test mixed_test...
+# UVM_INFO ../tb/sb/riscv_scoreboard.sv(63) @ 425000: uvm_test_top.env.sb [SB] PASS: 17 lenh so khop, 0 loi
+# UVM_ERROR :    0   UVM_FATAL :    0</code></pre>
+<p><em>Chương trình hỗn hợp (Lab 7) chạy qua DUT và ISS, mọi retire khớp. 17 = 9 lệnh chương trình + 8 lần retire lặp lại của halt <code>jal x0,0</code>
+(ISS cũng thực thi lặp lại, nên scoreboard vẫn khớp control-flow).</em></p>
+</details>
+
+<h2 id="m7">8. Iterations</h2>
+
+<h3>Iteration 1 — bơm lỗi vào DUT để thấy FAIL</h3>
+<p>Tạm sửa <code>alu.sv</code>: ADD thành <code>a + b + 1</code>. Chạy lại.</p>
+<details><summary>Expected log (FAIL)</summary>
+<pre><code># UVM_ERROR [SB] REG mismatch ... act x3&lt;=0x0000000e exp x3&lt;=0x0000000d
+# UVM_ERROR [SB] FAIL: N/M lenh sai
+# UVM_ERROR : &gt;0
+# (ví dụ đã chạy thật với mixed_test + alu ADD = a+b+1: địa chỉ SW lệch 1 nên báo MEM mismatch)
+UVM_ERROR ../tb/sb/riscv_scoreboard.sv(52) @ 145000: uvm_test_top.env.sb [SB] MEM mismatch pc=0x00000018: act[0x00000099]&lt;=0x00000000 exp[0x00000098]&lt;=0x00000000
+UVM_ERROR ../tb/sb/riscv_scoreboard.sv(65) @ 425000: uvm_test_top.env.sb [SB] FAIL: 2/17 lenh sai
+UVM_ERROR :    3</code></pre>
+<p>Scoreboard bắt lỗi ngay. Nhớ <strong>hoàn tác</strong> sửa RTL sau khi minh họa.</p></details>
+
+<h3>Iteration 2 — thêm chương trình có branch sai đích (control-flow)</h3>
+<p>Dùng directed program với <code>jal</code> đích lệch; hoặc bơm lỗi branch_control.</p>
+<details><summary>Khác biệt</summary><p><code>CF mismatch: act.pc != exp</code>. Dạy: kiểm PC kỳ vọng bắt lỗi luồng điều khiển mà so reg không thấy.</p></details>
+
+<h3>Iteration 3 — reset ISS khi driver reset (nhiều chương trình)</h3>
+<p>Scoreboard lắng nghe sự kiện reset (vd analysis riêng hoặc cờ) để gọi <code>iss.reset(); have_prev=0;</code>.</p>
+<details><summary>Khác biệt</summary><p>Chương trình 2 bắt đầu sạch. Dạy: đồng bộ reset giữa DUT và golden.</p></details>
+
+<h3>Iteration 4 — dùng <code>uvm_tlm_analysis_fifo</code> thay analysis_imp</h3>
+<p>Monitor ghi vào fifo; run_phase scoreboard <code>get()</code> xử lý.</p>
+<details><summary>Khác biệt</summary><p>Tách thời điểm nhận/xử lý; hữu ích khi so bất đồng bộ (nhiều nguồn). Dạy: 2 kiểu thu transaction.</p></details>
+
+<h3>Iteration 5 — in bảng so sánh gọn (act vs exp) ở verbosity thấp</h3>
+<p>Thêm dòng tóm tắt mỗi lệnh khi UVM_MEDIUM.</p>
+<details><summary>Khác biệt</summary><p>Dễ theo dõi; dạy: cân bằng log debug vs nhiễu.</p></details>
+
+<h2 id="m8">9. Bảng tổng hợp</h2>
+<div class="table-wrap"><table><tr><th>Iter</th><th>Đổi</th><th>Học</th></tr>
+<tr><td>0</td><td>scoreboard reg/mem/pc</td><td>so in-order + control flow</td></tr>
+<tr><td>1</td><td>bơm lỗi ALU</td><td>scoreboard bắt lỗi giá trị</td></tr>
+<tr><td>2</td><td>lỗi đích nhảy</td><td>control-flow check</td></tr>
+<tr><td>3</td><td>reset ISS</td><td>đồng bộ reset golden</td></tr>
+<tr><td>4</td><td>analysis_fifo</td><td>2 kiểu thu transaction</td></tr>
+<tr><td>5</td><td>log tóm tắt</td><td>debug cân bằng</td></tr>
+</table></div>
+
+<h2 id="m9">10. BASELINE sang Lab 11</h2>
+<p><code>riscv_scoreboard</code> so từng retire (reg/mem) + control-flow PC, dùng ISS <code>exec</code>. PASS trên
+chương trình hỗn hợp. Lab 11 bổ sung quét <em>toàn bộ</em> regfile + data memory + PC cuối cùng để chắc chắn
+không sót state.</p>
+
+<h2 id="m10">11. Checklist nhớ code</h2>
+<ul>
+  <li>[ ] Nhớ <code>`uvm_analysis_imp_decl(_ret)</code> + <code>write_ret</code>.</li>
+  <li>[ ] Nhớ so wb chỉ khi <code>reg_write &amp;&amp; rd!=0</code>; mem chỉ khi <code>mem_write</code>.</li>
+  <li>[ ] Nhớ cập nhật &amp; kiểm <code>exp_next_pc</code>.</li>
+</ul>
+
+<h2 id="m11">12. Phỏng vấn — hỏi &amp; đáp</h2>
+<p>Bấm câu hỏi để xem đáp án — nên tự trả lời miệng trước khi mở. Mỗi câu có ví dụ cụ thể như khi bị hỏi trong phỏng vấn.</p>
+<div class="qa-list">
+<details class="qa"><summary>Vì sao cần <code>`uvm_analysis_imp_decl</code>? Điều gì xảy ra nếu hai <code>uvm_analysis_imp</code> cùng class?</summary>
+<div class="ans">
+<p>Mỗi <code>uvm_analysis_imp#(T,IMP)</code> gọi <code>IMP::write(T)</code>. Hai cổng cùng kiểu sẽ cùng gọi một hàm <code>write</code> → không phân biệt được nguồn. Macro sinh các lớp <code>uvm_analysis_imp_act</code>/<code>_exp</code> gọi <code>write_act</code>/<code>write_exp</code> riêng. Quên macro: lỗi compile “write_act not found” (hoặc dùng sai nguồn nếu bạn dùng chung <code>write</code>).</p>
+</div></details>
+<details class="qa"><summary><code>analysis_imp</code> với <code>write()</code> hay <code>uvm_tlm_analysis_fifo</code> — khi nào dùng cái nào?</summary>
+<div class="ans">
+<p>imp: so sánh nhanh, đồng bộ, không cần chờ (lab này). fifo: cần <em>chờ</em> hai luồng khớp hoặc xử lý tốn thời gian ⇒ <code>run_phase</code> với <code>get()</code>. Một scoreboard hai luồng (actual/expected) hầu như luôn dùng fifo để khỏi tự quản queue; nhược là phải xử lý phần còn lại cuối test.</p>
+<pre><code>task run_phase(uvm_phase phase);
+  riscv_retire_item a, e;
+  forever begin  act_fifo.get(a);  exp_fifo.get(e);  compare(a, e);  end
+endtask</code></pre>
+</div></details>
+<details class="qa"><summary>Scoreboard báo PASS nhưng test thật ra không so sánh gì. Đây là lỗi gì? Phòng thế nào?</summary>
+<div class="ans">
+<p>“PASS rỗng”: monitor không phát item (vif null/reset kẹt) → <code>n_err=0</code>. Phòng: trong <code>check_phase</code>, <code>if (n_cmp == 0) `uvm_error("SB","khong co lenh nao duoc so")</code> hoặc so với số kỳ vọng từ driver (<code>n_loaded</code>). Kết hợp watchdog <code>+UVM_TIMEOUT</code> và coverage tối thiểu.</p>
+</div></details>
+<details class="qa"><summary>Một lỗi đầu tiên sinh 500 mismatch. Bạn tổ chức log thế nào để debug được?</summary>
+<div class="ans">
+<p>(1) ID riêng cho từng loại (<code>SB_REG/SB_MEM/SB_CF</code>); (2) giới hạn: <code>uvm_report_server::get_server().set_max_quit_count(5)</code> hoặc <code>+UVM_MAX_QUIT_COUNT=5,NO</code> dừng sau vài lỗi; (3) in <em>lỗi đầu tiên</em> kèm ngữ cảnh 5 retire trước (giữ ring buffer trong SB) ; (4) sau lỗi đầu coi các mismatch tiếp theo là “hệ quả”, tùy chọn bỏ qua (<code>first_error_only</code>). Câu trả lời tốt nhấn mạnh: <em>lỗi đầu tiên là giá trị nhất</em>.</p>
+</div></details>
+<details class="qa"><summary><code>check_phase</code> và <code>report_phase</code> dùng để làm gì? Vì sao không kết luận PASS trong <code>run_phase</code>?</summary>
+<div class="ans">
+<p><code>run_phase</code> chưa kết thúc — transaction còn có thể đến. <code>check_phase</code> (function, bottom-up) kiểm điều kiện “cuối test”: queue rỗng, đã so đủ số lượng. <code>report_phase</code> in tóm tắt. Thực hành: kiểm trong <code>check_phase</code> (dùng <code>uvm_error</code>), in trong <code>report_phase</code> → bộ đếm lỗi đã đủ trước khi in.</p>
+</div></details>
+<details class="qa"><summary>Scoreboard xử lý reset như thế nào?</summary>
+<div class="ans">
+<p>Khi DUT reset: xóa queue expected, <code>iss.reset()</code>, đặt <code>have_prev=0</code>. Tín hiệu reset đến từ đâu? monitor phát “reset item”/<code>uvm_event</code>, hoặc scoreboard lắng nghe analysis riêng. Quên → mismatch giả ở chương trình tiếp theo. Cân nhắc: transaction đang bay lúc reset phải bị loại (flush) chứ không được coi là lỗi.</p>
+</div></details>
+<details class="qa"><summary><code>compare()</code> tự động (field macros) hay viết tay <code>do_compare</code> — scoreboard này chọn gì và vì sao?</summary>
+<div class="ans">
+<p>Viết tay trong scoreboard: cần so <em>có điều kiện</em> (<code>wb_data</code> chỉ khi <code>rd!=0</code>), cần thông điệp giàu ngữ cảnh, và hiệu năng. <code>item.compare()</code> với field macros so <em>mọi</em> field, sẽ báo lỗi giả với <code>wb_data</code> của <code>jal x0</code>. Nếu vẫn muốn dùng <code>compare()</code>, đặt logic có điều kiện vào <code>do_compare</code> của <code>riscv_retire_item</code>.</p>
+</div></details>
+<details class="qa"><summary>Scoreboard có nên raise objection không? Khi nào?</summary>
+<div class="ans">
+<p>Thường không; test lo kết thúc. Nhưng khi scoreboard xử lý bất đồng bộ (fifo) và còn expected chưa so khi test drop objection, kết quả bị cắt. Giải pháp: test dùng <code>drain_time</code>, hoặc scoreboard raise objection khi còn pending và drop khi rỗng (hoặc dùng <code>phase_ready_to_end</code> để trì hoãn kết thúc cho đến khi fifo rỗng).</p>
+</div></details>
+</div>
+
+<h2 id="m12">13. Cheat-sheet</h2>
+<pre><code>`uvm_analysis_imp_decl(_ret)
+class riscv_scoreboard extends uvm_scoreboard;
+  uvm_analysis_imp_ret#(riscv_retire_item,riscv_scoreboard) ap_imp;
+  function void write_ret(act);
+    if(have_prev && act.pc!=exp_next_pc) `uvm_error(...CF...)
+    exp = iss.exec(act.pc, act.instr);
+    if(exp.reg_write && exp.rd!=0) compare wb; if(exp.mem_write) compare mem;
+    exp_next_pc = iss.pc; have_prev=1;</code></pre>
+
+<h2 id="m13">14. Bài tập code &amp; câu hỏi nâng cao UVM</h2>
+<p>8 bài rèn tay, tăng dần độ khó. Làm trên baseline của lab này; đáp án chỉ là hướng tham khảo — giá trị nằm ở việc bạn tự gõ, chạy và đọc log.</p>
+<div class="ex-progress"><span class="cnt">0 / 8 bài đã làm</span><span class="bar"><i></i></span></div>
+<div class="ex-list">
+<article class="ex"><div class="ex-head"><span class="lv l1">★ Dễ</span><h4>EX1 — Thêm ID lỗi theo loại</h4></div>
+Tách <code>`uvm_error("SB", …)</code> thành <code>SB_REG</code>, <code>SB_MEM</code>, <code>SB_CF</code>. Dùng <code>+uvm_set_severity</code> hoặc <code>set_report_severity_id_override</code> hạ <code>SB_CF</code> xuống WARNING cho một test thử nghiệm.
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p><code>set_report_severity_id_override(UVM_ERROR, "SB_CF", UVM_WARNING)</code> — công cụ dùng trong negative test khi một loại lỗi được biết trước.</p>
+</details>
+</article>
+<article class="ex"><div class="ex-head"><span class="lv l1">★ Dễ</span><h4>EX2 — Chống PASS rỗng</h4></div>
+Thêm <code>check_phase</code>: lỗi nếu <code>n_cmp == 0</code>. Cố ý tắt monitor (không phát) và chạy.
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p>Không có guard, báo cáo là PASS! Đây là lỗi “xanh giả” kinh điển.</p>
+</details>
+</article>
+<article class="ex"><div class="ex-head"><span class="lv l2">★★ Vừa</span><h4>EX3 — Scoreboard dùng analysis fifo</h4></div>
+Chuyển <code>write_ret</code> thành <code>uvm_tlm_analysis_fifo</code> + <code>run_phase</code> <code>forever get</code>. In <code>act_fifo.used()</code> tại <code>check_phase</code>; kiểm tra rỗng.
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p>Chú ý kết thúc test: nếu test drop objection trước khi fifo rỗng, một số retire không được so. Thêm <code>phase_ready_to_end</code> hoặc drain_time.</p>
+</details>
+</article>
+<article class="ex"><div class="ex-head"><span class="lv l2">★★ Vừa</span><h4>EX4 — Giới hạn lỗi</h4></div>
+Chạy bản cố ý sai ALU (+1). Dùng <code>+UVM_MAX_QUIT_COUNT=3,NO</code> và quan sát. Viết một bình luận 3 dòng: tại sao lỗi đầu tiên là đáng giá nhất.
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p>Sau 3 lỗi UVM gọi <code>die()</code> (kết thúc sớm). Với <code>NO</code> nghĩa là không overridable ở runtime.</p>
+</details>
+</article>
+<article class="ex"><div class="ex-head"><span class="lv l2">★★ Vừa</span><h4>EX5 — Ring buffer ngữ cảnh</h4></div>
+Giữ 5 retire gần nhất trong queue. Khi có mismatch in thêm 5 retire đó. So với log chỉ có dòng lỗi.
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p>Dùng <code>riscv_retire_item hist[$]; if (hist.size()&gt;5) void'(hist.pop_front());</code> Ngữ cảnh gần giúp thấy ngay lệnh trước (forwarding?) gây lỗi.</p>
+</details>
+</article>
+<article class="ex"><div class="ex-head"><span class="lv l2">★★ Vừa</span><h4>EX6 — Two-stream scoreboard</h4></div>
+Tách ISS thành predictor (Lab 9 EX3) phát expected; scoreboard dùng hai <code>analysis_imp_decl</code> (<code>_act</code>, <code>_exp</code>) và queue. Xử lý trường hợp expected đến trước/sau actual.
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p>Cần hai queue + hàm <code>try_match()</code> gọi ở cả hai <code>write_*</code>. Cuối test báo phần tử thừa ở queue nào — thông tin chẩn đoán rất hữu ích (thiếu actual = DUT mất lệnh; thiếu expected = DUT thừa).</p>
+</details>
+</article>
+<article class="ex"><div class="ex-head"><span class="lv l3">★★★ Khó</span><h4>EX7 — Bắt lỗi bằng factory-mutation</h4></div>
+Dùng model lỗi (Lab 9 EX1) cho 5 lỗi khác nhau; lập bảng lỗi nào được bắt bởi nhóm so sánh nào (REG/MEM/CF).
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p>Lỗi branch condition → CF; SW địa chỉ → MEM; ALU → REG. Một nhóm nào không bao giờ bắt được lỗi nào? → nhóm đó thừa hoặc thiếu stimulus.</p>
+</details>
+</article>
+<article class="ex"><div class="ex-head"><span class="lv l3">★★★ Khó</span><h4>EX8 — Dùng <code>uvm_in_order_comparator</code></h4></div>
+Thay scoreboard tay bằng <code>uvm_in_order_comparator#(riscv_retire_item)</code>: predictor nối <code>before_export</code>, monitor nối <code>after_export</code>. Cần <code>do_compare</code> trong item. So sánh khả năng báo lỗi.
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p>Nhận xét điển hình: dùng nhanh, nhưng thông điệp lỗi chung chung, không so có điều kiện được trừ khi <code>do_compare</code> làm; khó xử lý reset. Vì vậy công ty thường viết riêng.</p>
+</details>
+</article>
+</div>
+
+
+<nav class="pager" aria-label="Điều hướng lab"><a class="nav-card prev" href="lab09.html" rel="prev"><small>← Lab trước</small><span>Lab 09 — Reference model</span></a><div class="mid"><button type="button" class="btn primary" id="mark-done" aria-pressed="false">Đánh dấu hoàn thành</button></div><a class="nav-card next" href="lab11.html" rel="next"><small>Lab tiếp →</small><span>Lab 11 — Scoreboard đầy đủ</span></a></nav>
+<p class="foot">UVM · RISC-V Pipeline Speedrun — Lab 10 / 15. Phím tắt: <kbd>[</kbd> lab trước · <kbd>]</kbd> lab sau.</p>
+</main>
+</div>
+</body>
+</html>

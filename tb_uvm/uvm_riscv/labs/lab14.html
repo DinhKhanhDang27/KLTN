@@ -1,0 +1,459 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Lab 14 — RISC-V Factory Override + Negative Test</title>
+<link rel="stylesheet" href="assets/lab.css">
+<script src="assets/lab.js" defer></script>
+</head>
+<body data-lab="14" data-total="15">
+<div id="readbar" aria-hidden="true"></div>
+<header class="topbar">
+  <button type="button" class="iconbtn" id="toc-toggle" aria-label="Mở mục lục">☰</button>
+  <a class="brand" href="index.html"><span class="brand-mark">UVM</span><span>RISC-V <small>Speedrun</small></span></a>
+  <nav class="labdots" aria-label="Chọn lab"><a href="lab01.html" data-n="1" title="Lab 01 — Interface & clocking">1</a><a href="lab02.html" data-n="2" title="Lab 02 — Sequence item">2</a><a href="lab03.html" data-n="3" title="Lab 03 — Driver">3</a><a href="lab04.html" data-n="4" title="Lab 04 — Monitor & analysis port">4</a><a href="lab05.html" data-n="5" title="Lab 05 — Agent, env, test, config">5</a><a href="lab06.html" data-n="6" title="Lab 06 — Sequence library">6</a><a href="lab07.html" data-n="7" title="Lab 07 — Virtual sequencer">7</a><a href="lab08.html" data-n="8" title="Lab 08 — SVA & bind trong UVM">8</a><a href="lab09.html" data-n="9" title="Lab 09 — Reference model">9</a><a href="lab10.html" data-n="10" title="Lab 10 — Scoreboard in-order">10</a><a href="lab11.html" data-n="11" title="Lab 11 — Scoreboard đầy đủ">11</a><a href="lab12.html" data-n="12" title="Lab 12 — Functional coverage">12</a><a href="lab13.html" data-n="13" title="Lab 13 — RAL (uvm_reg / uvm_mem)">13</a><a href="lab14.html" data-n="14" title="Lab 14 — Factory, callback, catcher" aria-current="page">14</a><a href="lab15.html" data-n="15" title="Lab 15 — Regression & closure">15</a></nav>
+  <button type="button" class="iconbtn" id="theme-toggle" aria-label="Đổi giao diện sáng/tối">☾</button>
+</header>
+<div class="layout">
+<aside class="side" aria-label="Mục lục">
+  <nav class="side-toc">
+    <p class="side-title">Trong bài này</p>
+    <ol>
+<li><a href="#muc-tongquan">1. Tổng quan lab</a></li>
+<li><a href="#m1">2. Vị trí trong testbench</a></li>
+<li><a href="#m2">3. Mục tiêu học</a></li>
+<li><a href="#m3">4. Keyword &amp; khái niệm mới</a></li>
+<li><a href="#m4">5. Chuẩn bị</a></li>
+<li><a href="#m5">6. Lý thuyết ngắn — factory &amp; graceful (+ UVM bên trong)</a></li>
+<li><a href="#m6">7. Iteration 0 — type override sinh opcode không hỗ trợ</a></li>
+<li><a href="#m7">8. Iterations</a></li>
+<li><a href="#m8">9. Bảng tổng hợp</a></li>
+<li><a href="#m9">10. BASELINE sang Lab 15</a></li>
+<li><a href="#m10">11. Checklist nhớ code</a></li>
+<li><a href="#m11">12. Phỏng vấn — hỏi &amp; đáp</a></li>
+<li><a href="#m12">13. Cheat-sheet</a></li>
+<li><a href="#m13">14. Bài tập code &amp; câu hỏi nâng cao UVM</a></li>
+    </ol>
+  </nav>
+  <div class="side-tools">
+    <button type="button" class="btn" data-act="expand">Mở tất cả spoiler</button>
+    <button type="button" class="btn" data-act="collapse">Đóng tất cả spoiler</button>
+    <button type="button" class="btn" data-act="qa-close">Ẩn đáp án QA (tự test)</button>
+    <button type="button" class="btn" data-act="top">↑ Lên đầu trang</button>
+  </div>
+</aside>
+<main class="main">
+<header class="hero" data-num="14">
+  <div class="eyebrow"><span class="pill">Lab 14 / 15</span><span class="phase">Nâng cao</span></div>
+  <h1>Lab 14 — Factory Override + Negative Test</h1>
+  <p class="tags"><span class="tag uvm">factory override</span><span class="tag uvm">type/instance override</span><span class="tag uvm">uvm_callback</span><span class="tag">negative test</span><span class="tag">opcode không hỗ trợ</span><span class="tag">misalign</span><span class="tag">x0</span></p>
+</header>
+<nav class="toc" aria-label="Mục lục bài lab"><strong>📑 Mục lục</strong><ol>
+<li><a href="#muc-tongquan">1. Tổng quan lab</a></li>
+<li><a href="#m1">2. Vị trí trong testbench</a></li>
+<li><a href="#m2">3. Mục tiêu học</a></li>
+<li><a href="#m3">4. Keyword &amp; khái niệm mới</a></li>
+<li><a href="#m4">5. Chuẩn bị</a></li>
+<li><a href="#m5">6. Lý thuyết ngắn — factory &amp; graceful (+ UVM bên trong)</a></li>
+<li><a href="#m6">7. Iteration 0 — type override sinh opcode không hỗ trợ</a></li>
+<li><a href="#m7">8. Iterations</a></li>
+<li><a href="#m8">9. Bảng tổng hợp</a></li>
+<li><a href="#m9">10. BASELINE sang Lab 15</a></li>
+<li><a href="#m10">11. Checklist nhớ code</a></li>
+<li><a href="#m11">12. Phỏng vấn — hỏi &amp; đáp</a></li>
+<li><a href="#m12">13. Cheat-sheet</a></li>
+<li><a href="#m13">14. Bài tập code &amp; câu hỏi nâng cao UVM</a></li>
+</ol></nav>
+
+<div class="note" id="muc-tongquan">
+  <strong>Tổng quan lab</strong>
+  <ul>
+    <li><strong>Lab này làm gì:</strong> dùng <strong>factory override</strong> để thay
+      <code>riscv_seq_item</code> bằng biến thể sinh <em>lệnh biên/không hỗ trợ</em> mà không sửa sequence;
+      và viết <strong>negative test</strong>: opcode không hỗ trợ → core coi là NOP, ghi x0 → bất biến,
+      địa chỉ lệch → core căn chỉnh. Kiểm "DUT xử lý nhã nhặn ca lạ" (ISS cũng NOP → scoreboard vẫn PASS).
+      Thêm <code>uvm_callback</code> để tiêm lỗi tùy chọn.</li>
+    <li><strong>Tạo ra file nào:</strong> <code>tb/agent/riscv_illegal_item.sv</code>,
+      <code>tb/test/riscv_neg_tests.sv</code>, callback <code>riscv_cbs.sv</code> (monitor callback; tùy chọn).</li>
+    <li><strong>Nhận gì từ lab trước:</strong> toàn bộ env + scoreboard + ISS.</li>
+    <li><strong>Lab sau dùng để làm gì:</strong> Lab 15 gộp negative test vào regression + verification plan.</li>
+  </ul>
+</div>
+
+<div class="callout uvm"><strong>Trọng tâm UVM của lab</strong>
+<ul>
+  <li><strong>Factory override</strong> đúng cách: type vs instance, thứ tự ưu tiên, <em>đặt ở đâu</em> trong <code>build_phase</code>, và checklist khi override “không ăn”.</li>
+  <li><strong><code>uvm_callback</code></strong>: đăng ký (<code>uvm_register_cb</code>), gọi (<code>uvm_do_callbacks</code>), gắn (<code>uvm_callbacks#()::add</code>) — code đầy đủ bên dưới.</li>
+  <li><strong><code>uvm_report_catcher</code></strong>: biến “UVM_ERROR được mong đợi” của negative test thành thông tin có đếm.</li>
+  <li><strong>Chọn công cụ</strong>: factory override vs callback vs config knob.</li>
+  <li>Đã sửa Iteration 5: tiêm lỗi ở <em>driver</em> không bị scoreboard “observation-driven” thấy — dùng callback ở <em>monitor</em> (xem lý do ở Lab 9).</li>
+</ul></div>
+
+<div class="note warn"><strong>Negative test &amp; golden:</strong> để scoreboard vẫn so được, ISS phải mô
+hình đúng hành vi "ca lạ" của DUT: opcode lạ → NOP (control mặc định 0), LW/SW lệch → căn chỉnh
+<code>addr&amp;~3</code>, JALR → xóa bit0. ISS Lab 9 đã khớp các điểm này. Negative test xác nhận cả DUT lẫn
+golden đồng ý "không thay đổi state bất ngờ".</div>
+
+
+
+<h2 id="m1">2. Vị trí trong testbench</h2>
+<pre><code> set_type_override: riscv_seq_item -> riscv_illegal_item
+   sequence cũ create(riscv_seq_item) -> NHẬN riscv_illegal_item (sinh opcode lạ)
+ negative: opcode lạ=>NOP, rd=x0=>bất biến, addr lệch=>căn chỉnh
+ callback (tùy chọn): tiêm lỗi vào driver trước khi nạp</code></pre>
+
+<h2 id="m2">3. Mục tiêu học</h2>
+<ul>
+  <li>Factory override: <code>set_type_override_by_type</code> / <code>set_inst_override</code>.</li>
+  <li>Vì sao <code>type_id::create</code> là chìa khóa để override hoạt động.</li>
+  <li>Negative test: ca biên/không hỗ trợ, kỳ vọng "không hỏng".</li>
+  <li><code>uvm_callback</code>: hook tiêm hành vi (lỗi) mà không sửa component.</li>
+</ul>
+
+<h2 id="m3">4. Keyword &amp; khái niệm mới</h2>
+<div class="table-wrap"><table>
+<tr><th>Keyword</th><th>Giải thích</th><th>Ví dụ</th></tr>
+<tr><td><code>set_type_override_by_type</code></td><td>Thay mọi create của type A→B</td><td>trong test build</td></tr>
+<tr><td><code>set_inst_override_by_type</code></td><td>Thay theo đường dẫn cụ thể</td><td>chỉ 1 instance</td></tr>
+<tr><td><code>type_id::create</code></td><td>Tạo qua factory (cho override)</td><td>bắt buộc để override</td></tr>
+<tr><td><code>uvm_callback</code></td><td>Hook cắm hành vi ngoài</td><td>tiêm lỗi</td></tr>
+<tr><td>negative test</td><td>Ca lạ, kỳ vọng graceful</td><td>opcode không hỗ trợ</td></tr>
+<tr><td>NOP semantics</td><td>control=0 → không ghi gì</td><td>default control_unit</td></tr>
+</table></div>
+
+<h2 id="m4">5. Chuẩn bị</h2>
+<pre><code>cd ~/Study/KLtN/code/tb_uvm/uvm_riscv/tb/agent  # thêm illegal item</code></pre>
+
+<h2 id="m5">6. Lý thuyết ngắn — factory &amp; graceful (+ UVM bên trong)</h2>
+<ol>
+  <li><strong>Factory:</strong> vì item tạo bằng <code>type_id::create</code>, ta có thể bảo factory "khi ai
+    tạo riscv_seq_item, trả riscv_illegal_item" — sequence không đổi mà stimulus đổi.</li>
+  <li><strong>Graceful:</strong> opcode không thuộc tập hỗ trợ rơi vào <code>default</code> của
+    <code>control_unit</code> (mọi control=0) → core không ghi reg/mem, PC+4. Đây là hành vi "NOP an toàn".</li>
+  <li><strong>Align:</strong> <code>data_memory</code> dùng <code>{addr[31:2],2'b00}</code> → LW/SW lệch bị
+    căn xuống. JALR xóa bit0.</li>
+  <li><strong>x0:</strong> ghi x0 bị regfile bỏ qua → x0≡0.</li>
+</ol>
+
+<h3>6.5. Cơ chế override và thứ tự ưu tiên</h3>
+<div class="table-wrap"><div class="table-wrap"><table>
+<tr><th>API</th><th>Phạm vi</th><th>Ví dụ</th></tr>
+<tr><td><code>set_type_override_by_type(orig, ovr, replace=1)</code></td><td>Mọi <code>create</code> của <code>orig</code> trong toàn môi trường</td><td>mọi <code>riscv_seq_item</code> → <code>riscv_illegal_item</code></td></tr>
+<tr><td><code>set_inst_override_by_type(path, orig, ovr)</code></td><td>Chỉ instance có đường dẫn khớp <code>path</code> (tương đối <code>this</code>)</td><td><code>"env.agent.sqr.*"</code></td></tr>
+<tr><td><code>set_type_override_by_name("A","B")</code></td><td>Như trên nhưng bằng chuỗi — gõ sai không báo lỗi</td><td>tránh dùng</td></tr>
+</table></div></div>
+<ul>
+  <li><strong>Ưu tiên</strong>: <em>instance override</em> thắng <em>type override</em>; cùng loại thì cái <strong>set sau</strong> thắng (với <code>replace=1</code>).</li>
+  <li><strong>Điều kiện</strong>: lớp override phải kế thừa lớp gốc, đã đăng ký (<code>`uvm_object_utils</code>/<code>_component_utils</code>), và đối tượng phải được tạo bằng <code>type_id::create</code>.</li>
+  <li><strong>Thời điểm</strong>: override phải có hiệu lực <em>trước</em> khi <code>create</code> chạy. Nếu override ảnh hưởng component được dựng trong <code>super.build_phase</code> (env/agent), phải đặt <em>trước</em> <code>super.build_phase(phase)</code> trong test. Item được tạo ở run_phase nên bản lab đặt sau vẫn chạy, nhưng đừng tập thói quen đó.</li>
+  <li><strong>Hành vi</strong>: chỉ đổi được hành vi nếu method là <code>virtual</code> (Lab 2).</li>
+</ul>
+<div class="callout debug"><strong>Debug override “không ăn”:</strong> <code>uvm_factory::get().print()</code> (liệt kê override đang có), <code>factory.debug_create_by_type(riscv_seq_item::get_type(), "uvm_test_top.env.agent.sqr", "it")</code> (cho biết create sẽ trả kiểu gì). Kiểm: <code>new()</code> thay <code>create</code>? chưa register? set muộn? path sai? type name gõ nhầm?</div>
+
+<h3>6.6. <code>uvm_callback</code> — code đầy đủ</h3>
+<p>Callback cho phép <em>cắm hành vi</em> vào một điểm hook của component mà không sửa hay kế thừa nó. Bốn bước: định nghĩa lớp callback, đăng ký với component, gọi hook, gắn instance callback từ test.</p>
+<pre><code>// (1) tb/agent/riscv_cbs.sv — include TRƯỚC driver/monitor
+typedef class riscv_monitor;
+class riscv_mon_cb extends uvm_callback;
+  `uvm_object_utils(riscv_mon_cb)
+  function new(string name = "riscv_mon_cb"); super.new(name); endfunction
+  // hook: được gọi sau khi monitor dựng xong item, trước ap.write()
+  virtual function void post_sample(riscv_monitor mon, riscv_retire_item tr); endfunction
+endclass
+
+// (2)+(3) trong riscv_monitor
+class riscv_monitor extends uvm_monitor;
+  `uvm_component_utils(riscv_monitor)
+  `uvm_register_cb(riscv_monitor, riscv_mon_cb)        // đăng ký
+  …
+  // trong run_phase, sau khi điền tr, trước ap.write(tr):
+  `uvm_do_callbacks(riscv_monitor, riscv_mon_cb, post_sample(this, tr))
+  ap.write(tr);
+endclass
+
+// (4) callback cụ thể + gắn từ test
+class flip_wb_cb extends riscv_mon_cb;
+  `uvm_object_utils(flip_wb_cb)
+  int unsigned n = 3;                                    // lật ở lần thứ 3
+  bit          done;                                     // chỉ lật MỘT lần (idempotent — xem lưu ý xsim bên dưới)
+  function new(string name = "flip_wb_cb"); super.new(name); endfunction
+  virtual function void post_sample(riscv_monitor mon, riscv_retire_item tr);
+    if (!done &amp;&amp; mon.retire_count == n &amp;&amp; tr.reg_write) begin
+      done = 1;  tr.wb_data[0] = ~tr.wb_data[0];           // mô phỏng “DUT sai”
+    end
+  endfunction
+endclass
+
+// trong test (build hoặc start_of_simulation):
+flip_wb_cb cb = flip_wb_cb::type_id::create("cb");
+uvm_callbacks#(riscv_monitor, riscv_mon_cb)::add(env.agent.mon, cb);     // chỉ monitor này
+// uvm_callbacks#(riscv_monitor, riscv_mon_cb)::add(null, cb);           // MỌI monitor (type-wide)
+// uvm_callbacks#(riscv_monitor, riscv_mon_cb)::delete(env.agent.mon, cb);  // gỡ</code></pre>
+<p>Kết quả mong đợi (đã chạy): scoreboard <code>REG mismatch pc=0x00000008 ...: act x3&lt;=0x0000000c exp x3&lt;=0x0000000d</code> đúng ở retire thứ 3 — lỗi tiêm từ <em>ngoài</em> mà không sửa monitor.</p>
+<div class="note warn"><strong>Lưu ý xsim 2023.2:</strong> khi cùng lúc có <code>uvm_report_cb::add(null, catcher)</code> (mục 6.7), hook <code>uvm_do_callbacks</code> của monitor bị gọi <em>hai lần</em> cho mỗi item
+(đo được: <code>post_sample</code> in 2 dòng/lần). Callback lật bit kiểu <code>wb_data[0] = ~wb_data[0]</code> sẽ tự triệt tiêu → không có lỗi nào được tiêm. Vì vậy callback ở trên có cờ <code>done</code> để idempotent.
+Cần thêm vào <code>riscv_pkg.sv</code>: <code>`include "riscv_cbs.sv"</code> <em>trước</em> <code>riscv_driver.sv</code>/<code>riscv_monitor.sv</code>; trong <code>riscv_monitor</code> thêm <code>`uvm_register_cb(riscv_monitor, riscv_mon_cb)</code> sau <code>`uvm_component_utils</code>
+và <code>`uvm_do_callbacks(...)</code> ngay trước <code>ap.write(tr)</code>.</div>
+<div class="callout pitfall"><strong>Vì sao không tiêm lỗi ở driver (lật bit lệnh trước khi nạp ROM)?</strong> Scoreboard của lab chạy ISS bằng <code>act.instr</code> lấy từ chính retire của DUT; lệnh đã bị lật bit thì ISS cũng thực thi lệnh bị lật ⇒ <em>khớp</em> và không báo lỗi. Muốn bắt lỗi dạng này cần stimulus-driven check (Lab 9 EX5). Tiêm lỗi “ở đầu ra” (monitor) thì khác: đó mô phỏng DUT trả sai kết quả.</div>
+
+<h3>6.7. <code>uvm_report_catcher</code> — negative test không làm đỏ regression</h3>
+<p>Negative test có thể <em>cố ý</em> gây <code>UVM_ERROR</code> (ví dụ opcode lạ làm <code>illegal_bins</code> trúng). Muốn regression vẫn “xanh” nhưng <em>không nuốt lỗi bất ngờ</em>, dùng catcher: hạ cấp đúng lỗi mong đợi, đếm số lần, và cuối test kiểm đúng bằng kỳ vọng.</p>
+<pre><code>class exp_err_catcher extends uvm_report_catcher;
+  string       id_match;
+  int unsigned n_caught;
+  function new(string name = "exp_err_catcher", string id = "SB");   // id phải KHỚP id mà scoreboard dùng (`uvm_error("SB", ...))
+    super.new(name);  id_match = id;
+  endfunction
+  virtual function action_e catch();
+    if (get_severity() == UVM_ERROR &amp;&amp; get_id() == id_match) begin
+      set_severity(UVM_INFO);                     // hạ cấp
+      set_message({"[EXPECTED] ", get_message()});
+      n_caught++;
+    end
+    return THROW;                                 // vẫn in ra (đã hạ cấp)
+  endfunction
+endclass
+// test.build:  catcher = new();  uvm_report_cb::add(null, catcher);
+// test.check:  if (catcher.n_caught != N_EXPECT) `uvm_error("NEG", "so loi mong doi sai")</code></pre>
+
+<h3>6.8. Chọn công cụ: factory vs callback vs config</h3>
+<div class="table-wrap"><div class="table-wrap"><table>
+<tr><th>Nhu cầu</th><th>Dùng</th><th>Lý do</th></tr>
+<tr><td>Đổi <em>kiểu</em> đối tượng (item/driver/model)</td><td>Factory override</td><td>Thay nguyên lớp, không sửa nơi tạo</td></tr>
+<tr><td>Chèn hành vi tại <em>điểm xác định</em> (trước/sau gửi item…)</td><td><code>uvm_callback</code></td><td>Cắm/gỡ linh hoạt; nhiều callback xếp chồng</td></tr>
+<tr><td>Đổi tham số (tốc độ, độ trễ, bật/tắt)</td><td>Config object</td><td>Rẻ nhất; không cần kế thừa</td></tr>
+<tr><td>Hạ cấp/loại bỏ báo cáo mong đợi</td><td><code>uvm_report_catcher</code></td><td>Làm việc ở tầng report</td></tr>
+</table></div></div>
+
+<h3>6.9. Negative test: “pass” nghĩa là gì</h3>
+<p>Với DUT này có ba loại kết quả mong đợi, nên ghi rõ trong vPlan: (1) <strong>graceful</strong> — opcode lạ → NOP, DUT và model đồng ý; (2) <strong>known limitation</strong> — căn chỉnh thay vì trap (spec muốn trap thì là lỗi!); (3) <strong>expected error</strong> — chủ ý gây lỗi để chứng minh checker bắt được (dùng catcher + đếm).</p>
+
+<h2 id="m6">7. Iteration 0 — type override sinh opcode không hỗ trợ</h2>
+
+<details><summary>tb/agent/riscv_illegal_item.sv</summary>
+<pre><code>// tb/agent/riscv_illegal_item.sv — biến thể sinh lệnh KHÔNG hỗ trợ (custom opcode)
+`ifndef RISCV_ILLEGAL_ITEM_SV
+`define RISCV_ILLEGAL_ITEM_SV
+class riscv_illegal_item extends riscv_seq_item;
+  `uvm_object_utils(riscv_illegal_item)
+  function new(string name="riscv_illegal_item"); super.new(name); endfunction
+
+  // encode trả opcode custom-0 (0001011) -> core coi NOP (default control)
+  function bit [31:0] encode();
+    if (use_raw) return raw_word;
+    // {funct7, rs2, rs1, funct3, rd, opcode=0001011}
+    return {7'd0, rs2, rs1, 3'b000, rd, 7'b0001011};
+  endfunction
+endclass
+`endif</code></pre></details>
+
+<details><summary>tb/test/riscv_neg_tests.sv — negative_opcode_test</summary>
+<pre><code>`ifndef RISCV_NEG_TESTS_SV
+`define RISCV_NEG_TESTS_SV
+class negative_opcode_test extends riscv_base_test;
+  `uvm_component_utils(negative_opcode_test)
+  function new(string n,uvm_component p); super.new(n,p); endfunction
+
+  function void build_phase(uvm_phase phase);
+    super.build_phase(phase);
+    // MỌI riscv_seq_item do sequence tạo -> riscv_illegal_item
+    set_type_override_by_type(riscv_seq_item::get_type(),
+                              riscv_illegal_item::get_type());
+  endfunction
+
+  virtual function uvm_sequence#(riscv_seq_item) get_seq();
+    return riscv_rtype_seq::type_id::create("seq");  // seq cũ, nhưng item bị override
+  endfunction
+
+  task run_phase(uvm_phase phase);
+    uvm_sequence#(riscv_seq_item) seq = get_seq();
+    phase.raise_objection(this);
+    seq.start(env.agent.sqr);
+    repeat (30) @(posedge cfg.vif.clk);
+    // kỳ vọng: KHÔNG thanh ghi nào đổi (toàn NOP) -> x1..x31 = 0
+    env.sb.final_check();    // sweep: regfile == ISS (ISS cũng NOP) -> all 0
+    phase.drop_objection(this);
+  endtask
+endclass
+`endif</code></pre></details>
+
+<p><strong>Lệnh chạy:</strong></p>
+<p>Thêm vào <code>riscv_pkg.sv</code>: <code>`include "riscv_illegal_item.sv"</code> (sau <code>riscv_retire_item.sv</code>, sau <code>riscv_seq_item.sv</code>) và <code>`include "riscv_neg_tests.sv"</code> (sau <code>ral_test.sv</code>).</p>
+<pre><code>xvlog -sv -L uvm -i ../tb/agent -i ../tb/ref -i ../tb/sb -i ../tb/cov -i ../tb/ral -i ../tb/seq -i ../tb/env -i ../tb/test ../tb/pkg/riscv_pkg.sv ../tb/top/riscv_tb_top.sv  # + rtl như Lab 5</code></pre>
+<pre><code>xelab -L uvm -timescale 1ns/1ps riscv_tb_top -s top_sim</code></pre>
+<pre><code>xsim top_sim -R -testplusarg UVM_TESTNAME=negative_opcode_test</code></pre>
+
+<details><summary>Expected log</summary>
+<pre><code>UVM_INFO ../tb/agent/riscv_monitor.sv(37) @ 85000: uvm_test_top.env.agent.mon [MON] [1] pc=0x00000000 instr=0x00e1040b (no-regwr)   &lt;- opcode 0001011, NOP
+ERROR: For covergroup Instance 'obj.cg_isa' of covergroup 'riscv_pkg::riscv_coverage::cg_isa', Illegal bin value = '31' in bin 'unk' of coverpoint 'cp_op' was hit while sampling. ...
+... 8 lệnh lạ (no-regwr), mỗi lệnh kèm 1 dòng "ERROR: For covergroup ..." ...
+UVM_INFO ../tb/sb/riscv_scoreboard.sv(96) @ 325000: uvm_test_top.env.sb [SB] SWEEP PASS: regfile+mem khop (retire=14)
+UVM_ERROR :    0</code></pre>
+<p><em>Các dòng <code>ERROR: For covergroup ... Illegal bin</code> do <strong>simulator</strong> in (<code>illegal_bins unk</code> của Lab 12 trúng khi gặp opcode lạ) — đúng thiết kế, không tính vào <code>UVM_ERROR</code>
+(bộ đếm UVM vẫn 0). Muốn log sạch thì chuyển <code>illegal_bins unk</code> thành <code>ignore_bins</code> khi chạy negative test.</em></p>
+<p><em>Sequence R-type cũ KHÔNG đổi, nhưng nhờ override, item là illegal → encode opcode lạ → core NOP.
+ISS cũng NOP → regfile cả DUT &amp; ISS đều 0 → PASS. DUT xử lý nhã nhặn.</em></p>
+</details>
+
+<h2 id="m7">8. Iterations</h2>
+
+<h3>Iteration 1 — instance override (chỉ 1 nhánh)</h3>
+<p>Dùng <code>set_inst_override_by_type("env.agent.sqr.*", riscv_seq_item::get_type(), riscv_illegal_item::get_type())</code>.</p>
+<details><summary>Khác biệt</summary><p>Chỉ item tạo dưới sequencer bị thay; chỗ khác vẫn bình thường. Dạy: override phạm vi hẹp theo đường dẫn.</p></details>
+
+<h3>Iteration 2 — negative: ghi x0 (JAL x0) — bất biến</h3>
+<p>directed <code>jal x0, +8</code> nhiều lần; kiểm x0=0, các reg khác không đổi bất ngờ.</p>
+<details><summary>Khác biệt</summary><p>reg_write=1,rd=0 nhưng regfile bỏ ghi. SVA x0≡0 (Lab 8) không fail; scoreboard bỏ qua wb khi rd=0. Dạy: x0 bất biến.</p></details>
+
+<h3>Iteration 3 — negative: LW/SW lệch (addr=0x22)</h3>
+<p>directed SW tới 0x22; kiểm DUT ghi vào word 0x20 (căn chỉnh) và ISS khớp.</p>
+<details><summary>Khác biệt</summary><p>Cả hai căn chỉnh xuống → vẫn khớp. Dạy: hành vi căn chỉnh là "đúng theo RTL"; nếu muốn báo lỗi misalign
+cần logic trap (DUT không có) — ghi vào verification plan là "known limitation".</p></details>
+
+<h3>Iteration 4 — negative: JALR tới địa chỉ lệ (bit1=1)</h3>
+<p><code>addi x1,x0,6; jalr x0,x1,0</code> → đích 6 (bit0 xóa, bit1 giữ).</p>
+<details><summary>Khác biệt</summary><p>ISS <code>&amp;~1</code> khớp DUT → PC=6, fetch word index 1. Dạy: bẫy JALR; coverage SVA align bit0 (Lab 8) vẫn pass.</p></details>
+
+<h3>Iteration 5 — uvm_callback tiêm lỗi ở monitor (code đầy đủ ở §6.6)</h3>
+<p>Định nghĩa <code>riscv_mon_cb</code> với hook <code>post_sample(mon, tr)</code>; monitor gọi <code>`uvm_do_callbacks</code> trước <code>ap.write</code>; <code>flip_wb_cb</code> lật 1 bit <code>wb_data</code> ở retire thứ 3 để scoreboard bắt lỗi.</p>
+<details><summary>Khác biệt</summary><p>Không sửa monitor vẫn tiêm được lỗi → <code>REG mismatch</code> đúng retire thứ 3. Gỡ callback (<code>delete</code>) thì sạch. <strong>Lưu ý:</strong> tiêm lỗi ở <em>driver</em> (lật bit lệnh khi nạp ROM) <em>không</em> bị scoreboard “observation-driven” thấy vì ISS thực thi chính lệnh đã lật — xem EX4.</p></details>
+
+<h2 id="m8">9. Bảng tổng hợp</h2>
+<div class="table-wrap"><table><tr><th>Iter</th><th>Đổi</th><th>Học</th></tr>
+<tr><td>0</td><td>type override → illegal</td><td>factory thay stimulus</td></tr>
+<tr><td>1</td><td>instance override</td><td>override phạm vi hẹp</td></tr>
+<tr><td>2</td><td>ghi x0</td><td>x0 bất biến</td></tr>
+<tr><td>3</td><td>LW/SW lệch</td><td>căn chỉnh = known limit</td></tr>
+<tr><td>4</td><td>JALR lệch</td><td>bẫy LSB</td></tr>
+<tr><td>5</td><td>callback tiêm lỗi</td><td>hook ngoài</td></tr>
+</table></div>
+
+<h2 id="m9">10. BASELINE sang Lab 15</h2>
+<p><code>riscv_illegal_item</code> + <code>negative_opcode_test</code> (+ các directed negative: x0, misalign,
+jalr). Factory override + callback. Tất cả negative test PASS (graceful) hoặc lộ lỗi khi tiêm. Lab 15 gộp
+mọi test vào regression + coverage merge + firmware thật + verification plan.</p>
+
+<h2 id="m10">11. Checklist nhớ code</h2>
+<ul>
+  <li>[ ] Nhớ <code>set_type_override_by_type(A::get_type(), B::get_type())</code> trong build.</li>
+  <li>[ ] Nhớ item phải tạo bằng <code>type_id::create</code> thì override mới ăn.</li>
+  <li>[ ] Nhớ ISS khớp hành vi ca lạ (NOP/align/jalr) để scoreboard công bằng.</li>
+</ul>
+
+<h2 id="m11">12. Phỏng vấn — hỏi &amp; đáp</h2>
+<p>Bấm câu hỏi để xem đáp án — nên tự trả lời miệng trước khi mở. Mỗi câu có ví dụ cụ thể như khi bị hỏi trong phỏng vấn.</p>
+<div class="qa-list">
+<details class="qa"><summary>Factory override không có tác dụng. Liệt kê các nguyên nhân và cách xác minh.</summary>
+<div class="ans">
+<p>Theo xác suất: (1) đối tượng tạo bằng <code>new()</code> thay vì <code>type_id::create</code>; (2) override đặt <em>sau</em> khi đối tượng đã được tạo (set trong test nhưng env dựng ở <code>super.build_phase</code> chạy trước); (3) lớp override không đăng ký (<code>`uvm_*_utils</code>) hoặc không biên dịch trong package; (4) instance path sai (<em>tương đối</em> <code>this</code>); (5) method không <code>virtual</code> nên kiểu đổi mà hành vi không đổi; (6) một override khác (instance) ưu tiên cao hơn che mất.</p>
+<p>Xác minh: <code>uvm_factory::get().print()</code>, <code>debug_create_by_type</code>, in <code>obj.get_type_name()</code> ngay sau create.</p>
+</div></details>
+<details class="qa"><summary>Type override và instance override khác nhau thế nào? Nếu có cả hai?</summary>
+<div class="ans">
+<p>Type: mọi <code>create</code> của kiểu gốc trong toàn môi trường. Instance: chỉ đường dẫn khớp. Khi cả hai cùng áp dụng cho một đối tượng, <strong>instance thắng</strong>. Ví dụ: type override <code>riscv_seq_item → riscv_illegal_item</code> cho cả hai agent, rồi instance override <code>agent_b.sqr.* → riscv_seq_item</code> (trả về mặc định) ⇒ chỉ agent_a gặp lệnh lạ.</p>
+</div></details>
+<details class="qa"><summary>Vì sao nên đặt override <em>trước</em> <code>super.build_phase</code> trong test?</summary>
+<div class="ans">
+<p><code>super.build_phase</code> của <code>riscv_base_test</code> tạo env → agent → driver/monitor/sequencer bằng <code>type_id::create</code>. Override đặt sau thì các component đó đã được tạo bằng kiểu gốc ⇒ override <em>không áp dụng</em> cho chúng (chỉ áp dụng cho đối tượng tạo về sau như item ở run_phase). Quy ước: <em>cấu hình factory và config_db trước, rồi mới gọi <code>super.build_phase</code></em>.</p>
+<pre><code>function void build_phase(uvm_phase phase);
+  set_type_override_by_type(riscv_monitor::get_type(), riscv_monitor_dbg::get_type());  // trước
+  super.build_phase(phase);                                                              // env dựng với monitor_dbg
+endfunction</code></pre>
+</div></details>
+<details class="qa"><summary>Khi nào dùng callback thay vì kế thừa + factory override?</summary>
+<div class="ans">
+<p>Callback: cần <em>chèn một hành vi nhỏ</em> tại điểm hook và muốn <em>bật/tắt/xếp chồng</em> nhiều hành vi độc lập mà không tạo cây kế thừa (ví dụ 5 loại error injection). Factory: cần đổi <em>toàn bộ hành vi/kiểu</em> của một lớp (item mới, driver khác giao thức). Đánh đổi callback: phải có sẵn hook (thiết kế component từ trước), thứ tự thực thi giữa các callback cần quản lý (<code>UVM_PREPEND/APPEND</code>).</p>
+</div></details>
+<details class="qa"><summary>Viết các bước tạo và gắn một callback cho driver. Lỗi hay gặp?</summary>
+<div class="ans">
+<p>(1) <code>class my_cb extends uvm_callback</code> với hook <code>virtual function void pre_xxx(...)</code>; (2) trong component: <code>`uvm_register_cb(Comp, my_cb)</code>; (3) tại điểm hook: <code>`uvm_do_callbacks(Comp, my_cb, pre_xxx(this, args))</code>; (4) từ test: <code>uvm_callbacks#(Comp, my_cb)::add(inst_or_null, cb)</code>. Lỗi hay gặp: quên bước (2) → compile/runtime báo type chưa đăng ký; gắn <code>add</code> khi chưa có instance (handle null → thành type-wide); hook là <code>task</code> nhưng gọi trong function; lớp callback tham chiếu component trước khi khai báo (cần <code>typedef class</code>).</p>
+</div></details>
+<details class="qa"><summary><code>uvm_report_catcher</code> dùng khi nào? Rủi ro?</summary>
+<div class="ans">
+<p>Dùng để xử lý <code>UVM_ERROR</code>/<code>UVM_WARNING</code> <em>mong đợi</em> ở negative test: hạ cấp, đổi thông điệp, hoặc nuốt (<code>CAUGHT</code>), và <em>đếm</em> để cuối test xác nhận số lỗi mong đợi. Rủi ro: catcher quá rộng (bắt mọi <code>SB</code> error) sẽ <strong>che lỗi thật</strong>; nên khớp theo <em>ID + chuỗi thông điệp</em>, giới hạn theo test, và luôn kiểm đếm cuối test.</p>
+</div></details>
+<details class="qa"><summary>Negative test của lab PASS khi “DUT xử lý nhã nhặn”. Khác gì với bug? Ai quyết định?</summary>
+<div class="ans">
+<p>Quyết định bởi <strong>đặc tả</strong>. Căn chỉnh địa chỉ lệch xuống (<code>addr&amp;~3</code>) là <em>đúng</em> nếu spec nói vậy; <em>sai</em> nếu spec yêu cầu misaligned exception. Quy trình: ghi vào vPlan “hành vi mong đợi + nguồn spec”; nếu DUT khác spec → bug; nếu spec mơ hồ → hỏi designer và ghi “known limitation”. Test PASS nghĩa là DUT và <em>model</em> đồng ý <em>và</em> cả hai khớp spec.</p>
+</div></details>
+<details class="qa"><summary><code>type_id::create</code> trả về kiểu của lớp gốc. Khi nào cần <code>$cast</code>? Ví dụ.</summary>
+<div class="ans">
+<p>Handle có kiểu của lớp gốc nên chỉ thấy field/method của lớp gốc. Truy cập thành viên riêng của lớp override cần <code>$cast</code>:</p>
+<pre><code>riscv_seq_item it = riscv_seq_item::type_id::create("it");   // thực tế là riscv_illegal_item (nếu override)
+riscv_illegal_item ill;
+if ($cast(ill, it)) ill.bad_funct7 = 7'h55;                    // truy cập field chỉ có ở lớp con
+else `uvm_info("T", "override khong ap dung", UVM_LOW)</code></pre>
+<p>Cách khác tốt hơn: đặt knob ở lớp gốc hoặc dùng <code>virtual</code> để không phải cast.</p>
+</div></details>
+</div>
+
+<h2 id="m12">13. Cheat-sheet</h2>
+<pre><code>// trong test.build:
+set_type_override_by_type(riscv_seq_item::get_type(), riscv_illegal_item::get_type());
+// hoặc hẹp:
+set_inst_override_by_type("env.agent.sqr.*", riscv_seq_item::get_type(), riscv_illegal_item::get_type());
+// negative kỳ vọng: opcode la=>NOP, rd=x0=>bat bien, addr le=>align, scoreboard PASS</code></pre>
+
+<h2 id="m13">14. Bài tập code &amp; câu hỏi nâng cao UVM</h2>
+<p>8 bài rèn tay, tăng dần độ khó. Làm trên baseline của lab này; đáp án chỉ là hướng tham khảo — giá trị nằm ở việc bạn tự gõ, chạy và đọc log.</p>
+<div class="ex-progress"><span class="cnt">0 / 8 bài đã làm</span><span class="bar"><i></i></span></div>
+<div class="ex-list">
+<article class="ex"><div class="ex-head"><span class="lv l1">★ Dễ</span><h4>EX1 — Đọc factory</h4></div>
+Thêm <code>uvm_factory::get().print();</code> ở <code>end_of_elaboration_phase</code> của <code>negative_opcode_test</code>. Chỉ ra dòng override và lớp bị thay.
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p>Bạn sẽ thấy phần “Type Overrides” liệt kê <code>riscv_seq_item → riscv_illegal_item</code>. Lặp lại không có override để thấy phần đó trống.</p>
+</details>
+</article>
+<article class="ex"><div class="ex-head"><span class="lv l1">★ Dễ</span><h4>EX2 — Gõ sai tên khi override</h4></div>
+Dùng <code>set_type_override_by_name("riscv_seq_itm","riscv_illegal_item")</code> (gõ sai). Chạy: có lỗi không? Rồi đổi sang <code>by_type</code> và xem compile bắt lỗi.
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p><code>by_name</code> không báo lỗi (chỉ không có tác dụng); <code>by_type</code> bắt lỗi ngay lúc biên dịch. Vì vậy ưu tiên <code>by_type</code>.</p>
+</details>
+</article>
+<article class="ex"><div class="ex-head"><span class="lv l2">★★ Vừa</span><h4>EX3 — Callback tiêm lỗi ở monitor</h4></div>
+Hiện thực <code>riscv_mon_cb</code> + <code>flip_wb_cb</code> như §6.6, gắn từ test. Chạy <code>mixed_test</code>. Xác nhận <code>REG mismatch</code> đúng tại retire thứ 3. Gỡ callback bằng <code>delete</code> và chạy lại — sạch.
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p>Chú ý: thêm <code>`uvm_register_cb</code> và include <code>riscv_cbs.sv</code> <em>trước</em> monitor trong package; thêm <code>typedef class riscv_monitor;</code>.</p>
+</details>
+</article>
+<article class="ex"><div class="ex-head"><span class="lv l2">★★ Vừa</span><h4>EX4 — Tại sao lật bit ở driver không bị bắt</h4></div>
+Viết <code>riscv_drv_cb</code> có <code>pre_load(driver, ref bit [31:0] w)</code> lật bit 7 của word thứ 2. Chạy và chứng minh scoreboard không báo lỗi. Sau đó vá bằng kiểm <code>act.instr == iss.imem[pc&gt;&gt;2]</code> (Lab 9 EX5) và chạy lại.
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p>Hai nửa của bài học: observation-driven SB bị “mù” với lỗi fetch/nạp; thêm kiểm stimulus-vs-observed là cách vá. Bài này gắn Lab 9 ↔ Lab 14 ↔ Lab 10.</p>
+</details>
+</article>
+<article class="ex"><div class="ex-head"><span class="lv l2">★★ Vừa</span><h4>EX5 — Catcher đếm lỗi mong đợi</h4></div>
+Viết <code>exp_err_catcher</code>; negative test cố ý gây đúng 3 lỗi <code>SB_CF</code> (bằng callback). Cuối test kiểm <code>n_caught == 3</code>. Chạy bản cố ý 4 lỗi → test phải fail.
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p>Điểm mấu chốt: catcher “làm xanh” có kiểm soát — nếu số lỗi khác kỳ vọng thì <code>uvm_error</code> mới trong <code>check_phase</code>.</p>
+</details>
+</article>
+<article class="ex"><div class="ex-head"><span class="lv l2">★★ Vừa</span><h4>EX6 — Override component</h4></div>
+Viết <code>riscv_monitor_dbg extends riscv_monitor</code> thêm log chi tiết. Override toàn bộ monitor bằng factory; kiểm tra <em>trước</em> và <em>sau</em> <code>super.build_phase</code> khác nhau thế nào.
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p>Sau <code>super.build_phase</code>: monitor đã được tạo kiểu gốc → không đổi. Trước: đổi thành công. In <code>get_type_name()</code> của <code>env.agent.mon</code>.</p>
+</details>
+</article>
+<article class="ex"><div class="ex-head"><span class="lv l3">★★★ Khó</span><h4>EX7 — Instance override hai agent</h4></div>
+Dựng hai agent (Lab 5 EX7). Chỉ <code>agent_b</code> sinh lệnh lạ bằng <code>set_inst_override_by_type("env.agent_b.sqr.*", …)</code>. Chứng minh <code>agent_a</code> không bị ảnh hưởng.
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p>Đường dẫn tính tương đối từ component gọi hàm; test là <code>uvm_test_top</code> nên dùng <code>"env.agent_b.sqr.*"</code>. Kiểm bằng cách in <code>get_type_name()</code> ở từng sequence.</p>
+</details>
+</article>
+<article class="ex"><div class="ex-head"><span class="lv l3">★★★ Khó</span><h4>EX8 — Khung negative test tái dùng</h4></div>
+Viết <code>riscv_neg_test_base</code> có knob <code>expected_errors[string]</code> (id → số lần), tự cài catcher và kiểm đếm ở <code>check_phase</code>. Dùng lại cho 3 test âm: opcode lạ, ghi x0, JALR lệch.
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p>Dùng associative array id→count; catcher cập nhật đếm theo id. Khung này là thứ bạn mang vào dự án thật — một negative test khai báo kỳ vọng thay vì tắt lỗi.</p>
+</details>
+</article>
+</div>
+
+
+<nav class="pager" aria-label="Điều hướng lab"><a class="nav-card prev" href="lab13.html" rel="prev"><small>← Lab trước</small><span>Lab 13 — RAL (uvm_reg / uvm_mem)</span></a><div class="mid"><button type="button" class="btn primary" id="mark-done" aria-pressed="false">Đánh dấu hoàn thành</button></div><a class="nav-card next" href="lab15.html" rel="next"><small>Lab tiếp →</small><span>Lab 15 — Regression & closure</span></a></nav>
+<p class="foot">UVM · RISC-V Pipeline Speedrun — Lab 14 / 15. Phím tắt: <kbd>[</kbd> lab trước · <kbd>]</kbd> lab sau.</p>
+</main>
+</div>
+</body>
+</html>

@@ -1,0 +1,413 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Lab 11 — RISC-V Scoreboard đầy đủ (regfile + mem + PC)</title>
+<link rel="stylesheet" href="assets/lab.css">
+<script src="assets/lab.js" defer></script>
+</head>
+<body data-lab="11" data-total="15">
+<div id="readbar" aria-hidden="true"></div>
+<header class="topbar">
+  <button type="button" class="iconbtn" id="toc-toggle" aria-label="Mở mục lục">☰</button>
+  <a class="brand" href="index.html"><span class="brand-mark">UVM</span><span>RISC-V <small>Speedrun</small></span></a>
+  <nav class="labdots" aria-label="Chọn lab"><a href="lab01.html" data-n="1" title="Lab 01 — Interface & clocking">1</a><a href="lab02.html" data-n="2" title="Lab 02 — Sequence item">2</a><a href="lab03.html" data-n="3" title="Lab 03 — Driver">3</a><a href="lab04.html" data-n="4" title="Lab 04 — Monitor & analysis port">4</a><a href="lab05.html" data-n="5" title="Lab 05 — Agent, env, test, config">5</a><a href="lab06.html" data-n="6" title="Lab 06 — Sequence library">6</a><a href="lab07.html" data-n="7" title="Lab 07 — Virtual sequencer">7</a><a href="lab08.html" data-n="8" title="Lab 08 — SVA & bind trong UVM">8</a><a href="lab09.html" data-n="9" title="Lab 09 — Reference model">9</a><a href="lab10.html" data-n="10" title="Lab 10 — Scoreboard in-order">10</a><a href="lab11.html" data-n="11" title="Lab 11 — Scoreboard đầy đủ" aria-current="page">11</a><a href="lab12.html" data-n="12" title="Lab 12 — Functional coverage">12</a><a href="lab13.html" data-n="13" title="Lab 13 — RAL (uvm_reg / uvm_mem)">13</a><a href="lab14.html" data-n="14" title="Lab 14 — Factory, callback, catcher">14</a><a href="lab15.html" data-n="15" title="Lab 15 — Regression & closure">15</a></nav>
+  <button type="button" class="iconbtn" id="theme-toggle" aria-label="Đổi giao diện sáng/tối">☾</button>
+</header>
+<div class="layout">
+<aside class="side" aria-label="Mục lục">
+  <nav class="side-toc">
+    <p class="side-title">Trong bài này</p>
+    <ol>
+<li><a href="#muc-tongquan">1. Tổng quan lab</a></li>
+<li><a href="#m1">2. Vị trí trong testbench</a></li>
+<li><a href="#m2">3. Mục tiêu học</a></li>
+<li><a href="#m3">4. Keyword &amp; khái niệm mới</a></li>
+<li><a href="#m4">5. Chuẩn bị</a></li>
+<li><a href="#m5">6. Lý thuyết ngắn — sweep toàn kiến trúc (+ UVM bên trong)</a></li>
+<li><a href="#m6">7. Iteration 0 — final_check sweep</a></li>
+<li><a href="#m7">8. Iterations</a></li>
+<li><a href="#m8">9. Bảng tổng hợp</a></li>
+<li><a href="#m9">10. BASELINE sang Lab 12</a></li>
+<li><a href="#m10">11. Checklist nhớ code</a></li>
+<li><a href="#m11">12. Phỏng vấn — hỏi &amp; đáp</a></li>
+<li><a href="#m12">13. Cheat-sheet</a></li>
+<li><a href="#m13">14. Bài tập code &amp; câu hỏi nâng cao UVM</a></li>
+    </ol>
+  </nav>
+  <div class="side-tools">
+    <button type="button" class="btn" data-act="expand">Mở tất cả spoiler</button>
+    <button type="button" class="btn" data-act="collapse">Đóng tất cả spoiler</button>
+    <button type="button" class="btn" data-act="qa-close">Ẩn đáp án QA (tự test)</button>
+    <button type="button" class="btn" data-act="top">↑ Lên đầu trang</button>
+  </div>
+</aside>
+<main class="main">
+<header class="hero" data-num="11">
+  <div class="eyebrow"><span class="pill">Lab 11 / 15</span><span class="phase">Checking</span></div>
+  <h1>Lab 11 — Scoreboard đầy đủ (regfile + mem + PC, self-check)</h1>
+  <p class="tags"><span class="tag uvm">architectural sweep</span><span class="tag">backdoor peek</span><span class="tag uvm">check_phase</span><span class="tag">queue [$]</span><span class="tag">self-checking random</span><span class="tag">end-of-test</span></p>
+</header>
+<nav class="toc" aria-label="Mục lục bài lab"><strong>📑 Mục lục</strong><ol>
+<li><a href="#muc-tongquan">1. Tổng quan lab</a></li>
+<li><a href="#m1">2. Vị trí trong testbench</a></li>
+<li><a href="#m2">3. Mục tiêu học</a></li>
+<li><a href="#m3">4. Keyword &amp; khái niệm mới</a></li>
+<li><a href="#m4">5. Chuẩn bị</a></li>
+<li><a href="#m5">6. Lý thuyết ngắn — sweep toàn kiến trúc (+ UVM bên trong)</a></li>
+<li><a href="#m6">7. Iteration 0 — final_check sweep</a></li>
+<li><a href="#m7">8. Iterations</a></li>
+<li><a href="#m8">9. Bảng tổng hợp</a></li>
+<li><a href="#m9">10. BASELINE sang Lab 12</a></li>
+<li><a href="#m10">11. Checklist nhớ code</a></li>
+<li><a href="#m11">12. Phỏng vấn — hỏi &amp; đáp</a></li>
+<li><a href="#m12">13. Cheat-sheet</a></li>
+<li><a href="#m13">14. Bài tập code &amp; câu hỏi nâng cao UVM</a></li>
+</ol></nav>
+
+<div class="note" id="muc-tongquan">
+  <strong>Tổng quan lab</strong>
+  <ul>
+    <li><strong>Lab này làm gì:</strong> nâng cấp scoreboard: ngoài so <em>từng retire</em> (Lab 10), cuối
+      mỗi chương trình quét <strong>toàn bộ trạng thái kiến trúc</strong> — 31 thanh ghi (x1..x31), mọi word
+      data memory đã ghi, và PC cuối — đối chiếu DUT (backdoor peek) với ISS. Bắt được cả lỗi "âm thầm"
+      không lộ qua dòng retire.</li>
+    <li><strong>Tạo ra file nào:</strong> nâng cấp <code>riscv_scoreboard.sv</code> (thêm vif + <code>final_check()</code>),
+      test gọi sweep sau drain; thêm <code>self_check_test</code> chạy chương trình ngẫu nhiên dài.</li>
+    <li><strong>Nhận gì từ lab trước:</strong> scoreboard in-order (Lab 10), ISS (Lab 9), vseq (Lab 7).</li>
+    <li><strong>Lab sau dùng để làm gì:</strong> Lab 12 coverage khẳng định đã kích thích đủ; Lab 15 regression
+      chạy nhiều seed với self-check này.</li>
+  </ul>
+</div>
+
+<div class="callout uvm"><strong>Trọng tâm UVM của lab</strong>
+<ul>
+  <li><strong>Phase cuối test</strong>: <code>extract_phase</code> (thu thập) → <code>check_phase</code> (kiểm) → <code>report_phase</code> (in); vì sao sweep không nên nằm rải rác trong <code>run_phase</code> của test.</li>
+  <li><strong>Hai lớp kiểm</strong>: per-transaction (định vị) + end-of-state (lưới an toàn) — tư duy thiết kế checker.</li>
+  <li><strong>Kiến trúc backdoor</strong>: scoreboard cầm <code>vif</code> để peek — tiện nhưng gắn cứng; giải pháp trừu tượng hóa.</li>
+  <li><strong>Đồng bộ test ↔ scoreboard</strong>: <code>uvm_event</code>, <code>phase_ready_to_end</code>, objection khi còn pending.</li>
+  <li><strong>Ngân sách lỗi &amp; báo cáo</strong>: <code>uvm_report_server</code>, đếm severity, kết luận một dòng.</li>
+</ul></div>
+
+<div class="note"><strong>Hai lớp kiểm:</strong> (1) <em>per-retire</em> — bắt lỗi ngay tại lệnh, định vị
+chính xác. (2) <em>end-of-state sweep</em> — mạng lưới an toàn: nếu per-retire bỏ sót (vd ghi đè regfile
+ngoài dòng retire), sweep cuối vẫn lộ. Hai lớp cộng lại ≈ self-checking đầy đủ.</div>
+
+
+
+<h2 id="m1">2. Vị trí trong testbench</h2>
+<pre><code> [ scoreboard ]  per-retire compare (Lab 10)
+                 final_check(): for r in 1..31: peek_reg(r) == iss.xreg[r]
+                                for addr in iss.dmem.keys word: peek_mem == iss.ld_w
+                                peek PC cuoi == iss.pc</code></pre>
+
+<h2 id="m2">3. Mục tiêu học</h2>
+<ul>
+  <li>Quét toàn kiến trúc bằng backdoor peek (regfile/mem) so ISS.</li>
+  <li>Thu thập địa chỉ mem đã ghi (queue/assoc keys) để quét đúng chỗ.</li>
+  <li>Phân biệt lỗi lộ qua retire vs lỗi chỉ lộ ở sweep.</li>
+  <li>Chương trình ngẫu nhiên dài + self-check không cần biết đáp án trước.</li>
+</ul>
+
+<h2 id="m3">4. Keyword &amp; khái niệm mới</h2>
+<div class="table-wrap"><table>
+<tr><th>Keyword</th><th>Giải thích</th><th>Ví dụ</th></tr>
+<tr><td>architectural sweep</td><td>Quét toàn bộ state cuối</td><td>31 reg + mem + pc</td></tr>
+<tr><td>backdoor peek</td><td>Đọc trộm regfile/mem</td><td><code>vif.peek_reg(r)</code></td></tr>
+<tr><td>queue <code>[$]</code></td><td>Danh sách động địa chỉ ghi</td><td><code>int waddr[$];</code></td></tr>
+<tr><td><code>foreach(assoc)</code></td><td>Duyệt key đã ghi</td><td><code>foreach(iss.dmem[a])</code></td></tr>
+<tr><td>self-checking</td><td>Tự biết đúng/sai, không đáp án tay</td><td>ISS là đáp án</td></tr>
+<tr><td><code>final_check()</code></td><td>Hàm sweep cuối chương trình</td><td>test gọi sau drain</td></tr>
+</table></div>
+
+<h2 id="m4">5. Chuẩn bị</h2>
+<pre><code>// scoreboard cần vif để peek:
+//   build: uvm_config_db#(virtual riscv_if)::get(this,"","vif",vif)
+//   env set vif cho sb như set cho mon/drv</code></pre>
+
+<h2 id="m5">6. Lý thuyết ngắn — sweep toàn kiến trúc (+ UVM bên trong)</h2>
+<ol>
+  <li><strong>Vì sao cần sweep?</strong> Dòng retire chỉ phản ánh "ghi do lệnh commit". Nếu có đường ghi lạ
+    (bug) hoặc byte memory sai do store sai độ rộng, sweep so toàn bộ mới chắc.</li>
+  <li><strong>Quét đúng chỗ:</strong> regfile chỉ 32 ô → quét hết. Memory thưa → quét các word ISS từng ghi
+    (keys của dmem), căn chỉnh 4.</li>
+  <li><strong>PC cuối:</strong> sau drain, DUT dừng ở <code>jal x0,0</code> (loop) → PC = địa chỉ halt. ISS
+    cũng dừng tại đó (nextpc = pc). So PC cuối.</li>
+  <li><strong>Random dài:</strong> vseq sinh ~30 lệnh hỗn hợp; không cần tính tay — ISS là đáp án.</li>
+</ol>
+
+<h3>6.5. Sweep nên ở phase nào?</h3>
+<p>Bản lab gọi <code>env.sb.final_check()</code> từ <code>run_phase</code> của test sau khi chờ drain. Cách này <em>chạy được</em> nhưng gắn kiểm tra vào từng test (mỗi test phải nhớ gọi). Cách chuẩn: scoreboard tự sweep trong <code>check_phase</code> (hoặc <code>extract_phase</code> thu thập rồi <code>check_phase</code> so):</p>
+<pre><code>function void extract_phase(uvm_phase phase);      // thu thập state DUT
+  for (int r = 1; r &lt; 32; r++) dut_reg[r] = vif.peek_reg(r);
+endfunction
+function void check_phase(uvm_phase phase);        // so với model, báo lỗi
+  for (int r = 1; r &lt; 32; r++)
+    if (dut_reg[r] !== iss.xreg[r]) `uvm_error("REGSWEEP", …)
+  if (n_cmp == 0) `uvm_error("SB", "khong co lenh nao duoc so")
+endfunction</code></pre>
+<p>Hai điều kiện để làm vậy: (1) mọi transaction cuối cùng đã đến scoreboard <em>trước</em> khi <code>run_phase</code> kết thúc (drain đủ, hoặc <code>phase_ready_to_end</code>); (2) <code>check_phase</code> là function — dùng được backdoor <code>peek</code> (function, zero-time), không dùng <code>@</code>.</p>
+
+<h3>6.6. Trì hoãn kết thúc bằng <code>phase_ready_to_end</code></h3>
+<p>Khi objection về 0, UVM gọi <code>phase_ready_to_end(run_phase)</code> trên mọi component <em>trước</em> khi thực sự kết thúc. Component có thể raise objection ngược lại để xin thêm thời gian — cách sạch để “chờ pending = 0” mà không hard-code số chu kỳ drain:</p>
+<pre><code>virtual function void phase_ready_to_end(uvm_phase phase);
+  if (phase.get_name() != "run") return;
+  if (pending_count() != 0) begin
+    phase.raise_objection(this, "SB con pending");
+    fork begin  wait (pending_count() == 0);  phase.drop_objection(this);  end join_none
+  end
+endfunction</code></pre>
+
+<h3>6.7. Ai được “biết” DUT? Backdoor trong scoreboard</h3>
+<p>Scoreboard cầm <code>virtual riscv_if</code> để gọi <code>peek_reg/peek_mem</code> là tiện, nhưng buộc scoreboard vào interface này. Hai cải tiến phổ biến: (1) interface “backdoor” trừu tượng — một <code>virtual class riscv_state_peek</code> với <code>peek_reg/peek_mem</code>, nhiều hiện thực (RTL path / DPI / SW model) đặt trong config object; (2) dùng RAL <code>uvm_reg/uvm_mem</code> backdoor (Lab 13) — scoreboard hỏi register model, không biết đường dẫn RTL.</p>
+<div class="callout pitfall"><strong>Bẫy thời điểm:</strong> peek ở <code>check_phase</code> sau khi <code>run_phase</code> kết thúc: nếu test dừng đột ngột (timeout) thì DUT có thể đang giữa chương trình → sweep báo lỗi giả. Chỉ sweep khi “đã halt” (cờ do driver/test báo).</div>
+
+<h3>6.8. Thống kê &amp; kết luận qua report server</h3>
+<pre><code>function void report_phase(uvm_phase phase);
+  uvm_report_server srv = uvm_report_server::get_server();
+  int unsigned e = srv.get_severity_count(UVM_ERROR);
+  int unsigned f = srv.get_severity_count(UVM_FATAL);
+  `uvm_info("RESULT", $sformatf("%s  (cmp=%0d err=%0d fatal=%0d)", (e+f==0 &amp;&amp; n_cmp&gt;0) ? "** TEST PASSED **" : "** TEST FAILED **", n_cmp, e, f), UVM_NONE)
+endfunction</code></pre>
+<p>Một dòng cố định (<code>TEST PASSED/FAILED</code>) giúp script regression grep ổn định (Lab 15).</p>
+
+<h2 id="m6">7. Iteration 0 — final_check sweep</h2>
+
+<details><summary>Nâng cấp tb/sb/riscv_scoreboard.sv (phần thêm)</summary>
+<pre><code>// thêm vào riscv_scoreboard:
+  virtual riscv_if vif;
+  bit [31:0] last_pc;         // PC lệnh retire cuối
+
+  // trong build_phase:
+  if (!uvm_config_db#(virtual riscv_if)::get(this,"","vif",vif))
+    `uvm_fatal("SB","thieu vif");
+
+  // trong write_ret(): sau khi exec, nhớ PC cuối:
+  last_pc = act.pc;
+
+  // sweep toàn kiến trúc — test gọi sau khi drain xong
+  function void final_check();
+    int errs = 0;
+    // 1) regfile x1..x31
+    for (int r = 1; r &lt; 32; r++) begin
+      bit [31:0] d = vif.peek_reg(r);
+      if (d !== iss.xreg[r]) begin
+        errs++;
+        `uvm_error("SB", $sformatf("REGSWEEP x%0d: dut=0x%08h iss=0x%08h", r, d, iss.xreg[r]))
+      end
+    end
+    // 2) data memory: quét các word ISS đã ghi
+    begin
+      bit seen[int];   // tránh quét trùng word
+      foreach (iss.dmem[a]) begin
+        int w = a &amp; ~3;
+        if (!seen.exists(w)) begin
+          bit [31:0] dm = vif.peek_mem(w);
+          bit [31:0] im = iss.ld_w(w);
+          seen[w] = 1;
+          if (dm !== im) begin
+            errs++;
+            `uvm_error("SB", $sformatf("MEMSWEEP[0x%08h]: dut=0x%08h iss=0x%08h", w, dm, im))
+          end
+        end
+      end
+    end
+    // 3) PC cuối (xấp xỉ: PC retire cuối == pc ISS tại lệnh cuối)
+    //    (đầy đủ hơn: probe out_pc so iss.pc — xem iteration 3)
+    if (errs == 0)
+      `uvm_info("SB", $sformatf("SWEEP PASS: regfile+mem khop (retire=%0d)", n_cmp), UVM_LOW)
+    else
+      `uvm_error("SB", $sformatf("SWEEP FAIL: %0d sai", errs))
+  endfunction</code></pre></details>
+
+<details><summary>Nâng cấp tb/env/riscv_env.sv — env set vif cho scoreboard (QUAN TRỌNG)</summary>
+<pre><code>// Từ Lab 11, scoreboard yêu cầu vif (để peek). Phải set Ở ENV (một chỗ, mọi test dùng chung)
+// — KHÔNG để từng test tự set, nếu không mixed_test/ral_test sẽ UVM_FATAL "thieu vif".
+// Trong riscv_env.build_phase, sau khi create sb:
+  sb = riscv_scoreboard::type_id::create("sb", this);
+  uvm_config_db#(virtual riscv_if)::set(this, "sb", "vif", cfg.vif);   // &lt;-- THÊM DÒNG NÀY</code></pre></details>
+
+<details><summary>Test gọi sweep + chương trình random dài (self_check_test)</summary>
+<pre><code>`ifndef SELF_CHECK_TEST_SV
+`define SELF_CHECK_TEST_SV
+class self_check_test extends riscv_base_test;
+  `uvm_component_utils(self_check_test)
+  function new(string n,uvm_component p); super.new(n,p); endfunction
+  // (KHÔNG cần set vif ở test — env đã set cho sb, xem snippet "Nâng cấp env" bên dưới)
+  task run_phase(uvm_phase phase);
+    riscv_vseq v = riscv_vseq::type_id::create("v");
+    phase.raise_objection(this);
+    v.start(env.vsqr);
+    repeat (60) @(posedge cfg.vif.clk);   // drain dư cho chương trình dài
+    env.sb.final_check();                 // sweep cuối
+    phase.drop_objection(this);
+  endtask
+endclass
+`endif</code></pre></details>
+
+<p><strong>Lệnh chạy:</strong></p>
+<pre><code>cd ~/Study/KLtN/code/tb_uvm/uvm_riscv/sim</code></pre>
+<pre><code>xsim top_sim -R -testplusarg UVM_TESTNAME=self_check_test  # (biên dịch như Lab 10)</code></pre>
+
+<details><summary>Expected log (PASS)</summary>
+<pre><code>UVM_INFO ../tb/sb/riscv_scoreboard.sv(96) @ 625000: uvm_test_top.env.sb [SB] SWEEP PASS: regfile+mem khop (retire=24)
+UVM_INFO ../tb/sb/riscv_scoreboard.sv(103) @ 625000: uvm_test_top.env.sb [SB] PASS: 24 lenh so khop, 0 loi
+UVM_ERROR :    0   UVM_FATAL :    0</code></pre>
+<p><em>9 lệnh chương trình (3R+3I+2LS+halt) + các lần retire lặp của halt trong 60 chu kỳ drain = 24 retire (số này đổi nếu bạn đổi <code>repeat (60)</code>).
+Nhớ thêm <code>`include "self_check_test.sv"</code> vào <code>riscv_pkg.sv</code> sau <code>riscv_mixed_test.sv</code>.</em></p></details>
+
+<h2 id="m7">8. Iterations</h2>
+
+<h3>Iteration 1 — bơm lỗi store độ rộng (data_memory) → chỉ sweep bắt</h3>
+<p>Tạm sửa <code>data_memory.sv</code> ghi thiếu 1 byte (bỏ byte[31:24]).</p>
+<details><summary>Khác biệt</summary><p>Dòng retire vẫn "store đúng ý định" (monitor lấy wdata từ DUT port), nhưng <strong>MEMSWEEP</strong> so
+nội dung thực tế → lộ byte sai. Dạy: sweep bắt lỗi lưu trữ mà per-retire bỏ sót. Hoàn tác sau.</p></details>
+
+<h3>Iteration 2 — chương trình SW rồi LW khác word (địa chỉ phân tán)</h3>
+<p>vseq sinh nhiều SW ở địa chỉ khác nhau.</p>
+<details><summary>Khác biệt</summary><p>Sweep quét nhiều word; dmem keys phân tán. Dạy: assoc array + seen[] tránh quét trùng.</p></details>
+
+<h3>Iteration 3 — so PC cuối bằng probe out_pc</h3>
+<p>Thêm probe <code>vif.out_pc</code> (nối <code>dut.out_pc</code>); so <code>vif.out_pc == iss.pc</code> trong sweep.</p>
+<details><summary>Khác biệt</summary><p>Kiểm PC dừng khớp. Dạy: hoàn tất bộ ba regfile+mem+pc.</p></details>
+
+<h3>Iteration 4 — random 5 seed liên tiếp (self-check lặp)</h3>
+<p>Chạy vseq 5 lần (reset giữa mỗi lần), sweep sau mỗi lần.</p>
+<details><summary>Khác biệt</summary><p>Mỗi seed một chương trình khác, đều PASS. Dạy: self-check mở đường cho regression Lab 15.</p></details>
+
+<h3>Iteration 5 — bật quét toàn bộ 2048 byte (chậm) để so sánh hiệu năng</h3>
+<p>Thay quét theo keys bằng vòng 0..2047 step 4.</p>
+<details><summary>Khác biệt</summary><p>Chậm hơn nhiều, kết quả như nhau. Dạy: quét theo keys đã ghi là tối ưu; quét toàn bộ chỉ khi nghi ghi lạ.</p></details>
+
+<h2 id="m8">9. Bảng tổng hợp</h2>
+<div class="table-wrap"><table><tr><th>Iter</th><th>Đổi</th><th>Học</th></tr>
+<tr><td>0</td><td>final_check sweep reg+mem</td><td>mạng an toàn trạng thái</td></tr>
+<tr><td>1</td><td>lỗi store độ rộng</td><td>sweep bắt lỗi per-retire sót</td></tr>
+<tr><td>2</td><td>SW phân tán</td><td>assoc + seen[]</td></tr>
+<tr><td>3</td><td>so out_pc</td><td>đủ reg+mem+pc</td></tr>
+<tr><td>4</td><td>5 seed</td><td>chuẩn bị regression</td></tr>
+<tr><td>5</td><td>quét toàn bộ</td><td>tối ưu theo keys</td></tr>
+</table></div>
+
+<h2 id="m9">10. BASELINE sang Lab 12</h2>
+<p>Scoreboard "đầy đủ": per-retire compare + <code>final_check()</code> sweep regfile+mem+PC, dùng backdoor
+peek + ISS. <code>self_check_test</code> PASS chương trình ngẫu nhiên. Lab 12 đo coverage để biết đã kích
+thích đủ các lệnh/cross/hazard.</p>
+
+<h2 id="m10">11. Checklist nhớ code</h2>
+<ul>
+  <li>[ ] Nhớ scoreboard get vif; env set vif cho sb.</li>
+  <li>[ ] Nhớ quét reg 1..31 + mem theo keys (seen[] tránh trùng).</li>
+  <li>[ ] Nhớ gọi <code>final_check()</code> SAU khi drain xong.</li>
+</ul>
+
+<h2 id="m11">12. Phỏng vấn — hỏi &amp; đáp</h2>
+<p>Bấm câu hỏi để xem đáp án — nên tự trả lời miệng trước khi mở. Mỗi câu có ví dụ cụ thể như khi bị hỏi trong phỏng vấn.</p>
+<div class="qa-list">
+<details class="qa"><summary>Vì sao quét state cuối cùng khi đã có so sánh từng retire? Cho ví dụ lỗi chỉ lộ ở sweep.</summary>
+<div class="ans">
+<p>Per-retire so <em>dữ liệu monitor thấy</em> (ý định ghi), không phải nội dung thật trong bộ nhớ/regfile. Ví dụ: <code>data_memory</code> RTL bỏ mất byte[31:24] khi ghi: monitor vẫn thấy <code>mem_wdata</code> đầy đủ ở cổng retire → per-retire OK; nhưng <code>peek_mem</code> cho giá trị thiếu byte ⇒ <code>MEMSWEEP</code> báo lỗi. Triết lý: hai lớp kiểm <em>khác quan điểm</em> thì bổ trợ nhau.</p>
+</div></details>
+<details class="qa"><summary>Nên sweep ở <code>run_phase</code> của test hay <code>check_phase</code> của scoreboard?</summary>
+<div class="ans">
+<p><code>check_phase</code> của scoreboard: đóng gói trong component, mọi test tự hưởng, chạy đúng lúc “mọi thứ đã xong”. Sweep trong test dễ bị quên và phụ thuộc thời gian chờ cố định. Điều kiện: dữ liệu đã đủ khi <code>run_phase</code> kết thúc (dùng <code>drain_time</code>/<code>phase_ready_to_end</code>), và chỉ dùng <em>function</em> (peek) trong <code>check_phase</code>.</p>
+</div></details>
+<details class="qa"><summary><code>phase_ready_to_end</code> là gì? Khi nào dùng?</summary>
+<div class="ans">
+<p>Callback được gọi khi objection của một phase về 0, <em>trước</em> khi phase thực sự kết thúc; component có thể raise objection mới để trì hoãn. Dùng khi “không biết trước phải chờ bao lâu” (còn pending trong fifo, đợi response cuối). Thay cho <code>#delay</code> cứng — vừa chính xác vừa không lãng phí thời gian mô phỏng.</p>
+</div></details>
+<details class="qa"><summary><code>uvm_event</code> dùng để làm gì giữa test và scoreboard? Khác <code>@(posedge)</code> thế nào?</summary>
+<div class="ans">
+<p><code>uvm_event</code> là đối tượng đồng bộ hóa có tên, có thể <em>mang dữ liệu</em> (<code>trigger(data)</code>/<code>wait_trigger_data</code>), tra theo tên qua <code>uvm_event_pool::get_global("halt_done")</code> nên hai component không cần biết nhau. Ví dụ: driver trigger <code>"prog_done"</code> khi đã drain; scoreboard <code>wait_trigger</code> rồi sweep. Khác <code>@(posedge clk)</code>: không gắn clock, rút gọn phụ thuộc giữa component.</p>
+<pre><code>uvm_event ev = uvm_event_pool::get_global("prog_done");
+// driver:      ev.trigger();
+// scoreboard:  ev.wait_trigger();  sweep();</code></pre>
+</div></details>
+<details class="qa"><summary>Scoreboard cầm <code>virtual riscv_if</code> để peek DUT — điểm yếu và cách cải thiện?</summary>
+<div class="ans">
+<p>Yếu: gắn cứng scoreboard vào interface cụ thể + đường dẫn RTL; đổi DUT (Lab 15 Avalon) phải sửa scoreboard. Cải thiện: (1) đưa backdoor vào <em>một abstract class</em> trong config object (<code>cfg.peek</code>), mỗi DUT có hiện thực riêng; (2) dùng <code>uvm_reg</code>/<code>uvm_mem</code> backdoor (RAL) để scoreboard chỉ hỏi model; (3) giữ interface làm nơi duy nhất biết path. Tất cả đều là <em>dependency inversion</em>.</p>
+</div></details>
+<details class="qa"><summary>Làm sao để kết luận test PASS/FAIL ở cuối một cách ổn định cho script regression?</summary>
+<div class="ans">
+<p>Lấy số lỗi từ <code>uvm_report_server</code> (<code>get_severity_count(UVM_ERROR/UVM_FATAL)</code>) <em>và</em> điều kiện “đã so đủ” (<code>n_cmp &gt; 0</code>); in <em>một dòng cố định</em> <code>** TEST PASSED **</code>/<code>** TEST FAILED **</code> ở <code>UVM_NONE</code> để không bị lọc bởi verbosity. Script chỉ grep dòng đó + <code>UVM_FATAL</code>. Tránh dựa vào dòng summary mặc định (có thể thay đổi định dạng giữa tool).</p>
+</div></details>
+<details class="qa"><summary>Self-checking nghĩa là gì? Nó khác test directed như thế nào về cách thiết kế?</summary>
+<div class="ans">
+<p>Test tự biết đúng/sai nhờ model tham chiếu độc lập (ISS), không cần đáp án tính tay ⇒ chạy được stimulus ngẫu nhiên bất kỳ và nhiều seed. Directed thường kèm đáp án cố định (kiểm <em>một</em> kịch bản). Thiết kế self-checking đòi hỏi: model độc lập, so sánh đầy đủ (per-txn + cuối), và cơ chế “không xanh giả”. Directed vẫn cần để đảm bảo corner case.</p>
+</div></details>
+<details class="qa"><summary>Chương trình random dài làm sweep chậm — tối ưu thế nào?</summary>
+<div class="ans">
+<p>Chỉ quét <em>phần đã chạm</em>: regfile 31 ô là rẻ; memory quét theo <code>keys</code> mà model đã ghi (assoc array) thay vì 0..2047 (Iteration 5). Thêm: tính checksum/ XOR toàn bộ vùng rồi so một lần, chỉ liệt kê chi tiết khi checksum lệch (sweep “hai tầng”).</p>
+</div></details>
+</div>
+
+<h2 id="m12">13. Cheat-sheet</h2>
+<pre><code>function void final_check();
+  for(r=1;r&lt;32;r++) if(vif.peek_reg(r)!==iss.xreg[r]) `uvm_error(REGSWEEP);
+  foreach(iss.dmem[a]) { w=a&amp;~3; if(!seen[w]){seen[w]=1;
+     if(vif.peek_mem(w)!==iss.ld_w(w)) `uvm_error(MEMSWEEP);} }
+  // (iter3) if(vif.out_pc!==iss.pc) `uvm_error(PC);</code></pre>
+
+<h2 id="m13">14. Bài tập code &amp; câu hỏi nâng cao UVM</h2>
+<p>8 bài rèn tay, tăng dần độ khó. Làm trên baseline của lab này; đáp án chỉ là hướng tham khảo — giá trị nằm ở việc bạn tự gõ, chạy và đọc log.</p>
+<div class="ex-progress"><span class="cnt">0 / 8 bài đã làm</span><span class="bar"><i></i></span></div>
+<div class="ex-list">
+<article class="ex"><div class="ex-head"><span class="lv l1">★ Dễ</span><h4>EX1 — Chuyển sweep sang <code>check_phase</code></h4></div>
+Di chuyển <code>final_check()</code> thành <code>check_phase</code> của scoreboard (bỏ lời gọi trong test). Chạy <code>mixed_test</code> và <code>self_check_test</code>. Sweep có còn chạy sau khi test đã drop objection không? Chứng minh bằng log.
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p>Có — <code>check_phase</code> chạy sau <code>run_phase</code>. Nhưng nếu drain chưa đủ, dữ liệu cuối thiếu; thêm <code>drain_time</code> hoặc <code>phase_ready_to_end</code>.</p>
+</details>
+</article>
+<article class="ex"><div class="ex-head"><span class="lv l1">★ Dễ</span><h4>EX2 — Dòng kết luận cố định</h4></div>
+Thêm <code>report_phase</code> in <code>** TEST PASSED **</code>/<code>FAILED</code> bằng <code>uvm_report_server</code>. Viết lệnh <code>grep -q "TEST PASSED"</code> làm tiêu chí pass duy nhất cho regression.
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p>In ở <code>UVM_NONE</code>. Nhớ so cả <code>UVM_FATAL</code>: một fatal ở <code>build_phase</code> sẽ khiến dòng của bạn không bao giờ được in — nên “không có dòng PASSED” cũng là FAIL (ngầm định tốt).</p>
+</details>
+</article>
+<article class="ex"><div class="ex-head"><span class="lv l2">★★ Vừa</span><h4>EX3 — <code>phase_ready_to_end</code> thay <code>repeat(60)</code></h4></div>
+Bỏ <code>repeat (60) @(posedge clk)</code> trong test. Cài <code>phase_ready_to_end</code> trong scoreboard chờ tới khi nhận retire của lệnh halt (<code>instr==0x0000006f</code>) hoặc timeout 200 chu kỳ.
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p>Cẩn thận vòng vô hạn nếu halt không bao giờ tới: luôn có timeout (<code>fork … join_any</code> với <code>#timeout</code>).</p>
+</details>
+</article>
+<article class="ex"><div class="ex-head"><span class="lv l2">★★ Vừa</span><h4>EX4 — <code>uvm_event</code> báo “halt_done”</h4></div>
+Monitor trigger <code>uvm_event "halt"</code> khi thấy retire halt lần đầu. Scoreboard <code>wait_trigger</code> rồi sweep trong <code>run_phase</code> (hoặc raise/drop objection quanh sweep). So với cách chờ cố định.
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p>Ưu: chính xác. Nhược: nếu chương trình không có halt (firmware lặp vô hạn) cần điều kiện khác — bài toán “khi nào chương trình kết thúc?” cũng quan trọng với firmware thật (Lab 15).</p>
+</details>
+</article>
+<article class="ex"><div class="ex-head"><span class="lv l2">★★ Vừa</span><h4>EX5 — Checksum hai tầng</h4></div>
+Tính XOR của mọi word đã ghi ở cả DUT (peek) và ISS; chỉ khi khác mới liệt kê chi tiết từng word. Đo thời gian mô phỏng so với quét từng word.
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p>Rất hữu ích khi vùng nhớ lớn; nhớ XOR có thể bỏ sót lỗi bù trừ (hiếm) — dùng CRC nếu cần.</p>
+</details>
+</article>
+<article class="ex"><div class="ex-head"><span class="lv l3">★★★ Khó</span><h4>EX6 — Backdoor trừu tượng</h4></div>
+Định nghĩa <code>virtual class riscv_state_peek</code> (pure virtual <code>peek_reg/peek_mem</code>) và hiện thực <code>riscv_rtl_peek</code> dùng vif. Scoreboard chỉ giữ handle <code>riscv_state_peek</code> lấy từ cfg. Viết hiện thực thứ hai trả giá trị cố định để chứng minh scoreboard không phụ thuộc DUT.
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p>Sau bài này, chuyển sang DUT Avalon ở Lab 15 chỉ cần thêm một hiện thực mới — dependency inversion thực tế.</p>
+</details>
+</article>
+<article class="ex"><div class="ex-head"><span class="lv l3">★★★ Khó</span><h4>EX7 — Sweep giữa chương trình</h4></div>
+Thêm khả năng sweep tại “checkpoint”: sau mỗi N retire, so regfile DUT ↔ model <em>tại đúng thời điểm đó</em> (cần pipeline đã drain đến lệnh N — thực tế khó vì còn lệnh bay!). Thảo luận vì sao chỉ sweep cuối chương trình là an toàn, và đề xuất cách làm đúng.
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p>Regfile DUT chứa kết quả của <em>các lệnh đã qua WB</em>, nhưng retire stream đến sau shadow pipeline: bạn phải so với state của model sau lệnh <em>đã retire</em> chứ không phải lệnh vừa phát. Dùng chính <code>ret_valid</code>/tín hiệu “write-back xảy ra” để chốt thời điểm.</p>
+</details>
+</article>
+<article class="ex"><div class="ex-head"><span class="lv l3">★★★ Khó</span><h4>EX8 — Mutation: giấu lỗi khỏi per-retire</h4></div>
+Chèn lỗi RTL: ghi thanh ghi thứ hai khi <code>jal</code> (ghi x5 sai). Per-retire có thấy không? Sweep có thấy không? Giải thích bằng “quan điểm khác nhau” của hai lớp kiểm.
+<details><summary>Gợi ý &amp; đáp án tham khảo</summary>
+<p>Per-retire chỉ so <code>rd</code> khai báo của lệnh; ghi lạ vào x5 không xuất hiện ở cổng retire → chỉ <code>REGSWEEP x5</code> thấy.</p>
+</details>
+</article>
+</div>
+
+
+<nav class="pager" aria-label="Điều hướng lab"><a class="nav-card prev" href="lab10.html" rel="prev"><small>← Lab trước</small><span>Lab 10 — Scoreboard in-order</span></a><div class="mid"><button type="button" class="btn primary" id="mark-done" aria-pressed="false">Đánh dấu hoàn thành</button></div><a class="nav-card next" href="lab12.html" rel="next"><small>Lab tiếp →</small><span>Lab 12 — Functional coverage</span></a></nav>
+<p class="foot">UVM · RISC-V Pipeline Speedrun — Lab 11 / 15. Phím tắt: <kbd>[</kbd> lab trước · <kbd>]</kbd> lab sau.</p>
+</main>
+</div>
+</body>
+</html>

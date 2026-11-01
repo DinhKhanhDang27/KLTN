@@ -1,0 +1,121 @@
+<mxGraphModel dx="3281" dy="810" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+  <root>
+    <mxCell id="0" />
+    <mxCell id="1" parent="0" />
+    <mxCell id="PC" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="PC Register" vertex="1">
+      <mxGeometry height="120" width="80" x="-290" y="370" as="geometry" />
+    </mxCell>
+    <mxCell id="PC_ADD4" parent="1" style="shape=trapezoid;perimeter=trapezoidPerimeter;whiteSpace=wrap;html=1;fixedSize=1;direction=south;" value="PC + 4&#xa;Adder" vertex="1">
+      <mxGeometry height="60" width="80" x="-110" y="30" as="geometry" />
+    </mxCell>
+    <mxCell id="IMEM" parent="1" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#fff2cc;strokeColor=#d6b656;" value="Instruction&#xa;Memory" vertex="1">
+      <mxGeometry height="120" width="100" x="250" y="300" as="geometry" />
+    </mxCell>
+    <mxCell id="CTRL" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" value="Control&#xa;Unit" vertex="1">
+      <mxGeometry height="120" width="100" x="240" y="110" as="geometry" />
+    </mxCell>
+    <mxCell id="REGFILE" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" value="Register&#xa;File" vertex="1">
+      <mxGeometry height="140" width="100" x="470" y="240" as="geometry" />
+    </mxCell>
+    <mxCell id="IMMGEN" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" value="Imm&#xa;Gen" vertex="1">
+      <mxGeometry height="60" width="100" x="160" y="560" as="geometry" />
+    </mxCell>
+    <mxCell id="ALU_MUX" parent="1" style="shape=trapezoid;perimeter=trapezoidPerimeter;whiteSpace=wrap;html=1;fixedSize=1;direction=south;" value="ALU MUX" vertex="1">
+      <mxGeometry height="80" width="40" x="590" y="480" as="geometry" />
+    </mxCell>
+    <mxCell id="ALU" parent="1" style="shape=trapezoid;perimeter=trapezoidPerimeter;whiteSpace=wrap;html=1;fixedSize=1;direction=south;fillColor=#f8cecc;strokeColor=#b85450;" value="ALU" vertex="1">
+      <mxGeometry height="140" width="100" x="960" y="414" as="geometry" />
+    </mxCell>
+    <mxCell id="BRANCH_CTRL" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" value="Branch&#xa;Control" vertex="1">
+      <mxGeometry height="80" width="100" x="610" y="120" as="geometry" />
+    </mxCell>
+    <mxCell id="PC_ADD_IMM" parent="1" style="shape=trapezoid;perimeter=trapezoidPerimeter;whiteSpace=wrap;html=1;fixedSize=1;direction=south;" value="Branch/JAL&#xa;Adder" vertex="1">
+      <mxGeometry height="60" width="80" x="850" y="650" as="geometry" />
+    </mxCell>
+    <mxCell id="DMEM" parent="1" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#fff2cc;strokeColor=#d6b656;" value="Data Memory&#xa;(or Avalon I/O)" vertex="1">
+      <mxGeometry height="120" width="100" x="1090" y="130" as="geometry" />
+    </mxCell>
+    <mxCell id="WB_MUX" parent="1" style="shape=trapezoid;perimeter=trapezoidPerimeter;whiteSpace=wrap;html=1;fixedSize=1;direction=south;" value="WB MUX" vertex="1">
+      <mxGeometry height="120" width="40" x="1540" y="294" as="geometry" />
+    </mxCell>
+    <mxCell id="E1" edge="1" parent="1" source="PC" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="IMEM" value="PC">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="E2" edge="1" parent="1" source="PC" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="PC_ADD4" value="">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="E3" edge="1" parent="1" source="IMEM" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="CTRL" value="Opcode,&#xa;Funct3, Funct7">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="E4" edge="1" parent="1" source="IMEM" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="REGFILE" value="rs1, rs2, rd">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="E5" edge="1" parent="1" source="IMEM" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="IMMGEN" value="Instruction">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="E6" edge="1" parent="1" source="REGFILE" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="ALU" value="Read Data 1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="E7" edge="1" parent="1" source="REGFILE" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="ALU_MUX" value="Read Data 2">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="E8" edge="1" parent="1" source="IMMGEN" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="ALU_MUX" value="Imm">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="E9" edge="1" parent="1" source="ALU_MUX" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="ALU" value="B">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="880" y="520" />
+          <mxPoint x="880" y="520" />
+        </Array>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="E10" edge="1" parent="1" source="ALU" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="DMEM" value="ALU Result&#xa;(Addr)">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="E11" edge="1" parent="1" source="ALU" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="BRANCH_CTRL" value="Zero">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="E12" edge="1" parent="1" source="REGFILE" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="DMEM" value="Write Data">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="E13" edge="1" parent="1" source="DMEM" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="WB_MUX" value="Mem Read Data">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="E14" edge="1" parent="1" source="ALU" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="WB_MUX" value="ALU Result">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="1560" y="484" />
+        </Array>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="E15" edge="1" parent="1" source="PC_ADD4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="WB_MUX" value="PC+4">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="1620" y="60" />
+          <mxPoint x="1620" y="354" />
+        </Array>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="E16" edge="1" parent="1" source="WB_MUX" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" target="REGFILE" value="Write Back Data">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="E17" edge="1" parent="1" source="PC" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="PC_ADD_IMM" value="PC">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="E18" edge="1" parent="1" source="IMMGEN" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="PC_ADD_IMM" value="Imm">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="870" y="590" />
+        </Array>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="E19" edge="1" parent="1" source="PC_ADD_IMM" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.75;entryDx=0;entryDy=0;" target="PC" value="Branch Target">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="E20" edge="1" parent="1" source="PC_ADD4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.25;entryDx=0;entryDy=0;" target="PC" value="Next PC">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+  </root>
+</mxGraphModel>
+

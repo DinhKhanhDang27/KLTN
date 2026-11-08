@@ -36,3 +36,33 @@ cov_db/
 
 # KHÔNG bỏ qua các file HTML (Giữ lại báo cáo Code Coverage dưới dạng Web)
 !*.html
+
+# ==========================================
+# QUARTUS / INTEL FPGA IGNORE LIST
+# Bỏ qua database & output sinh tự động khi compile (tái tạo lại được)
+# ==========================================
+
+# Compilation databases (rất nặng, sinh lại mỗi lần compile)
+db/
+incremental_db/
+output_files/
+greybox_tmp/
+hc_output/
+qdb/
+
+# Qsys / GUI state (per-user)
+.qsys_edit/
+*.qws
+*.qarlog
+*.rpt.messages
+
+# Áp dụng cho mọi sub-project Quartus (vd: riscv_quartus_pipeline/)
+**/db/
+**/incremental_db/
+**/output_files/
+
+# ==========================================
+# TÀI LIỆU PDF (lưu ngoài repo, không version-control)
+# ==========================================
+*.pdf
+*.PDF

@@ -1,0 +1,30 @@
+# =============================================================
+# Standalone RISC-V 5-stage pipeline core - Fmax characterization
+# Target board: Terasic DE0-Nano
+# Device      : Cyclone IV E  EP4CE22F17C6
+# Top module  : riscv_pipeline_top (self-contained: core + imem + dmem)
+# =============================================================
+
+set_global_assignment -name FAMILY "Cyclone IV E"
+set_global_assignment -name DEVICE EP4CE22F17C6
+set_global_assignment -name TOP_LEVEL_ENTITY riscv_pipeline_top
+set_global_assignment -name ORIGINAL_QUARTUS_VERSION 13.0
+set_global_assignment -name PROJECT_OUTPUT_DIRECTORY output_files
+
+# ---- Source files ----
+set_global_assignment -name SYSTEMVERILOG_FILE rtl/riscv_pipeline_top.sv
+set_global_assignment -name SYSTEMVERILOG_FILE rtl/riscv_pipeline_core.sv
+set_global_assignment -name SYSTEMVERILOG_FILE rtl/pc_register.sv
+set_global_assignment -name SYSTEMVERILOG_FILE rtl/register_file.sv
+set_global_assignment -name SYSTEMVERILOG_FILE rtl/alu.sv
+set_global_assignment -name SYSTEMVERILOG_FILE rtl/alu_control.sv
+set_global_assignment -name SYSTEMVERILOG_FILE rtl/control_unit.sv
+set_global_assignment -name SYSTEMVERILOG_FILE rtl/imm_gen.sv
+set_global_assignment -name SYSTEMVERILOG_FILE rtl/branch_control.sv
+set_global_assignment -name SYSTEMVERILOG_FILE rtl/adder.sv
+set_global_assignment -name SYSTEMVERILOG_FILE rtl/mux.sv
+set_global_assignment -name SYSTEMVERILOG_FILE rtl/instruction_memory.sv
+set_global_assignment -name SYSTEMVERILOG_FILE rtl/data_memory.sv
+
+# ---- Timing constraints ----
+set_global_assignment -name SDC_FILE riscv_pipeline.sdc

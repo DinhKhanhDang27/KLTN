@@ -1,0 +1,72 @@
+<mxfile host="app.diagrams.net" agent="Claude" version="24.0.0">
+  <diagram id="sha2_core" name="SHA-256 / SHA-512 Core">
+    <mxGraphModel dx="1600" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2600" pageHeight="1700" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- TITLE -->
+        <mxCell id="title" value="SHA-2 Core (SHA-256 / SHA-512)" style="text;html=1;fontSize=48;fontStyle=1;align=center;verticalAlign=middle;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="600" y="20" width="1400" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- MAIN SPINE -->
+        <mxCell id="block_in" value="Message Block" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=40;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="760" y="130" width="780" height="150" as="geometry" />
+        </mxCell>
+
+        <mxCell id="msgsched" value="Message Schedule" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=40;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="760" y="370" width="780" height="150" as="geometry" />
+        </mxCell>
+
+        <mxCell id="compress" value="Compression Round" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=40;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="700" y="610" width="900" height="170" as="geometry" />
+        </mxCell>
+
+        <mxCell id="finaladd" value="Final Addition" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=40;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="760" y="870" width="780" height="150" as="geometry" />
+        </mxCell>
+
+        <mxCell id="hash_out" value="Hash Output" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=40;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="760" y="1110" width="780" height="150" as="geometry" />
+        </mxCell>
+
+        <!-- LEFT FEEDERS -->
+        <mxCell id="kconst" value="Round Constants" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=40;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="100" y="385" width="480" height="150" as="geometry" />
+        </mxCell>
+
+        <mxCell id="funcs" value="Logic Functions" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=40;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="100" y="620" width="480" height="150" as="geometry" />
+        </mxCell>
+
+        <!-- RIGHT SIDE -->
+        <mxCell id="iv" value="Initial Hash (IV)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=40;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1780" y="130" width="620" height="150" as="geometry" />
+        </mxCell>
+
+        <mxCell id="workregs" value="Working Registers" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=40;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1780" y="620" width="620" height="150" as="geometry" />
+        </mxCell>
+
+        <mxCell id="fsm" value="Control FSM" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=40;verticalAlign=middle;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="1780" y="870" width="620" height="150" as="geometry" />
+        </mxCell>
+
+        <!-- EDGES (data) -->
+        <mxCell id="ed1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;strokeColor=#000000;strokeWidth=2;" edge="1" parent="1" source="block_in" target="msgsched"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="ed2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;strokeColor=#000000;strokeWidth=2;" edge="1" parent="1" source="msgsched" target="compress"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="ed3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;strokeColor=#000000;strokeWidth=2;" edge="1" parent="1" source="kconst" target="compress"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="ed4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;strokeColor=#000000;strokeWidth=2;" edge="1" parent="1" source="funcs" target="compress"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="ed5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;strokeColor=#000000;strokeWidth=2;" edge="1" parent="1" source="compress" target="workregs"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="ed6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;strokeColor=#000000;strokeWidth=2;" edge="1" parent="1" source="workregs" target="compress"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="2090" y="570"/><mxPoint x="1150" y="570"/></Array></mxGeometry></mxCell>
+        <mxCell id="ed7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;strokeColor=#000000;strokeWidth=2;dashed=1;" edge="1" parent="1" source="iv" target="workregs"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="2480" y="470"/></Array></mxGeometry></mxCell>
+        <mxCell id="ed8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;strokeColor=#000000;strokeWidth=2;" edge="1" parent="1" source="compress" target="finaladd"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="ed9" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;strokeColor=#000000;strokeWidth=2;dashed=1;" edge="1" parent="1" source="iv" target="finaladd"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="2540" y="945"/></Array></mxGeometry></mxCell>
+        <mxCell id="ed10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;strokeColor=#000000;strokeWidth=2;" edge="1" parent="1" source="finaladd" target="hash_out"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="ed11" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;strokeColor=#000000;strokeWidth=2;dashed=1;" edge="1" parent="1" source="fsm" target="compress"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="1150" y="900"/></Array></mxGeometry></mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

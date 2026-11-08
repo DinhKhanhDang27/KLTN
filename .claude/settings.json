@@ -11,7 +11,9 @@
       "Read(//home/dinhkhanhdang/.vscode/extensions/**)",
       "Read(//home/dinhkhanhdang/.cache/**)",
       "Bash(python3 -c \"import playwright;print\\('py playwright',playwright.__version__\\)\")",
-      "Bash(python3 -c \"import selenium;print\\('selenium'\\)\")"
+      "Bash(python3 -c \"import selenium;print\\('selenium'\\)\")",
+      "Bash(git fsck *)",
+      "Bash(git remote *)"
     ],
     "additionalDirectories": [
       "/home/dinhkhanhdang/Study/KLtN/code/scripts"

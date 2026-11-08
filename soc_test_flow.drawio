@@ -1,0 +1,72 @@
+<mxfile host="app.diagrams.net" agent="Claude" version="24.0.0">
+  <diagram id="soc_test_flow" name="SoC Test Flow">
+    <mxGraphModel dx="1600" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2600" pageHeight="4600" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- TITLE -->
+        <mxCell id="title" value="SoC Test Flow (SHA-256 + RISC-V trên DE0-Nano)" style="text;html=1;fontSize=72;fontStyle=1;align=center;verticalAlign=middle;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="300" y="40" width="2000" height="110" as="geometry" />
+        </mxCell>
+
+        <mxCell id="s1" value="Biên dịch firmware&#10;asm_to_hex.py -&gt; firmware.hex" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=60;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="400" y="220" width="1800" height="240" as="geometry" />
+        </mxCell>
+
+        <mxCell id="s2" value="Copy firmware.hex vao&#10;system/synthesis/submodules" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=60;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="400" y="580" width="1800" height="240" as="geometry" />
+        </mxCell>
+
+        <mxCell id="s3" value="Tong hop Quartus II&#10;(Start Compilation)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=60;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="400" y="940" width="1800" height="240" as="geometry" />
+        </mxCell>
+
+        <mxCell id="s4" value="Nap .sof xuong DE0-Nano&#10;(Quartus Programmer, USB-Blaster)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=60;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="400" y="1300" width="1800" height="240" as="geometry" />
+        </mxCell>
+
+        <mxCell id="s5" value="Tao du lieu message.txt&#10;(Set-Content -NoNewline &quot;abc&quot;)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=60;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="400" y="1660" width="1800" height="240" as="geometry" />
+        </mxCell>
+
+        <mxCell id="s6" value="pack_sdram_input.py&#10;-&gt; load_sdram_input.tcl&#10;(+ SHA-256 tham chieu)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=60;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="400" y="2020" width="1800" height="300" as="geometry" />
+        </mxCell>
+
+        <mxCell id="s7" value="System Console: source .tcl&#10;Ghi SDRAM qua&#10;JTAG-to-Avalon Master" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=60;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="400" y="2440" width="1800" height="300" as="geometry" />
+        </mxCell>
+
+        <mxCell id="s8" value="Kiem tra magic = 0x53484132&#10;va length" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=60;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="400" y="2860" width="1800" height="240" as="geometry" />
+        </mxCell>
+
+        <mxCell id="s9" value="Firmware RISC-V:&#10;padding + ghi block 512-bit,&#10;kich hoat SHA-256 IP, polling" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=60;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="400" y="3220" width="1800" height="300" as="geometry" />
+        </mxCell>
+
+        <mxCell id="s10" value="Doc digest 256-bit&#10;Xuat qua JTAG UART&#10;-&gt; nios2-terminal" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=60;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="400" y="3640" width="1800" height="300" as="geometry" />
+        </mxCell>
+
+        <mxCell id="s11" value="So sanh digest FPGA&#10;voi tham chieu Python&#10;-&gt; PASS / FAIL" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=60;verticalAlign=middle;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="400" y="4060" width="1800" height="300" as="geometry" />
+        </mxCell>
+
+        <!-- EDGES (arrows 10px) -->
+        <mxCell id="a1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;strokeColor=#000000;strokeWidth=10;endSize=10;" edge="1" parent="1" source="s1" target="s2"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="a2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;strokeColor=#000000;strokeWidth=10;endSize=10;" edge="1" parent="1" source="s2" target="s3"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="a3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;strokeColor=#000000;strokeWidth=10;endSize=10;" edge="1" parent="1" source="s3" target="s4"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="a4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;strokeColor=#000000;strokeWidth=10;endSize=10;" edge="1" parent="1" source="s4" target="s5"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="a5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;strokeColor=#000000;strokeWidth=10;endSize=10;" edge="1" parent="1" source="s5" target="s6"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="a6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;strokeColor=#000000;strokeWidth=10;endSize=10;" edge="1" parent="1" source="s6" target="s7"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="a7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;strokeColor=#000000;strokeWidth=10;endSize=10;" edge="1" parent="1" source="s7" target="s8"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="a8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;strokeColor=#000000;strokeWidth=10;endSize=10;" edge="1" parent="1" source="s8" target="s9"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="a9" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;strokeColor=#000000;strokeWidth=10;endSize=10;" edge="1" parent="1" source="s9" target="s10"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="a10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;strokeColor=#000000;strokeWidth=10;endSize=10;" edge="1" parent="1" source="s10" target="s11"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -1,0 +1,68 @@
+===================================================================
+  RISC-V 5-STAGE PIPELINE CORE - QUARTUS Fmax REPORT
+===================================================================
+Project      : riscv_quartus_pipeline  (standalone, core only)
+Top module   : riscv_pipeline_top  (core + on-chip imem + dmem)
+Board        : Terasic DE0-Nano
+Device       : Cyclone IV E  EP4CE22F17C6
+Tool         : Quartus II 13.0sp1
+Date         : 2026-11-05
+Flow         : quartus_map -> quartus_fit -> quartus_sta  (exit 0)
+
+-------------------------------------------------------------------
+  1) Fmax  (from Static Timing Analysis - independent of firmware)
+-------------------------------------------------------------------
+  Slow 1200mV  85C model : 76.29 MHz   <-- sign-off number (worst case)
+  Slow 1200mV   0C model : 84.97 MHz
+
+  >> REPORT Fmax for the core = 76.29 MHz  (clock domain: clk)
+
+  Notes:
+  - Fmax is computed by TimeQuest from the longest register-to-register
+    path. It does NOT depend on which firmware runs; firmware.hex only
+    initialises the instruction ROM so synthesis has real contents.
+  - Use the 85C (hot) corner as the official sign-off value: 76.29 MHz.
+
+-------------------------------------------------------------------
+  2) Resource utilisation (Fitter summary)
+-------------------------------------------------------------------
+  Total logic elements        : 3,841 / 22,320   (17 %)
+      combinational functions : 3,460 / 22,320   (16 %)
+  Total registers             : 1,519
+  Total pins                  : 66 / 154         (43 %)
+  Total memory bits           : 16,384 / 608,256 (3 %)   (imem + dmem = M9K)
+  DSP blocks                  : 0
+
+-------------------------------------------------------------------
+  3) Critical path (what limits Fmax)
+-------------------------------------------------------------------
+  Worst setup path (85C):
+     From : exmem_rd_r[3]   (EX/MEM pipeline register)
+     To   : ifid_instr[*]   (IF/ID instruction register)
+     Data delay : ~13.0 ns  ->  1/13.0ns ~= 76.3 MHz
+  The bottleneck is the fetch/decode path interacting with the
+  EX/MEM stage (instruction memory read feeding IF/ID). To push Fmax
+  higher, pipeline/register the instruction-memory read path.
+
+-------------------------------------------------------------------
+  4) About the negative slack in the .sta.rpt
+-------------------------------------------------------------------
+  The SDC constrains clk to 5.000 ns (200 MHz) ON PURPOSE, so the
+  design does not get artificially capped. At 200 MHz it fails setup
+  (worst slack = -8.108 ns) - this is EXPECTED and is NOT an error.
+  The achievable frequency is the "Report Fmax" value above
+  (76.29 MHz), which is what you quote.
+
+  On the real DE0-Nano the on-board oscillator is 50 MHz, so the core
+  runs comfortably within timing (76.29 MHz > 50 MHz).
+
+-------------------------------------------------------------------
+  5) How to reproduce
+-------------------------------------------------------------------
+  cd riscv_quartus_pipeline
+  quartus_map riscv_pipeline
+  quartus_fit riscv_pipeline
+  quartus_sta riscv_pipeline
+  # Fmax in: output_files/riscv_pipeline.sta.rpt
+  #   -> panel "Slow 1200mV 85C Model Fmax Summary"
+===================================================================

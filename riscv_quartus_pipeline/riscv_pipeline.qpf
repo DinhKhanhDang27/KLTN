@@ -1,0 +1,5 @@
+QUARTUS_VERSION = "13.0"
+
+# Revisions
+
+PROJECT_REVISION = "riscv_pipeline"
